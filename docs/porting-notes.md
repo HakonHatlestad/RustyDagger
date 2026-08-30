@@ -157,6 +157,7 @@ See [saves.md](saves.md). Heroes used to be bare files in the working directory.
 | `Faces/Serville.jpg` → `Servile.jpg` | `arClanHall` asked for a filename that did not match the shipped asset, so the clan hall portrait never loaded. |
 | `prefferedSize()` → `getPreferredSize()` | Typo, so it overrode nothing and the panel had no preferred size. Needed for `pack()`. |
 | `new Integer(s)` / `new Long(s)` replaced | Constructors deprecated for removal; the build now passes `-Xlint:removal` clean. |
+| `itMonster.buildGear` handles non-weapon gear | Meeting the Mound Queen crashed the game outright, about 30% of the time. Her gear list names a Crystal Crown, which lives in `GearTable` rather than `ArmsTable`, so `GearTable.shopItem` hands back a count rather than a weapon and the unchecked cast to `itArms` threw. `buildPack` has always handled that case; `buildGear` now does the same, and she drops the crown as loot. Found by the parity harness on its first run. |
 | `Tools.roll()` no longer returns negatives | It negated a raw `nextInt()` and took a modulus. `Integer.MIN_VALUE` negates to itself, so roll could go negative and crash `select()` as an array index. Now `nextInt(bound)`, which is also free of the old modulo bias. Verified uniform over 6M samples, no negatives. |
 
 ## Known and left alone

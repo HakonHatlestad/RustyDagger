@@ -248,17 +248,35 @@ public class itMonster extends itAgent {
   }
 
   void buildGear(Item it) {
-    itArms make;
-    if (((itCount) it).makeCount() >= 1 && (make = (itArms) GearTable.shopItem(it)) != null) {
-      make.tweak();
-      if (getGear().hasTrait(ArmsTrait.CURSE) && Tools.percent(25)) {
-        make.fixTrait(ArmsTrait.CURSED);
-      }
-      if (getGear().hasTrait(ArmsTrait.BLESS)) {
-        make.fixTrait(ArmsTrait.BLESS);
-      }
-      getPack().append(make);
+    if (!(it instanceof itCount)) {
+      return;
     }
+    int num = ((itCount) it).makeCount();
+    if (num < 1) {
+      return;
+    }
+    Item make = GearTable.shopItem(it);
+    if (make == null) {
+      return;
+    }
+    // A gear entry naming something in GearTable rather than ArmsTable comes back as a
+    // count, not a weapon -- the Mound Queen's Crystal Crown is the only one in the game.
+    // buildPack() has always handled that case; this cast it straight to itArms and threw,
+    // so meeting her was a hard crash whenever the 30% roll came up.
+    if (!(make instanceof itArms)) {
+      make.setCount(num);
+      getPack().append(make);
+      return;
+    }
+    itArms arms = (itArms) make;
+    arms.tweak();
+    if (getGear().hasTrait(ArmsTrait.CURSE) && Tools.percent(25)) {
+      arms.fixTrait(ArmsTrait.CURSED);
+    }
+    if (getGear().hasTrait(ArmsTrait.BLESS)) {
+      arms.fixTrait(ArmsTrait.BLESS);
+    }
+    getPack().append(arms);
   }
 
   public void testGear() {

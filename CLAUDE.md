@@ -8,7 +8,7 @@ this file is the short version plus the traps.
 Two things at once, and knowing which you are in matters.
 
 **`app/`** is a TypeScript rewrite, and where new work goes. It is playable end to end, has a full
-quality gate (`cd app && pnpm check`) and is checked against the Java build's recorded behaviour.
+quality gate (`cd app && pnpm verify`) and is checked against the Java build's recorded behaviour.
 Modern code; treat it as you would any TypeScript project.
 
 It is **deliberately no longer the same game**. The daily quest ration, gear decay and the death
@@ -57,7 +57,11 @@ Nothing needs installing but a JDK 17+. Gradle downloads the Java 17 toolchain i
 
 ## Seeing your change
 
-There are **no tests**. The only real verification is running it, and the game is a GUI, so:
+**In `app/`, run `pnpm verify`** — that is type checking, linting, formatting, the full suite, a
+build, and a game played through the built bundle. It is what CI runs.
+
+**On the Java side there are no unit tests.** What holds it still is the parity harness
+(`./gradlew baseline`), and beyond that the only verification is running it. The game is a GUI, so:
 
 ```
 ./gradlew build
@@ -116,5 +120,11 @@ a real subprocess with a working native stack, scrub the environment first:
   from improving buys nothing. See [docs/development.md](docs/development.md).
 - **Record behaviour changes in `docs/porting-notes.md` in the same commit.** Six months on, the
   question is always "was this a bug or a decision?"
+- **Never let a test read something the game writes.** Fixtures live in `app/test/fixtures/`;
+  `saves/*.hero` are play files and are gitignored. The suite once read a real save and three tests
+  passed only on the machine that had played.
+- **If the interface says the game does something, pin it in `app/test/promises.test.ts`.** The
+  inventory told players which items a swap would replace for weeks while the game replaced nothing;
+  every individual piece passed its own tests.
 - Commit messages say what a player would notice, then why. The decompiled names mean nothing on
   their own.

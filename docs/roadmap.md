@@ -35,8 +35,9 @@ now keeps improving whatever happens to the rewrite.
 
 **Phases 0 to 4 are done and the game is playable end to end in a browser.** `app/` holds the
 TypeScript port — run `cd app && pnpm install && pnpm dev`. Make a character or load an existing
-`.hero`, hunt in any of four regions, fight, drink what you looted mid-fight, take the spoils, spend
-them in three shops, rest for free at the temple, and pick up where you left off tomorrow because it
+`.hero`, hunt across any of ten regions, fight, drink what you looted mid-fight, take the spoils,
+spend them in four shops and at the guild, enchant what you carry, buy your way into the places
+beyond the first four, rest for free at the temple, and pick up where you left off because it
 autosaves. 353 tests, plus a smoke test that boots the built bundle and plays through it.
 
 **It is no longer the same game as the Java build, on purpose.** The daily quest ration, gear decay
@@ -106,9 +107,16 @@ misdiagnosed twice.
 No framework or library choice is made here or anywhere in this document; that belongs to this
 phase's own session.
 
-**Done.** `app/` is Vite, TypeScript, Vitest, ESLint and Prettier, with `pnpm check` gating type
-checking, linting, formatting and tests. CI runs that, builds the bundle, and separately checks that
-regenerating the exported content produces no diff — generated files go stale silently otherwise.
+**Done.** `app/` is Vite, TypeScript, Vitest, ESLint and Prettier, with `pnpm verify` gating type
+checking, linting, formatting, the tests, a build, and a game played through the built bundle. CI
+runs that, and separately checks that regenerating the exported content produces no diff —
+generated files go stale silently otherwise.
+
+**It took until 2026-08-31 for any of that to actually run.** `pnpm/action-setup` could not work out
+which pnpm to install, so the job died before its first step and every test had only ever run on one
+developer's machine; and the content export was nondeterministic, so its diff check failed on every
+push whether or not anything had changed. Both are fixed. A quality gate nobody has watched go green
+is a quality gate you do not have.
 
 *What changes for the player:* nothing yet.
 *Docs touched:* [development.md](development.md), [architecture.md](architecture.md),
@@ -191,10 +199,10 @@ The remaining screens: the town and its shops, the four wilderness zones, the ca
 minigames, the bank, the guild, the healer. Enumerated from the package map in
 [architecture.md](architecture.md).
 
-**Done:** the four hunting regions, all three town shops with the names, rates and stock the Java
-gives them, the temple, and character creation. The regions cost almost nothing — every creature in
-them was already in the exported content — which is why they came in ahead of the rest of this
-phase rather than waiting for it.
+**Done:** ten hunting regions driven by the Java's own weighted encounter tables, all four town
+shops with the names, rates and stock the Java gives them, the temple, the guild, and character
+creation. The regions cost almost nothing — every creature in them was already in the exported
+content — which is why they came in ahead of the rest of this phase rather than waiting for it.
 
 **Left:** the castle and the queen's minigames. The guild has since landed, which was the
 substantial one — its ranks feed straight into `calcCombat` and nothing granted them, so a third of

@@ -79,6 +79,60 @@ Special actions are multipliers, not modifiers:
 | `Reflex` trait | flat +30 Speed — decisive at low levels |
 | `Blind` | halves Speed and swings |
 
+### Winning without a fight
+
+Control and Swindle are not weaker attacks, they are **the other two ways to win**, and they pay
+differently. Each is one opposed check — twice your Wits against their Wits, twice your Charm
+against their Charm — and taking it ends the encounter on the spot.
+
+| | Kill | Hypnotise | Swindle |
+|---|---|---|---|
+| Its pack | yours | yours | yours |
+| Experience | `baseExp + (2·Guts + Wits + Charm)·weight / 4` | `baseExp + its Wits` | `baseExp + its Charm` |
+| Health cost | whatever the fight took | none | none |
+| Teaches | Guts | Wits | Charm |
+
+So talking something down is worth the same goods, less experience, and no blood. **Losing the
+check is a real loss**: it hands you nothing, an aggressive creature that hypnotises you kills you
+outright, and one that swindles you takes half your purse unless you are carrying Thief Insurance.
+
+The names in the code say who *won*, not which flag is set — `wonByHypnosis`, `lostToHypnosis` — 
+because naming them after the flag got the port's messages and rewards exactly backwards once
+already. See [porting-notes.md](porting-notes.md).
+
+### After a blow lands
+
+A weapon can carry Blind, Panic or Disease, and thrown dust queues the same three. Both go into one
+queue on the attacker and are settled together by `arBattle.spellEffects`, which is why a blinding
+blade and a handful of Blinding Dust behave identically:
+
+- **Blind** and **Panic** are opposed checks of `yourWits × count` against their Wits, so throwing
+  more at once makes them stronger. Blinding halves what the target can do; panic ends the fight.
+- **Disease** needs no check and lands for `(damage + 3) / 5`, halved against anyone `Hardy`. It
+  drags Skill down and persists until cured.
+- A **blast** suppresses disease for that blow: the explosion reached the target, not the blade.
+
+## Growing by what you do
+
+Levelling grants a flat +2 to Guts, Wits and Charm however you play. **This is the other half**, and
+it is what makes one character different from another — a win teaches you whatever won it:
+
+| How you won | Teaches |
+|---|---|
+| Berzerk | Guts, at weight × 5 |
+| Backstab | Charm at weight × 3, and Guts at weight × 2 |
+| An ordinary attack | Guts, at weight × 1 |
+| Hypnotise | Wits, at weight × 5 |
+| Swindle | Charm, at weight × 5 |
+
+The chance is `weight / current stat`, from `itHero.gainGuts` and its two siblings — so **it has
+diminishing returns built into its shape**: a hero with 10 Guts and a weight of 5 grows half the
+time, the same hero at 60 grows one time in twelve. Nothing caps a stat; the curve does it. `weight`
+is the region's depth, so the same victory teaches more the further out you got it.
+
+Measured: restoring this, together with the weight term in kill experience, took a 400-quest
+campaign in the Fields from level 6 to level 11 and halved the deaths.
+
 ## How monsters scale
 
 [`itMonster.balance()`](../src/main/java/DCourt/Items/List/itMonster.java) runs once per
@@ -266,6 +320,53 @@ marks up what it specialises in by a third — `arWeapon` anything held in the r
 anything worn on the body — with a floor of 2.
 
 These numbers are recorded in `baseline/rules.txt` and checked by `app/test/economy.test.ts`.
+
+## Where you go, and what you meet
+
+Each area holds a **weighted table** and rolls against it — `arField`, `arForest`, `arHills`,
+`arMound` and `arCastle` each have one, and `WildsScreen.selectQuest` does the rolling. A uniform
+pick over everything sharing the area's prefix is wrong twice over: common creatures stop being
+common, and creatures that are not random encounters at all start turning up. **The Dragon is not
+in the Hills table.** The Mound's Queen appears only in the deepest of its three.
+
+The Fields alone swap tables at level 3 — no soldiers below it, barely a gypsy — which is the
+original's only difficulty ramp. And one encounter in a hundred is the wandering Faery, wherever
+you are, which is where that prefix-less monster in the content belongs.
+
+`weight` is what the area passes to `arQuest`: the Fields are 1, the Forest 2, the Hills and Mound
+3, and the places beyond them more. It scales kill experience, Fame, and how fast a win teaches
+you — it is not a difficulty multiplier. What makes a region hard is what lives in it.
+
+## Scrolls, and what money is for
+
+Both gear shops together come to about three thousand Marks. The best weapon in the game is worth
+forty-one thousand and **cannot be bought at all**: sixty-three of the ninety-one pieces of
+equipment are loot only. Two ladders connect the two, and both are priced in the 1997 gear table.
+
+**Scrolls**, 60 to 3,500 Marks, each granting a trait the combat maths already applies — Glow,
+Bless, Luck, Flame. Whether one takes at all is `contest(your Wits, the item's power)`, where
+`power = attack × 3 + defend × 2 + skill`, so a better weapon resists you harder. A Magic guild
+rank counts towards your side of that check.
+
+**Enchanting** is the one that repeats, and the only sink with no ceiling:
+
+- Each success is +1 enchantment, worth `(enchant + 9) / 10` Attack, `(enchant + 4) / 10` Defence
+  and **the full amount in Skill**.
+- It is **safe while the enchantment is below the item's power**, so a great sword absorbs many and
+  a knife almost none.
+- Past that, each attempt is `contest(overshoot, power)`. Lose it and the item disintegrates and
+  the magic goes through you for `overshoot` wounds — which can kill you.
+
+**Key items**, 500 to 18,000 Marks, open the regions beyond the first four. Fifty-eight thousand
+Marks of ladder against three thousand of shop, and they are bought *and* found, never consumed.
+
+## Wearing things
+
+Equipment claims one or more of five slots — head, body, feet, right hand, left hand — and putting
+one on **displaces whatever holds those slots**, back into the pack. Sixteen weapons are two-handed
+and claim both, so a pike costs you the shield as well as the sword. Something claiming no slot at
+all cannot be worn, and a cursed item cannot be taken off, which blocks the whole swap rather than
+half of it. `arStatus.wearGear`.
 
 ## Quests (the day allowance)
 

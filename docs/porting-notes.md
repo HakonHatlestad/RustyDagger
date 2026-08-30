@@ -225,12 +225,15 @@ Brasil 6,000, Rutter for Shangala 12,000. Fifty-eight thousand Marks of ladder a
 thousand of shop. They are bought *and* found, as in the original, and never consumed: a map does
 not wear out.
 
-### Four regions rather than one
+### Ten regions rather than one
 
-The Fields, Forest, Hills and Goblin Mound. Every creature in them was already in the exported
-content, so this cost nothing but naming them. Each says what level it suits, because the game has
-no other way to warn you and the Hills will kill a new character in two rounds — a claim the
-balance test checks rather than asserts.
+The Fields, Forest, Hills and Goblin Mound to walk to, and six more — the Treasury, the Throne
+Room, the Castle Dungeons, the Ocean, Hie Brasil and Shangala — behind a key item apiece. Every
+creature in all of them was already in the exported content, so this cost nothing but naming them
+and porting the weighted tables that decide which one you meet.
+
+Each card says how the place looks to *you*, worked out against what actually lives there rather
+than quoted from a level written down once — see below.
 
 ### Character creation, with traits that are real
 

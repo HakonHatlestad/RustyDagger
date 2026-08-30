@@ -14,15 +14,17 @@ Dragon Court, the classic 90's game by Fred Haslam (Ffiends.com). A Quest to rev
 This repository holds the game twice over, on purpose.
 
 - **`app/`** — the TypeScript rewrite, and where the work is. Playable in a browser end to end: make
-  a character, hunt in four regions, fight, loot, use what you loot, spend it in three shops, rest,
-  and come back to it later because it saves. This is what
+  a character, hunt across ten regions, fight, loot, drink what you loot mid-fight, spend the
+  proceeds in four shops and at the guild, enchant what you are carrying, buy your way into the
+  places beyond the first four, and come back to it later because it saves. This is what
   [docs/roadmap.md](docs/roadmap.md) is about.
 - **the Java build** — the 1997 applet, ported to run on the desktop and in a browser. Still fully
   playable, and it is also the **reference the rewrite is checked against**: `./gradlew baseline`
   records how it behaves and the TypeScript suite is held to that.
 
-Neither is finished replacing the other. The Java build still has the castle, the queen's minigames,
-the bank and the guild; the rewrite has everything else, built properly.
+Neither is finished replacing the other. The Java build still has the castle proper, the Vortex and
+the queen's minigames; the rewrite has everything else, built properly, and several things the Java
+build never had.
 
 **The rewrite is deliberately not the same game.** The original is a *daily* game — a ration of
 quests, gear that wears out, something lost when you die — because that is how a 1997 browser game
@@ -80,14 +82,19 @@ after that it is cached.
 
 ## Saves
 
-Heroes live in [saves/](saves/) as plain-text files, committed to this repo so a character
-can move between machines with a `git pull`. See [docs/saves.md](docs/saves.md).
+The Java build keeps heroes in [saves/](saves/) as plain-text files; the rewrite keeps one in your
+browser. Both read and write the same 1997 format, so a character crosses either way — **Save a
+copy** in the web app downloads a `.hero` the Java build opens, and **Load a character** takes one
+back.
+
+Play files are **not** committed: they used to be, and the test suite ended up reading one as a
+fixture. See [docs/saves.md](docs/saves.md).
 
 ## Documentation
 
-- [docs/gameplay.md](docs/gameplay.md) - character creation, combat maths, RNG, items, decay
+- [docs/gameplay.md](docs/gameplay.md) - character creation, combat maths, RNG, items, the economy
 - [docs/architecture.md](docs/architecture.md) - package map and the Screen/Item models
-- [docs/saves.md](docs/saves.md) - save format and git syncing
+- [docs/saves.md](docs/saves.md) - save format, and where a character lives in each build
 - [docs/porting-notes.md](docs/porting-notes.md) - every departure from the 1997 original
 - [docs/development.md](docs/development.md) - building, and how to verify a UI change
 - [SPEC.md](SPEC.md) - the `{type|field|field}` serialization format

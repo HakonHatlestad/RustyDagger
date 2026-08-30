@@ -158,6 +158,13 @@ port has to implement that grammar anyway to read existing `.hero` saves, so thi
 rather than two, and inventing a schema now would be designing the port's data model before the port
 exists. Cheap numeric fields sit alongside so a reader can sanity-check without a parser.
 
+**The export is seeded.** `Harness.boot` fixes the seed before the tables load, because *loading*
+a monster resolves the slots in its flavour text by rolling — `{~|$smile$|smiling|grinning|winking}`.
+Without that the export differs on every run, so CI's `git diff --exit-code content/` fails whether
+or not anything changed, which makes the check worse than useless: it cannot tell a stale file from
+a fresh one. Every measurement in the harness reseeds before it starts, so the baseline is
+unaffected by this.
+
 Two self-checks run before anything is written, and both earned their place immediately:
 
 - **Every exported string is parsed back and re-serialised**, and must come out identical. This
@@ -172,12 +179,19 @@ Two self-checks run before anything is written, and both earned their place imme
 cd app
 pnpm install
 pnpm dev            # local dev server
-pnpm check          # typecheck + lint + format check + tests -- what CI runs
+pnpm check          # typecheck + lint + format check + tests
+pnpm verify         # all of that, plus a build and a game played through it -- what CI runs
 pnpm test           # tests alone
 ```
 
+**CI runs `pnpm verify`, not `pnpm check`.** A broken content path or a bundling mistake passes
+every unit test and gives you a blank page; `pnpm smoke` boots the built bundle in jsdom, makes a
+character, hunts until something stands and fights, plays the fight out, and checks a save was
+written.
+
 `app/` is the rewrite ([roadmap.md](roadmap.md)). Unlike the Java side, which is gated on
-formatting alone and has no tests, this has type checking, linting, formatting and tests from its
+formatting alone and has no unit tests — what holds *it* still is the harness above — this has type
+checking, linting, formatting and tests from its
 first commit — that absence on the Java side is what let two defects ship in one session and be
 misdiagnosed twice, and it is far cheaper to establish before there is code than to retrofit.
 
@@ -194,6 +208,30 @@ The first module is `src/format/parse.ts`, the reader for the `{type|field|field
 exported content, and to import existing `.hero` saves. Its tests run against every one of the 146
 arms and monsters the Java build exports, so the grammar is checked against the real game rather
 than against invented examples.
+
+### Fixtures are fixtures, and saves are not
+
+Anything asserting what is *inside* a character reads `app/test/fixtures/hero.hero`. Nothing writes
+to it.
+
+The suite used to read `saves/Timber.hero`, which is a **live play file** — the Java build writes to
+it whenever anyone plays. A session had added a Cookie, a Bottled Faery and a note from Fred, and
+three tests came to depend on all three being there, so they passed against a working tree and
+failed against a checkout. Saves are gitignored now and the sweep over any real ones that happen to
+be present skips itself when there are none.
+
+The lesson generalises: **a test that asserts the contents of a file the game writes is a test that
+breaks when somebody plays.**
+
+### Testing that the interface is telling the truth
+
+`app/test/promises.test.ts` is written from the wording a player sees rather than from the
+implementation, and it exists because of a specific failure. The inventory told players which items
+a swap "would replace" — computed correctly, since the day it was written — while the game appended
+to a list and replaced nothing, so five right-hand weapons could be worn at once. Every piece passed
+its own tests. Nobody had checked whether the sentence on the screen was true.
+
+When the interface starts promising something new, pin it there.
 
 ## Checking the port against the Java build
 

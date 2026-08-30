@@ -1,6 +1,7 @@
 package DCourt.Screens.Utility;
 
 import DCourt.Components.FTextList;
+import DCourt.Control.GameRules;
 import DCourt.Control.GearTable;
 import DCourt.Items.Item;
 import DCourt.Items.List.itAgent;
@@ -202,7 +203,7 @@ public class arStatus extends Screen implements GearTypes, ArmsTrait {
   void drawStats(Graphics g) {
     itHero h = Screen.getHero();
     int wounds = h.getWounds();
-    int fatigue = h.getFatigue() + h.getOverload();
+    int fatigue = (GameRules.DAILY_QUEST_LIMIT ? h.getFatigue() : 0) + h.getOverload();
     int disease = h.disease();
     g.setColor(getForeground());
     g.setFont(Tools.statusF);

@@ -50,6 +50,19 @@ $ ./gradlew spotlessApply    # format (google-java-format)
 $ ./gradlew spotlessCheck    # what CI enforces
 ```
 
+## House rules
+
+The original rationed play with a daily quest allowance -- `27 + 3 x level` quests, spent
+by every action, refilled only when the calendar date changed. That paced a shared server
+this port does not have, so **the daily limit is off by default** and a hero can keep
+questing. To play it as it shipped:
+
+```
+$ java -Ddragoncourt.dailyQuestLimit=true -jar build/libs/RustyDagger.jar
+```
+
+Pack overload still costs quests either way: an over-stuffed bag slows you down.
+
 ## Limitations
 
 - Multiplayer was removed. There is no server, so the clan hall, postal service and

@@ -1,6 +1,7 @@
 package DCourt.Items.List;
 
 import DCourt.Components.Portrait;
+import DCourt.Control.GameRules;
 import DCourt.Items.Item;
 import DCourt.Items.itList;
 import DCourt.Screens.Areas.Fields.arHealer;
@@ -340,7 +341,10 @@ public class itHero extends itAgent {
   }
 
   public int getQuests() {
-    return (getBaseQuests() - getFatigue()) - getOverload();
+    // Overload still bites: an over-stuffed pack slows you down regardless of the day's
+    // allowance. Fatigue only counts when the daily limit is switched on.
+    int spent = GameRules.DAILY_QUEST_LIMIT ? getFatigue() : 0;
+    return (getBaseQuests() - spent) - getOverload();
   }
 
   public int getFatigue() {

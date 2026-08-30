@@ -63,6 +63,12 @@ a real subprocess with a working native stack, scrub the environment first:
 - **[docs/porting-notes.md](docs/porting-notes.md)** — every deliberate departure from the 1997
   original, and why. **Add to it when you change behaviour.**
 - **[SPEC.md](SPEC.md)** — the `{type|field|field}` serialization format.
+- **[docs/roadmap.md](docs/roadmap.md)** — what happens next, and in what order. Read it before
+  starting anything substantial; the plan is a rewrite, not more patching.
+- **[docs/adr/2026-08-30-typescript-rewrite.md](docs/adr/2026-08-30-typescript-rewrite.md)** — why
+  the game is being rebuilt as a web app rather than modernised in Java.
+- **[docs/remake-comparison.md](docs/remake-comparison.md)** — what the still-maintained remake
+  changed, and which of it we take.
 
 ## Conventions
 

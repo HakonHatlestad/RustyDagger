@@ -57,6 +57,11 @@ can move between machines with a `git pull`. See [docs/saves.md](docs/saves.md).
 - [docs/porting-notes.md](docs/porting-notes.md) - every departure from the 1997 original
 - [docs/development.md](docs/development.md) - building, and how to verify a UI change
 - [SPEC.md](SPEC.md) - the `{type|field|field}` serialization format
+- [docs/roadmap.md](docs/roadmap.md) - what happens next, and in what order
+- [docs/adr/2026-08-30-typescript-rewrite.md](docs/adr/2026-08-30-typescript-rewrite.md) - why the
+  game is being rebuilt as a web app
+- [docs/remake-comparison.md](docs/remake-comparison.md) - what the still-maintained remake
+  changed, and which of it we take
 - [CLAUDE.md](CLAUDE.md) - orientation for agents working in this repo
 
 ## Options

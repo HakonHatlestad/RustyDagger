@@ -224,7 +224,11 @@ public class FTextList extends FTools {
   }
 
   public boolean mouseDown(Event e, int x, int y) {
-    if (!setSelect(this.base + ((y - 3) / this.fmet.getHeight()))) {
+    // Hit-test against the scrollbar's current value, not `base`. `base` is only refreshed
+    // inside paint(), and repaint() is asynchronous -- so after a wheel scroll, a click that
+    // landed before the repaint selected whatever row had been under the cursor beforehand.
+    int top = this.scroll.getVal();
+    if (!setSelect(top + ((y - 3) / this.fmet.getHeight()))) {
       return true;
     }
     postEvent(new Event(this, 1001, (Object) null));

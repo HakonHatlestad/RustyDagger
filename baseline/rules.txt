@@ -1364,6 +1364,81 @@ action=Swindle seed=7 -> heroDmgTaken=0 mobDmgTaken=0 heroState=Swindle mobState
 action=Swindle seed=99 -> heroDmgTaken=0 mobDmgTaken=0 heroState=Swindle mobState=Alive
 action=Swindle seed=4242 -> heroDmgTaken=0 mobDmgTaken=0 heroState=Swindle mobState=Alive
 
+== NEW CHARACTER (allocation -> derived) ==
+guts=10 wits=10 charm=10 class=(none) -> attack=0 defend=0 skill=10 raise=50 quests=30 power=50
+guts=10 wits=10 charm=10 class=thief -> attack=0 defend=1 skill=10 raise=50 quests=30 power=58
+guts=10 wits=10 charm=10 class=magic -> attack=0 defend=0 skill=11 raise=50 quests=30 power=59
+guts=10 wits=10 charm=10 class=fight -> attack=1 defend=0 skill=10 raise=50 quests=30 power=60
+guts=30 wits=5 charm=5 class=(none) -> attack=0 defend=0 skill=5 raise=50 quests=30 power=75
+guts=30 wits=5 charm=5 class=thief -> attack=0 defend=1 skill=5 raise=50 quests=30 power=83
+guts=30 wits=5 charm=5 class=magic -> attack=0 defend=0 skill=6 raise=50 quests=30 power=84
+guts=30 wits=5 charm=5 class=fight -> attack=1 defend=0 skill=5 raise=50 quests=30 power=85
+guts=5 wits=30 charm=5 class=(none) -> attack=0 defend=0 skill=22 raise=50 quests=30 power=67
+guts=5 wits=30 charm=5 class=thief -> attack=0 defend=1 skill=22 raise=50 quests=30 power=75
+guts=5 wits=30 charm=5 class=magic -> attack=0 defend=0 skill=23 raise=50 quests=30 power=76
+guts=5 wits=30 charm=5 class=fight -> attack=1 defend=0 skill=22 raise=50 quests=30 power=77
+guts=5 wits=5 charm=30 class=(none) -> attack=0 defend=0 skill=14 raise=50 quests=30 power=59
+guts=5 wits=5 charm=30 class=thief -> attack=0 defend=1 skill=14 raise=50 quests=30 power=67
+guts=5 wits=5 charm=30 class=magic -> attack=0 defend=0 skill=15 raise=50 quests=30 power=68
+guts=5 wits=5 charm=30 class=fight -> attack=1 defend=0 skill=14 raise=50 quests=30 power=69
+guts=16 wits=16 charm=16 class=(none) -> attack=0 defend=0 skill=16 raise=50 quests=30 power=80
+guts=16 wits=16 charm=16 class=thief -> attack=0 defend=1 skill=16 raise=50 quests=30 power=88
+guts=16 wits=16 charm=16 class=magic -> attack=0 defend=0 skill=17 raise=50 quests=30 power=89
+guts=16 wits=16 charm=16 class=fight -> attack=1 defend=0 skill=16 raise=50 quests=30 power=90
+
+== ECONOMY ==
+charm=5 merchant=false Knife=stock:11/sell:4 Long Sword=stock:158/sell:57 Battle Axe=stock:549/sell:198 Long Bow=stock:551/sell:198 Half Plate=stock:324/sell:117
+charm=5 merchant=true Knife=stock:11/sell:4 Long Sword=stock:158/sell:60 Battle Axe=stock:549/sell:208 Long Bow=stock:551/sell:209 Half Plate=stock:324/sell:123
+charm=20 merchant=false Knife=stock:11/sell:5 Long Sword=stock:158/sell:71 Battle Axe=stock:549/sell:247 Long Bow=stock:551/sell:248 Half Plate=stock:324/sell:146
+charm=20 merchant=true Knife=stock:11/sell:5 Long Sword=stock:158/sell:75 Battle Axe=stock:549/sell:260 Long Bow=stock:551/sell:261 Half Plate=stock:324/sell:153
+charm=60 merchant=false Knife=stock:11/sell:6 Long Sword=stock:158/sell:83 Battle Axe=stock:549/sell:288 Long Bow=stock:551/sell:289 Half Plate=stock:324/sell:170
+charm=60 merchant=true Knife=stock:11/sell:6 Long Sword=stock:158/sell:87 Battle Axe=stock:549/sell:303 Long Bow=stock:551/sell:305 Half Plate=stock:324/sell:179
+charm=200 merchant=false Knife=stock:11/sell:6 Long Sword=stock:158/sell:90 Battle Axe=stock:549/sell:315 Long Bow=stock:551/sell:315 Half Plate=stock:324/sell:186
+charm=200 merchant=true Knife=stock:11/sell:6 Long Sword=stock:158/sell:95 Battle Axe=stock:549/sell:331 Long Bow=stock:551/sell:333 Half Plate=stock:324/sell:195
+equippedDelta wearing=Long Sword vs=Knife -> " -6"
+equippedDelta wearing=Long Sword vs=Long Sword -> " ="
+equippedDelta wearing=Long Sword vs=Battle Axe -> " +7"
+equippedDelta wearing=Long Sword vs=Long Bow -> " +13"
+equippedDelta wearing=Long Sword vs=Half Plate -> " +6"
+
+== QUEST ACCOUNTING (daily limit off, the default) ==
+level=1 fatigue=0 packOver=0 -> quests=30 overload=0 packMax=75
+level=1 fatigue=0 packOver=3 -> quests=27 overload=3 packMax=75
+level=1 fatigue=0 packOver=25 -> quests=5 overload=25 packMax=75
+level=1 fatigue=10 packOver=0 -> quests=30 overload=0 packMax=75
+level=1 fatigue=10 packOver=3 -> quests=27 overload=3 packMax=75
+level=1 fatigue=10 packOver=25 -> quests=5 overload=25 packMax=75
+level=1 fatigue=50 packOver=0 -> quests=30 overload=0 packMax=75
+level=1 fatigue=50 packOver=3 -> quests=27 overload=3 packMax=75
+level=1 fatigue=50 packOver=25 -> quests=5 overload=25 packMax=75
+level=5 fatigue=0 packOver=0 -> quests=42 overload=0 packMax=75
+level=5 fatigue=0 packOver=3 -> quests=39 overload=3 packMax=75
+level=5 fatigue=0 packOver=25 -> quests=17 overload=25 packMax=75
+level=5 fatigue=10 packOver=0 -> quests=42 overload=0 packMax=75
+level=5 fatigue=10 packOver=3 -> quests=39 overload=3 packMax=75
+level=5 fatigue=10 packOver=25 -> quests=17 overload=25 packMax=75
+level=5 fatigue=50 packOver=0 -> quests=42 overload=0 packMax=75
+level=5 fatigue=50 packOver=3 -> quests=39 overload=3 packMax=75
+level=5 fatigue=50 packOver=25 -> quests=17 overload=25 packMax=75
+level=15 fatigue=0 packOver=0 -> quests=72 overload=0 packMax=75
+level=15 fatigue=0 packOver=3 -> quests=69 overload=3 packMax=75
+level=15 fatigue=0 packOver=25 -> quests=47 overload=25 packMax=75
+level=15 fatigue=10 packOver=0 -> quests=72 overload=0 packMax=75
+level=15 fatigue=10 packOver=3 -> quests=69 overload=3 packMax=75
+level=15 fatigue=10 packOver=25 -> quests=47 overload=25 packMax=75
+level=15 fatigue=50 packOver=0 -> quests=72 overload=0 packMax=75
+level=15 fatigue=50 packOver=3 -> quests=69 overload=3 packMax=75
+level=15 fatigue=50 packOver=25 -> quests=47 overload=25 packMax=75
+level=40 fatigue=0 packOver=0 -> quests=147 overload=0 packMax=75
+level=40 fatigue=0 packOver=3 -> quests=144 overload=3 packMax=75
+level=40 fatigue=0 packOver=25 -> quests=122 overload=25 packMax=75
+level=40 fatigue=10 packOver=0 -> quests=147 overload=0 packMax=75
+level=40 fatigue=10 packOver=3 -> quests=144 overload=3 packMax=75
+level=40 fatigue=10 packOver=25 -> quests=122 overload=25 packMax=75
+level=40 fatigue=50 packOver=0 -> quests=147 overload=0 packMax=75
+level=40 fatigue=50 packOver=3 -> quests=144 overload=3 packMax=75
+level=40 fatigue=50 packOver=25 -> quests=122 overload=25 packMax=75
+
 == DECAY ==
 item=Asaura rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-8 s=-12
 item=Asaura rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=7 s=3

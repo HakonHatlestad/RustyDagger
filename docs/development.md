@@ -87,8 +87,10 @@ checked against it. See [roadmap.md](roadmap.md) for why.
 
 - `baseline/rules.txt` — the arithmetic, as functions with every input stated and every output a
   number: attack resolution across the stat ranges the game reaches, gear and traits into derived
-  combat stats, the special actions, decay, the levelling curve and what crossing a level gives you,
-  a save round-trip, and what every monster drops. **Checked exactly.** A diff is a port defect.
+  combat stats, the special actions, what a character-creation allocation derives, shop pricing and
+  the equipped-stat preview, quest and overload accounting, decay, the levelling curve and what
+  crossing a level gives you, a save round-trip, and what every monster drops. **Checked exactly.**
+  A diff is a port defect.
 - `baseline/distributions.txt` — how the game plays over large samples: hit rate for every Skill
   matchup, and complete fights per monster and hero build classified by how they ended. **Checked by
   shape.** A port may consume randomness in a different order; it may not play differently.
@@ -117,6 +119,14 @@ Things that cost time to find, and will cost it again:
   monsters, so a fight driver that skips it records a different game.
 - The harness redirects `dragoncourt.saveDir` to a temp directory, because levelling triggers the
   game's autosave and would otherwise drop characters into `saves/`.
+- **Shops are the one part that will not run headless.** They build real AWT `Button`s, unlike the
+  combat screens. `PricingShop` subclasses the real weapon shop and overrides only the two widget
+  hooks, so every input to a price — resale and base numbers, your Charm, the Merchant trait — is
+  still the shop's own.
+- **`costSpecial()` is not recorded, deliberately.** On a smith it prices whatever row is selected
+  in the list, so it is a function of the interface rather than of the rules.
+- **Character creation is point-buy, not a roll.** There is no randomness in `arCreate.createHero`,
+  so what is worth recording is what an allocation derives, not a distribution.
 
 Regenerating and finding a diff means behaviour changed. That is either the bug you meant to fix, or
 one you did not.

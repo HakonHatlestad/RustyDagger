@@ -248,4 +248,16 @@ public final class Harness {
     Collections.sort(names);
     return names.isEmpty() ? "(nothing)" : String.join("+", names);
   }
+
+  /** Stuffs the pack past its limit, which costs quests regardless of the daily allowance. */
+  public static void overload(itHero h, int itemsOverMax) {
+    int target = h.packMax() + itemsOverMax;
+    while (h.getPack().getCount() < target) {
+      itArms filler = ArmsTable.shopItem("Knife");
+      if (filler == null) {
+        return;
+      }
+      h.getPack().append(filler);
+    }
+  }
 }

@@ -7,6 +7,8 @@ import DCourt.Items.List.itMonster;
 import DCourt.Screens.Quest.BattleAccess;
 import DCourt.Screens.Quest.arBattle;
 import DCourt.Screens.Quest.arQuest;
+import DCourt.Screens.Template.Shop;
+import DCourt.Screens.Template.ShopAccess;
 import DCourt.Static.Constants;
 import DCourt.Tools.Tools;
 import java.io.PrintWriter;
@@ -36,6 +38,9 @@ final class Rules {
     damage(w);
     gearAndTraits(w);
     actions(w);
+    newCharacter(w);
+    economy(w);
+    questAccounting(w);
     decay(w);
     levelling(w);
     saveRoundTrip(w);
@@ -196,6 +201,138 @@ final class Rules {
                 + h.getState()
                 + " mobState="
                 + fighting.getState());
+      }
+    }
+    w.println();
+  }
+
+  /**
+   * What the creation choices actually buy. Character creation is point-buy, not a roll -- no
+   * randomness anywhere in {@code arCreate.createHero} -- so the portable rule is what a given
+   * allocation derives: combat stats, the cost of level two, and the day's quest allowance.
+   */
+  private static void newCharacter(PrintWriter w) {
+    w.println("== NEW CHARACTER (allocation -> derived) ==");
+    int[][] allocations = {
+      {10, 10, 10}, {30, 5, 5}, {5, 30, 5}, {5, 5, 30}, {16, 16, 16},
+    };
+    String[] classes = {"(none)", Constants.THIEF, Constants.MAGIC, Constants.FIGHT};
+    for (int[] a : allocations) {
+      for (String cls : classes) {
+        itHero h = Harness.hero("N", a[0], a[1], a[2], 0, 0, 0);
+        h.getRank().fix(Constants.LEVEL, 1);
+        if (!cls.equals("(none)")) {
+          h.addRank(cls, 1);
+          h.fixTemp(cls, 1);
+        }
+        h.calcCombat();
+        h.calcRaise();
+        w.println(
+            "guts="
+                + a[0]
+                + " wits="
+                + a[1]
+                + " charm="
+                + a[2]
+                + " class="
+                + cls
+                + " -> attack="
+                + h.getAttack()
+                + " defend="
+                + h.getDefend()
+                + " skill="
+                + h.getSkill()
+                + " raise="
+                + h.getRaise()
+                + " quests="
+                + h.getQuests()
+                + " power="
+                + h.getPower());
+      }
+    }
+    w.println();
+  }
+
+  /**
+   * Shop pricing. What you are paid depends on the item's table cost, the shop's resale and base
+   * numbers, your Charm and whether you are a Merchant -- a port can get this wrong without any
+   * visible number changing, which is how an economy quietly drifts.
+   */
+  private static void economy(PrintWriter w) {
+    w.println("== ECONOMY ==");
+    String[] goods = {"Knife", "Long Sword", "Battle Axe", "Long Bow", "Half Plate"};
+    for (int charm : new int[] {5, 20, 60, 200}) {
+      for (boolean merchant : new boolean[] {false, true}) {
+        itHero h = Harness.hero("E", 30, 20, charm, 0, 0, 0);
+        if (merchant) {
+          Harness.withTrait(h, Constants.MERCHANT);
+        }
+        Shop shop = new PricingShop();
+        StringBuilder prices = new StringBuilder();
+        for (String g : goods) {
+          itArms it = Harness.arms(g);
+          if (it == null) {
+            continue;
+          }
+          prices
+              .append(' ')
+              .append(g)
+              .append("=stock:")
+              .append(ShopAccess.stockValue(shop, it))
+              .append("/sell:")
+              .append(ShopAccess.packValue(shop, it));
+        }
+        // costSpecial() is deliberately absent: on a smith it prices whatever row is selected
+        // in the shop list, so it is a function of the interface rather than of the rules, and
+        // there is nothing portable to record.
+        w.println("charm=" + charm + " merchant=" + merchant + prices);
+      }
+    }
+    // The stat preview shops show and the inventory screen does not.
+    itHero h = Harness.hero("D", 30, 20, 30, 0, 0, 0);
+    Harness.equip(h, "Long Sword");
+    Shop shop = new PricingShop();
+    for (String g : goods) {
+      itArms it = Harness.arms(g);
+      if (it != null) {
+        w.println(
+            "equippedDelta wearing=Long Sword vs="
+                + g
+                + " -> \""
+                + ShopAccess.equippedDelta(shop, it)
+                + "\"");
+      }
+    }
+    w.println();
+  }
+
+  /**
+   * The quest allowance. Overload always costs quests; fatigue only counts when the daily limit is
+   * switched on, which this port leaves off by default.
+   */
+  private static void questAccounting(PrintWriter w) {
+    w.println("== QUEST ACCOUNTING (daily limit off, the default) ==");
+    for (int level : new int[] {1, 5, 15, 40}) {
+      for (int fatigue : new int[] {0, 10, 50}) {
+        for (int overloadBy : new int[] {0, 3, 25}) {
+          itHero h = Harness.hero("Q", 20, 20, 20, 0, 0, 0);
+          Harness.setLevel(h, level);
+          h.addFatigue(fatigue);
+          Harness.overload(h, overloadBy);
+          w.println(
+              "level="
+                  + level
+                  + " fatigue="
+                  + fatigue
+                  + " packOver="
+                  + overloadBy
+                  + " -> quests="
+                  + h.getQuests()
+                  + " overload="
+                  + h.getOverload()
+                  + " packMax="
+                  + h.packMax());
+        }
       }
     }
     w.println();

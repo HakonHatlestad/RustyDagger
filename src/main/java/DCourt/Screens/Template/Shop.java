@@ -10,6 +10,7 @@ import DCourt.Items.Token.itCount;
 import DCourt.Items.itList;
 import DCourt.Screens.Screen;
 import DCourt.Screens.Utility.arDetail;
+import DCourt.Static.ArmsTrait;
 import DCourt.Static.Constants;
 import DCourt.Tools.Tools;
 import java.awt.Button;
@@ -242,10 +243,45 @@ public abstract class Shop extends Indoors {
     }
   }
 
+  /** Gear slots an itArms can occupy; an item carries its slot as a trait. */
+  private static final String[] WEAR_SLOTS = {
+    ArmsTrait.HEAD, ArmsTrait.BODY, ArmsTrait.FEET, ArmsTrait.RIGHT, ArmsTrait.LEFT
+  };
+
+  /**
+   * How much better or worse this piece is than whatever occupies its slot right now, as a single
+   * signed number -- the sum of the attack, defence and skill differences.
+   *
+   * <p>Without it, buying gear means memorising what you are wearing and doing the arithmetic in
+   * your head. Unidentified items show nothing, since their stats are hidden anyway.
+   */
+  String equippedDelta(itArms shopItem) {
+    if (shopItem.hasTrait(ArmsTrait.SECRET)) {
+      return "";
+    }
+    String slot = null;
+    for (String candidate : WEAR_SLOTS) {
+      if (shopItem.hasTrait(candidate)) {
+        slot = candidate;
+        break;
+      }
+    }
+    if (slot == null) {
+      return ""; // Not something you wear.
+    }
+    int offered = shopItem.fullAttack() + shopItem.fullDefend() + shopItem.fullSkill();
+    itArms worn = Screen.getGear().findArms(slot);
+    int held = worn == null ? 0 : worn.fullAttack() + worn.fullDefend() + worn.fullSkill();
+    int delta = offered - held;
+    // Kept terse: the row already carries a name, stat block and price, and the list is
+    // only ~180px wide. Parentheses cost two characters that the price then loses.
+    return delta == 0 ? " =" : (delta > 0 ? " +" + delta : " " + delta);
+  }
+
   public String shopName(Item it) {
     String msg =
         it instanceof itArms
-            ? it.toShow()
+            ? it.toShow() + equippedDelta((itArms) it)
             : String.valueOf(
                 String.valueOf(
                     new StringBuffer(String.valueOf(String.valueOf(it.getName())))

@@ -3,6 +3,7 @@ package DCourt.Screens.Command;
 import DCourt.Components.FTextField;
 import DCourt.Components.FTextList;
 import DCourt.Components.Portrait;
+import DCourt.Control.GameRules;
 import DCourt.Control.PlaceTable;
 import DCourt.Control.Player;
 import DCourt.Control.SaveStore;
@@ -308,7 +309,9 @@ public class arEntry extends Screen
   public void addTools() {
     add(this.nameTXF);
     add(this.heroes);
-    add(this.lists);
+    if (GameRules.MULTIPLAYER_SCREENS) {
+      add(this.lists);
+    }
     add(this.credits);
   }
 

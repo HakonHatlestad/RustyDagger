@@ -1,6 +1,7 @@
 package DCourt.Screens.Wilds;
 
 import DCourt.Components.Portrait;
+import DCourt.Control.GameRules;
 import DCourt.Items.List.itMonster;
 import DCourt.Screens.Areas.Castle.arClanHall;
 import DCourt.Screens.Areas.Castle.arPostal;
@@ -73,6 +74,9 @@ public class arCastle extends WildsScreen {
     super.init();
     getPic(2).show(Screen.getLevel() >= 8);
     getPic(5).show(Screen.getLevel() >= 10);
+    // Clan hall and post office both need the server that no longer exists.
+    getPic(3).show(GameRules.MULTIPLAYER_SCREENS);
+    getPic(4).show(GameRules.MULTIPLAYER_SCREENS);
     Screen.getHero().tryToLevel(this);
   }
 

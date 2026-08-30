@@ -1,6 +1,7 @@
 package DCourt.Screens.Command;
 
 import DCourt.Components.Portrait;
+import DCourt.Control.GameRules;
 import DCourt.Items.List.itHero;
 import DCourt.Items.itList;
 import DCourt.Screens.Screen;
@@ -149,7 +150,9 @@ public class arFinish extends Screen implements Constants {
 
   @Override // DCourt.Screens.Screen
   public void addTools() {
-    add(this.lists);
+    if (GameRules.MULTIPLAYER_SCREENS) {
+      add(this.lists);
+    }
     add(this.credits);
   }
 

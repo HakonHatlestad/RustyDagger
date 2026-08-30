@@ -31,6 +31,45 @@ const IMPLEMENTED = new Set<number>(Object.values(Effect));
 /** Effects that need something to throw them at. */
 const NEEDS_A_TARGET = new Set<number>([Effect.BLIND, Effect.PANIC]);
 
+/**
+ * The gear-table categories, from `GearTypes`.
+ *
+ * Only needed to tell apart what is safe to sell in bulk from what emphatically is not: a stack of
+ * gems is loot, a Map to Vortex is ten thousand Marks of progress.
+ */
+export const GearType = {
+  JUNK: 0,
+  MAP: 1,
+  CAMP: 2,
+  SUPPLY: 3,
+  LOOT: 4,
+  GEMS: 5,
+  POTION: 6,
+  SCROLL: 7,
+  SPECIAL: 8,
+  MONEY: 9,
+} as const;
+
+/**
+ * Things that exist only to be turned into money: junk, trophies, gems.
+ *
+ * Deliberately a whitelist. A blacklist would sell somebody's Rutter for Shangala the first time a
+ * new item type appeared, and they would not find out until they tried to sail.
+ */
+const SELLABLE_IN_BULK = new Set<number>([GearType.JUNK, GearType.LOOT, GearType.GEMS]);
+
+export function typeOf(content: Content, name: string): number {
+  return content.gear.get(name)?.type ?? -1;
+}
+
+/** Whether a bulk sell should include this, which is a question about safety, not about price. */
+export function isBulkSellable(content: Content, item: Carried): boolean {
+  if (item.kind === "arms") {
+    return true;
+  }
+  return item.kind === "count" && SELLABLE_IN_BULK.has(typeOf(content, item.name));
+}
+
 export function effectOf(content: Content, name: string): number {
   return content.gear.get(name)?.effect ?? 0;
 }

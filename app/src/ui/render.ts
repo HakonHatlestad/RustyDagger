@@ -27,7 +27,7 @@ import { SHOPS, sellPrice, shopByKey, stockOf } from "../game/shop.js";
 import { REGIONS, assess, canEnter, pickEncounter, tableFor } from "../game/world.js";
 import { powerOf, typicalPower } from "../game/monster.js";
 import { BACKGROUNDS } from "../game/creation.js";
-import { describeUse, effectOf, isUsable, isUsableHere } from "../game/items.js";
+import { describeUse, effectOf, isBulkSellable, isUsable, isUsableHere } from "../game/items.js";
 import { describeScroll, isScroll } from "../game/scrolls.js";
 import {
   JOINING_FEE,
@@ -1095,6 +1095,40 @@ function shopScreen(
   if (character.pack.length === 0) {
     selling.append(el("div", "empty", "Nothing to sell."));
   } else {
+    // A long session comes home with sixty-odd rows, most of them the same dagger. One button
+    // rather than sixty clicks -- and it can only ever take loot, never a potion or a map.
+    const bulk = el("div", "actions actions--items");
+    const arms = character.pack.filter((i) => i.kind === "arms").length;
+    const valuables = character.pack.filter(
+      (i) => i.kind !== "arms" && isBulkSellable(game.content, i),
+    ).length;
+    if (arms > 0) {
+      bulk.append(
+        button(
+          `Sell all ${String(arms)} weapons and armour`,
+          () => {
+            dispatch({ kind: "sellAll", shop: shop.key, what: "arms" });
+            rerender();
+          },
+          { hint: "Everything in your pack. Nothing you are wearing is in your pack." },
+        ),
+      );
+    }
+    if (valuables > 0) {
+      bulk.append(
+        button(
+          `Sell all ${String(valuables)} trophies and gems`,
+          () => {
+            dispatch({ kind: "sellAll", shop: shop.key, what: "valuables" });
+            rerender();
+          },
+          { hint: "Junk, trophies and gems only — never a potion, a scroll or a map." },
+        ),
+      );
+    }
+    if (bulk.childElementCount > 0) {
+      selling.append(bulk);
+    }
     const list = el("ul", "itemlist");
     list.setAttribute("role", "listbox");
     list.setAttribute("aria-label", "Your pack");

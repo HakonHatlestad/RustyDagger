@@ -242,6 +242,18 @@ points, so the choice is shape rather than strength.
 `Hardy` is the one addition: the Java names it in `Constants` and halves disease with it, and the
 port had no disease to halve until now.
 
+### Clearing the pack out in one go
+
+Measured over 300 quests in the Fields, a character comes home with sixty-four rows, fifty-five of
+them weapons and most of those the same Rusty Dagger. The original caps a pack at 75 and charges
+quests for going over; with the daily ration gone that penalty charges nothing, so the cap was
+dropped and the tidying-up was left as sixty clicks at a shop counter.
+
+Shops now offer to take the lot: weapons and armour in one button, junk and trophies and gems in
+another. What matters about it is what it cannot take — the list is a **whitelist** of gear types,
+so a potion, a scroll or a Rutter for Shangala is never caught by it. A blacklist would sell
+somebody's way onward the first time a new item type appeared and they would find out at the docks.
+
 ### A fight can be fought from the keyboard
 
 A, B, Z, H, S, R for the six actions, and Enter to move on once it is over. A long session is
@@ -315,6 +327,21 @@ since they are all `FTextList`.
 See [saves.md](saves.md). Heroes used to be bare files in the working directory.
 
 ## Bugs fixed
+
+### You could wear five swords at once
+
+**In `app/` only.** Every piece of equipment claims one or more of five slots — head, body, feet,
+right hand, left hand — and putting one on displaces whatever holds those slots, back into the
+pack. A two-handed weapon claims both hands, so a pike costs you the shield as well as the sword.
+
+The port had none of it and simply appended to a list. Five right-hand weapons at once gave 55
+Attack where one gives 14, which breaks the fight maths and the economy together.
+
+The galling part is that the inventory had been telling the player the truth all along:
+`describe.ts` computes exactly which items a swap "would replace", and has since it was written. The
+interface was promising a rule the game did not have, and no test covered it in either direction.
+From `arStatus.wearGear`, cursed items included. `WEAR_SLOTS` moved into `rules/combat.ts` on the
+way, because where a thing is worn is a rule and the game layer must not import the interface.
 
 ### Four of the eight fight endings were backwards
 

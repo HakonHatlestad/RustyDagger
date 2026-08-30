@@ -50,7 +50,7 @@ import {
 import { GROWTH, grows } from "../rules/growth.js";
 import { rollLoot } from "./loot.js";
 import { buyPrice, sellPrice, shopByKey, type ShopDefinition } from "./shop.js";
-import { effectOf, endOfFight, isUsableHere, useItem } from "./items.js";
+import { effectOf, endOfFight, isBulkSellable, isUsableHere, useItem } from "./items.js";
 import { isScroll, readScroll } from "./scrolls.js";
 import { backgroundByKey, newHeroText } from "./creation.js";
 
@@ -292,7 +292,8 @@ export type Move =
   | { readonly kind: "equip"; readonly index: number }
   | { readonly kind: "unequip"; readonly index: number }
   | { readonly kind: "buy"; readonly shop: string; readonly name: string }
-  | { readonly kind: "sell"; readonly shop: string; readonly index: number };
+  | { readonly kind: "sell"; readonly shop: string; readonly index: number }
+  | { readonly kind: "sellAll"; readonly shop: string; readonly what: "arms" | "valuables" };
 
 /**
  * Applies a move and returns the game.
@@ -350,6 +351,9 @@ export function apply(game: Game, move: Move): Game {
 
     case "sell":
       return sell(game, shopByKey(move.shop), move.index);
+
+    case "sellAll":
+      return sellAll(game, shopByKey(move.shop), move.what);
   }
 }
 
@@ -689,6 +693,52 @@ function useCarriedItem(game: Game, index: number): Game {
     return game;
   }
   advanceStance(quest.monster);
+  return game;
+}
+
+/**
+ * Clearing out the pack in one go.
+ *
+ * Measured over 300 quests in the Fields, a character comes home with sixty-four rows, fifty-five
+ * of them weapons and most of those the same Rusty Dagger. Selling that one row at a time is
+ * fifty-five clicks at a shop counter, which is not a decision, it is a chore.
+ *
+ * Nothing you are wearing can be caught by this — worn gear is not in the pack — and nothing
+ * useful is either: it takes weapons, or it takes junk, trophies and gems, and never a potion, a
+ * scroll or a map. See `isBulkSellable`, which is a whitelist for exactly that reason.
+ */
+function sellAll(game: Game, shop: ShopDefinition, what: "arms" | "valuables"): Game {
+  const character = game.character;
+  if (character === null) {
+    return game;
+  }
+  const merchant = character.traits.has("Merchant");
+  let earned = 0;
+  let sold = 0;
+  const keeping: Carried[] = [];
+  for (const item of character.pack) {
+    const wanted = what === "arms" ? item.kind === "arms" : item.kind !== "arms";
+    if (!wanted || !isBulkSellable(game.content, item)) {
+      keeping.push(item);
+      continue;
+    }
+    const each = sellPrice(game.content, shop, item, character.charm, merchant);
+    const many = item.kind === "count" ? item.count : 1;
+    if (each <= 0) {
+      // Worth nothing to this shop: leave it rather than quietly binning it.
+      keeping.push(item);
+      continue;
+    }
+    earned += each * many;
+    sold += many;
+    character.marks += each * many;
+  }
+  character.pack = keeping;
+  game.notices = [
+    sold === 0
+      ? "Nothing here is worth anything to them."
+      : `You sell ${String(sold)} for ${String(earned)} Marks.`,
+  ];
   return game;
 }
 

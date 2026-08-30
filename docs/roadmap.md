@@ -37,7 +37,7 @@ now keeps improving whatever happens to the rewrite.
 TypeScript port — run `cd app && pnpm install && pnpm dev`. Make a character or load an existing
 `.hero`, hunt in any of four regions, fight, drink what you looted mid-fight, take the spoils, spend
 them in three shops, rest for free at the temple, and pick up where you left off tomorrow because it
-autosaves. 325 tests, plus a smoke test that boots the built bundle and plays through it.
+autosaves. 344 tests, plus a smoke test that boots the built bundle and plays through it.
 
 **It is no longer the same game as the Java build, on purpose.** The daily quest ration, gear decay
 and the death penalty are gone — everything that existed to make you put a 1997 browser game down

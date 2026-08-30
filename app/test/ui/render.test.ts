@@ -450,6 +450,31 @@ describe("the shops", () => {
     expect(root.textContent).toContain("Healing Salve");
   });
 
+  it("offers to clear the pack out in one go, once there is a pack to clear", () => {
+    game.character!.pack.push({
+      kind: "arms",
+      name: "Rusty Dagger",
+      attack: 1,
+      defend: 0,
+      skill: 0,
+      traits: ["right"],
+      enchant: 0,
+    });
+    game.character!.pack.push({ kind: "count", name: "Ruby", count: 2 });
+    apply(game, { kind: "goTo", place: { kind: "shop", shop: "weapons" } });
+    render(root, game, ui);
+    const labels = buttons().join(" | ");
+    expect(labels).toContain("Sell all 1 weapons and armour");
+    expect(labels).toContain("Sell all 1 trophies and gems");
+  });
+
+  it("does not offer a bulk sell when there is nothing it could take", () => {
+    game.character!.pack = [{ kind: "count", name: "Healing Salve", count: 3 }];
+    apply(game, { kind: "goTo", place: { kind: "shop", shop: "weapons" } });
+    render(root, game, ui);
+    expect(buttons().join(" | ")).not.toContain("Sell all");
+  });
+
   it("buys a potion into the pack as a stack", () => {
     apply(game, { kind: "goTo", place: { kind: "shop", shop: "trader" } });
     game.character!.marks = 10000;

@@ -79,21 +79,38 @@ So a monster tracks your level but not your gear, and every area gets permanentl
 buy armour. Encounter tables also swap at a level threshold — the Fields use `loweight` below
 level 3 and `hiweight` from 3 up, which is where the Soldier first appears.
 
-### The `adjust` flag does nothing
+### The `adjust` flag does nothing, and could not be made to work
 
-Five monsters are tagged `adjust` (field Wizard and Soldier, forest Unicorn, mound Queen, the
-Faery), which was meant to scale them to the hero's `getPower()`. It never fires:
-`itAgent.hasTrait` only looks at the `temp` and `stat` lists, and `adjust` is declared inside
-`values`. Verified by instrumenting `balance()` — with a hero geared to power 949, the field
-Wizard still rolls 1–2 Guts at hero levels 1, 3, 5, 10 and 20.
+**Eight** monsters are tagged `adjust` — field Wizard and Soldier, forest Unicorn, mound Queen,
+Hills Giant, Hills Dragon, Ocean Mermaid and the Faery. (An earlier version of this note said five;
+it missed the Giant, the Dragon and the Mermaid.) The tag was meant to scale them to the hero's
+`getPower()`. It never fires: `itAgent.hasTrait` only looks at the `temp` and `stat` lists, and
+`adjust` is declared inside `values`. Verified by instrumenting `balance()` — with a hero geared to
+power 949, the field Wizard still rolls 1–2 Guts at hero levels 1, 3, 5, 10 and 20.
 
-**Do not simply move the flag into `stat` to "fix" it.** The guarded block divides by
-`(float) (getPower() / heroPower)` — an *integer* division, so any monster weaker than the hero
-gives `0`, the ratio becomes `Infinity`, and `alterGuts()` writes `Integer.MAX_VALUE`. The damage
-term `(guts * (2 + swings)) / 10` then overflows, and because the sign flips with the parity of
-`2 + swings` it comes out as either `0` or `214748364` — a monster that is unkillable, harmless
-on even swings, and an instant death on odd ones. The division has to become floating point in
-the same change.
+**It was enabled, measured, and reverted.** Two separate faults, and the second one is fatal.
+
+*The shallow fault.* The guarded block divides by `(float) (getPower() / heroPower)` — an *integer*
+division, so any monster weaker than the hero gives `0`, the ratio becomes `Infinity`, and
+`alterGuts()` writes `Integer.MAX_VALUE`. The damage term `(guts * (2 + swings)) / 10` then
+overflows, and because the sign flips with the parity of `2 + swings` it comes out as either `0` or
+`214748364` — a monster that is unkillable, harmless on even swings, and an instant death on odd
+ones. That part is fixable: divide in floating point and guard both zero cases.
+
+*The fatal fault.* With the division fixed and the flag reaching the list it lives in, the parity
+harness recorded 288 rounds against those eight monsters. **The monster died 0 times**, against 114
+before the change. The mechanic multiplies Guts, Wits, Charm and the base attack, defence and skill
+all by the same power ratio, and against a late-game hero that ratio is around 150. The field
+Wizard's Defence goes from 12 to 2,547 while your Attack is 150 — and since damage is
+`Guts × (2 + swings) / 10 + Attack − Defence`, a linear rule, you do nothing at all. Forever. The
+Wizard hypnotises you until you die.
+
+So uniform multiplication cannot produce a fair fight against this damage formula, only an
+unwinnable one. Scaling a monster to a hero needs a rule built for the damage model, which is
+design work rather than a bug fix — see [roadmap.md](roadmap.md), where it belongs to the
+rules-changing group that ships as an opt-in toggle.
+
+**Leave the flag dead.** It is not a latent feature waiting for a one-line fix.
 
 ## Randomness
 

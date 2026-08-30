@@ -19,7 +19,8 @@ Gradle downloads the Java 17 toolchain it compiles with.
 ### Desktop
 
 ```
-$ ./gradlew run
+$ ./gradlew run              # 400x300, the original size
+$ ./gradlew run -Pscale=3    # 3x -- see the note on scaling below
 ```
 
 or build the jar and launch it yourself:

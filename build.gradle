@@ -27,6 +27,13 @@ application {
     mainClass = 'DCourt.DCourtFrame'
 }
 
+// ./gradlew run -Pscale=3  -- saves spelling out the -D every time.
+tasks.named('run') {
+    if (project.hasProperty('scale')) {
+        systemProperty 'dragoncourt.scale', project.property('scale')
+    }
+}
+
 sourceSets {
     main {
         java {

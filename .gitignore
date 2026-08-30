@@ -2,3 +2,9 @@
 build/
 node_modules/
 app/dist/
+
+# Characters people play. These used to be committed so a hero could move between machines by
+# `git push`, which worked but made play files part of the source -- and the test suite ended up
+# reading one as a fixture, so three tests passed only on the machine that had played. Fixtures
+# live in app/test/fixtures/ now, and a character is yours to keep wherever you like.
+saves/*.hero

@@ -32,7 +32,7 @@ import {
   type Ending,
   type Fighter,
 } from "../rules/battle.js";
-import { calcCombat, type Equipment } from "../rules/combat.js";
+import { WEAR_SLOT_SET, calcCombat, type Equipment } from "../rules/combat.js";
 import { raiseFor, tryToLevel } from "../rules/levelling.js";
 import type { GameRandom } from "../rules/random.js";
 import { armsOf, type Content, type MonsterDefinition } from "./content.js";
@@ -53,6 +53,7 @@ import { buyPrice, sellPrice, shopByKey, type ShopDefinition } from "./shop.js";
 import { effectOf, endOfFight, isUsableHere, useItem } from "./items.js";
 import { isScroll, readScroll } from "./scrolls.js";
 import { backgroundByKey, newHeroText } from "./creation.js";
+
 import {
   JOINING_FEE,
   TRACKS,
@@ -339,10 +340,10 @@ export function apply(game: Game, move: Move): Game {
       return applyScroll(game, move.scrollIndex, move.target);
 
     case "equip":
-      return moveBetween(game, "pack", "gear", move.index);
+      return wear(game, move.index);
 
     case "unequip":
-      return moveBetween(game, "gear", "pack", move.index);
+      return takeOff(game, move.index);
 
     case "buy":
       return buy(game, shopByKey(move.shop), move.name);
@@ -468,17 +469,78 @@ function applyScroll(game: Game, scrollIndex: number, target: number): Game {
   return game;
 }
 
-function moveBetween(game: Game, from: "pack" | "gear", to: "pack" | "gear", index: number): Game {
+/**
+ * Putting something on, which is not the same as adding it to a list.
+ *
+ * Every piece of equipment claims one or more of five slots — head, body, feet, right hand, left
+ * hand — and wearing it **displaces whatever already occupies each of them**, back into the pack.
+ * A two-handed weapon claims both hands, so a pike costs you the shield as well as the sword.
+ * Something claiming no slot at all cannot be worn.
+ *
+ * The port had none of this and simply appended: you could wear five right-hand weapons at once,
+ * two-handed pike included, for 55 Attack where one weapon gives 14. Worse, the inventory has been
+ * telling you all along which item a swap "would replace" — `describe.ts` computes exactly that —
+ * so the interface promised a rule the game did not have.
+ *
+ * From `arStatus.wearGear`.
+ */
+function wear(game: Game, index: number): Game {
   const character = game.character;
   if (character === null) {
     return game;
   }
-  const item = character[from][index];
+  const item = character.pack[index];
   if (item === undefined || item.kind !== "arms") {
     return game;
   }
-  character[from].splice(index, 1);
-  character[to].push(item);
+  const slots = item.traits.map((t) => t.toLowerCase()).filter((t) => WEAR_SLOT_SET.has(t));
+  if (slots.length === 0) {
+    game.notices = [`The ${item.name} is not something you can wear.`];
+    return game;
+  }
+
+  const displaced = character.gear.filter(
+    (worn): worn is Extract<Carried, { kind: "arms" }> =>
+      worn.kind === "arms" && worn.traits.some((t) => slots.includes(t.toLowerCase())),
+  );
+  // A cursed item cannot be taken off, and blocks the whole swap rather than half of it.
+  const stuck = displaced.find((worn) => worn.traits.some((t) => t.toLowerCase() === "cursed"));
+  if (stuck !== undefined) {
+    game.notices = [`You cannot remove the ${stuck.name}. The thing is cursed.`];
+    return game;
+  }
+
+  character.pack.splice(index, 1);
+  for (const worn of displaced) {
+    character.gear.splice(character.gear.indexOf(worn), 1);
+    character.pack.push(worn);
+  }
+  character.gear.push(item);
+  game.notices =
+    displaced.length === 0
+      ? [`You put on the ${item.name}.`]
+      : [
+          `You put on the ${item.name}, and take off the ${displaced.map((d) => d.name).join(" and ")}.`,
+        ];
+  return game;
+}
+
+/** Taking something off is unconditional, unless it is cursed on. */
+function takeOff(game: Game, index: number): Game {
+  const character = game.character;
+  if (character === null) {
+    return game;
+  }
+  const item = character.gear[index];
+  if (item === undefined || item.kind !== "arms") {
+    return game;
+  }
+  if (item.traits.some((t) => t.toLowerCase() === "cursed")) {
+    game.notices = [`You cannot remove the ${item.name}. The thing is cursed.`];
+    return game;
+  }
+  character.gear.splice(index, 1);
+  character.pack.push(item);
   return game;
 }
 

@@ -12,7 +12,14 @@
 
 import { loadContent } from "./game/content.js";
 import { characterFrom, type Game } from "./game/state.js";
-import { browserStore, clearSave, exportText, loadSaved, saveCharacter } from "./game/save.js";
+import {
+  browserStore,
+  clearSave,
+  exportText,
+  importText,
+  loadSaved,
+  saveCharacter,
+} from "./game/save.js";
 import { GameRandom } from "./rules/random.js";
 import { initialUi, render } from "./ui/render.js";
 
@@ -81,6 +88,40 @@ function wireToolbar(game: Game, store: ReturnType<typeof browserStore>, draw: (
     if (game.character !== null) {
       download(game.character.name, exportText(game.character));
     }
+  });
+
+  const load = document.getElementById("load-save");
+  const picker = document.getElementById("load-file");
+  load?.addEventListener("click", () => {
+    (picker as HTMLInputElement | null)?.click();
+  });
+  picker?.addEventListener("change", () => {
+    const input = picker as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file === undefined) {
+      return;
+    }
+    void file.text().then((text) => {
+      const result = importText(text);
+      // The picker is cleared either way, or choosing the same file twice does nothing.
+      input.value = "";
+      if ("error" in result) {
+        window.alert(result.error);
+        return;
+      }
+      if (
+        game.character !== null &&
+        !window.confirm(`Replace ${game.character.name} with ${result.hero.name}?`)
+      ) {
+        return;
+      }
+      game.character = characterFrom(result.hero);
+      game.quest = null;
+      game.notices = [`${result.hero.name} takes over.`];
+      game.place = { kind: "town" };
+      saveCharacter(store, game.character);
+      draw();
+    });
   });
 
   const fresh = document.getElementById("new-game");

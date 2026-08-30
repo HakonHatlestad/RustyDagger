@@ -74,3 +74,35 @@ export function clearSave(store: SaveStore | null): void {
 export function exportText(character: Character): string {
   return serialiseHero(toHero(character));
 }
+
+/**
+ * Reading a `.hero` somebody hands you.
+ *
+ * The other half of "Save a copy", and the reason the port keeps the 1997 format at all: a
+ * character from the Java build, or from another browser, or from a backup. Returns the trouble
+ * rather than throwing it, because the only sensible thing to do with a bad file is tell the
+ * player which file was bad and leave what they already had alone.
+ */
+export function importText(text: string): { hero: Hero } | { error: string } {
+  const trimmed = text.trim();
+  if (trimmed === "") {
+    return { error: "That file is empty." };
+  }
+  try {
+    const hero = parseHero(trimmed);
+    if (hero.name.trim() === "") {
+      return { error: "That character has no name, so it is probably not a save." };
+    }
+    if (hero.guts < 1) {
+      return { error: "That character has no Guts at all, so it is probably not a save." };
+    }
+    return { hero };
+  } catch (error) {
+    return {
+      error:
+        error instanceof SaveFormatError
+          ? `That is not a character: ${error.message}.`
+          : "That file could not be read as a character.",
+    };
+  }
+}

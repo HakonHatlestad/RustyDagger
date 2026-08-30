@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { parseEntity } from "../src/format/parse.js";
 import { serialiseEntity } from "../src/format/serialise.js";
@@ -21,8 +21,18 @@ import {
  * gives the same character.
  */
 
+/**
+ * Any real characters that happen to be lying about.
+ *
+ * Play files are no longer committed, so on a fresh checkout there are none and the sweep below
+ * simply does not run. That is deliberate: it is worth having on a machine somebody plays on, and
+ * it must not be something CI depends on. Anything that asserts what is *in* a character uses the
+ * fixture instead.
+ */
 const savesDir = fileURLToPath(new URL("../../saves/", import.meta.url));
-const saveFiles = readdirSync(savesDir).filter((f) => f.endsWith(".hero"));
+const saveFiles = existsSync(savesDir)
+  ? readdirSync(savesDir).filter((f) => f.endsWith(".hero"))
+  : [];
 
 function save(name: string): string {
   return readFileSync(savesDir + name, "utf8");
@@ -44,11 +54,7 @@ const FIXTURE = readFileSync(
  * The real saves are still tested — but only for properties that hold whatever anyone has played.
  * A test that asserts a real save's *contents* is a test that breaks when its owner levels up.
  */
-describe("the real saves in this repository", () => {
-  it("there are some to test against", () => {
-    expect(saveFiles.length).toBeGreaterThan(0);
-  });
-
+describe.skipIf(saveFiles.length === 0)("any real saves on this machine", () => {
   it.each(saveFiles)("loads %s", (fileName) => {
     const hero = parseHero(save(fileName));
     expect(hero.name.length).toBeGreaterThan(0);

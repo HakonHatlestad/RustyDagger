@@ -6,6 +6,7 @@ import { parseHero } from "../src/game/hero.js";
 import {
   clearSave,
   exportText,
+  importText,
   loadSaved,
   saveCharacter,
   SAVE_KEY,
@@ -108,5 +109,47 @@ describe("keeping a character between sessions", () => {
     const c = character();
     c.marks = 42;
     expect(characterFrom(parseHero(exportText(c))).marks).toBe(42);
+  });
+});
+
+describe("taking a character in", () => {
+  it("reads back what it wrote out, which is the whole point of keeping the 1997 format", () => {
+    const c = character();
+    c.marks = 4321;
+    c.level = 7;
+    const result = importText(exportText(c));
+    expect("hero" in result).toBe(true);
+    if (!("hero" in result)) return;
+    const again = characterFrom(result.hero);
+    expect(again.marks).toBe(4321);
+    expect(again.level).toBe(7);
+    expect(again.name).toBe(c.name);
+  });
+
+  it("reads a save the Java build wrote", () => {
+    // A real `.hero`, tabs, nested lists and all.
+    const result = importText(TIMBER);
+    expect("hero" in result).toBe(true);
+  });
+
+  it("says what is wrong rather than throwing, because the file is the player's only copy", () => {
+    // Whether it fails in the grammar or at the wrong entity type, the player gets a sentence
+    // about characters and their existing hero is untouched.
+    for (const text of ["", "   \n  ", "not a hero at all", "{itArms|Knife|2|0|1}", "{{{"]) {
+      const result = importText(text);
+      expect("error" in result, JSON.stringify(text)).toBe(true);
+      if ("error" in result) {
+        expect(result.error.length, JSON.stringify(text)).toBeGreaterThan(10);
+        expect(result.error.toLowerCase()).toMatch(/character|empty/);
+      }
+    }
+  });
+
+  it("turns away something shaped like a hero but plainly not one", () => {
+    expect("error" in importText("{itHero||0|0|0}")).toBe(true);
+  });
+
+  it("tolerates the whitespace a file picker or a copy-paste adds", () => {
+    expect("hero" in importText(`\n\n  ${TIMBER}  \n`)).toBe(true);
   });
 });

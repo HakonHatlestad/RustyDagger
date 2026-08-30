@@ -10,13 +10,20 @@
  * It also produces a real description, which the original had nowhere to put at all.
  */
 
-import { itemAttack, itemDefend, itemSkill, type Equipment } from "../rules/combat.js";
+import {
+  WEAR_SLOTS,
+  WEAR_SLOT_SET,
+  itemAttack,
+  itemDefend,
+  itemSkill,
+  type Equipment,
+} from "../rules/combat.js";
 
-/** Where a piece of equipment is worn. An item can claim more than one. */
-export const WEAR_SLOTS = ["head", "body", "feet", "right", "left"] as const;
+// Re-exported: the interface and its tests have always reached for this from here.
+export { WEAR_SLOTS };
 
 /** Traits that are about where an item is worn rather than what it does. */
-const SLOT_TRAITS = new Set<string>(WEAR_SLOTS);
+const SLOT_TRAITS = WEAR_SLOT_SET;
 
 /** Traits worth explaining, and what they mean in plain words. */
 const TRAIT_MEANINGS: Readonly<Record<string, string>> = {

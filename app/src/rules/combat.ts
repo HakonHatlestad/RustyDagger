@@ -90,6 +90,16 @@ export function itemPower(item: Equipment): number {
   return power < 1 ? 1 : power;
 }
 
+/**
+ * The five places a piece of equipment can be worn, from `arStatus.slot`.
+ *
+ * Lives here rather than with the interface because wearing something is a rule: putting one on
+ * displaces whatever holds the same slot, and a two-handed weapon holds two.
+ */
+export const WEAR_SLOTS = ["head", "body", "feet", "right", "left"] as const;
+
+export const WEAR_SLOT_SET: ReadonlySet<string> = new Set<string>(WEAR_SLOTS);
+
 /** A ten percent bonus, rounded up — the shape the game uses for Agile, Strong and Sturdy. */
 function tenPercentUp(value: number): number {
   return value + Math.trunc((value + 9) / 10);

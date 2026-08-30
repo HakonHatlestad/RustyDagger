@@ -55,6 +55,15 @@ One round, in [`arBattle.battle()`](../src/main/java/DCourt/Screens/Quest/arBatt
    `n-1`, so **once your Skill is within one of theirs you cannot miss at all**, and below that
    you connect `(yourSkill + 1) / theirSkill` of the time. A defender with `Alert` against a
    Backstab, or `Fencer` against a Berzerk or Ieatsu, gets +30 Skill for this roll only.
+
+   **Two fixes for the plateau were measured and neither was adopted.** Recorded so the
+   experiment is not repeated: over 1,980 harness battles, capping the hit chance at 95% (widening
+   the roll only where it saturates) barely moves the game — monster kill rate 45%→44%, dodges up
+   about a fifth — but Skill still stops paying once you pass them, so it fixes invulnerability
+   and not the wasted stat. Replacing the roll with `contest(yourSkill, theirSkill)` fixes both,
+   since `a/(a+b)` never saturates, but it more than doubles dodges (432→999) and drops the
+   monster kill rate to 34%, lengthening every fight in the game by roughly a third. The
+   saturating rule was kept deliberately.
 4. **Damage** — `(Guts * (2 + swings)) / 10 + Attack - Defence`.
 5. **Severity** — scaled against the defender's *remaining* health, not their maximum. If damage
    is at least what they have left, it is an instant kill.

@@ -108,5 +108,12 @@ screens position children at fixed pixel coordinates), `StatusPic` (the status b
 `postEvent`) because that is what they were written against.
 
 That model predates the mouse wheel and focus traversal, so newer input in `FTextList` is wired
-with the modern listener API alongside the old handlers rather than replacing them. Follow that
-pattern rather than trying to convert a widget wholesale.
+with the modern listener API instead.
+
+**The two models cannot coexist on one component.** `addMouseListener`, `addKeyListener` and
+`addMouseWheelListener` each set `Component.newEventsOnly`, and from then on AWT delivers only
+modern events to that component — its `mouseDown`/`mouseUp`/`mouseDrag` overrides stop being
+called, silently. So if you add any listener to a widget, move *all* of its input handling over
+in the same change. `FTextList` does this: clicking a row is handled in its `mousePressed`, and
+it re-posts the old-style `ACTION_EVENT` itself so screens keying off `e.target == theList` keep
+working. Other widgets still on the 1.0 model are fine as they are — leave them.

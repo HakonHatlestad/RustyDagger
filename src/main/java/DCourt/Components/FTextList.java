@@ -46,9 +46,11 @@ public class FTextList extends FTools {
   }
 
   /**
-   * Mouse wheel and keyboard navigation. The list itself still uses the AWT 1.0 event model it was
-   * decompiled with, but that model predates both the wheel and focus traversal, so these ride on
-   * the modern listener API alongside it.
+   * Mouse wheel, keyboard navigation and row clicking. The rest of the game still uses the AWT 1.0
+   * event model it was decompiled with, but that model predates the wheel and focus traversal, so
+   * this list has to use the modern listener API -- and once a Component has any modern listener,
+   * AWT stops delivering the 1.0 events to it entirely. Clicking therefore has to be handled here
+   * too; it cannot stay on {@code mouseDown}.
    */
   private void installInput() {
     setFocusable(true);
@@ -62,6 +64,7 @@ public class FTextList extends FTools {
           @Override
           public void mousePressed(MouseEvent e) {
             requestFocusInWindow();
+            selectAt(e.getY());
           }
         });
     addKeyListener(
@@ -223,17 +226,17 @@ public class FTextList extends FTools {
     return true;
   }
 
-  public boolean mouseDown(Event e, int x, int y) {
+  /** Picks the row under a click. Screens key off the 1.0 ACTION_EVENT, so it still goes out. */
+  private void selectAt(int y) {
     // Hit-test against the scrollbar's current value, not `base`. `base` is only refreshed
     // inside paint(), and repaint() is asynchronous -- so after a wheel scroll, a click that
     // landed before the repaint selected whatever row had been under the cursor beforehand.
     int top = this.scroll.getVal();
     if (!setSelect(top + ((y - 3) / this.fmet.getHeight()))) {
-      return true;
+      return;
     }
     postEvent(new Event(this, 1001, (Object) null));
     fireAction();
-    return true;
   }
 
   public void addItem(String str) {

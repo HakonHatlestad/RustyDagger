@@ -7,9 +7,15 @@ this file is the short version plus the traps.
 
 Two things at once, and knowing which you are in matters.
 
-**`app/`** is a TypeScript rewrite, and where new work goes. It is playable, has a full quality gate
-(`cd app && pnpm check`) and is checked against the Java build's recorded behaviour. Modern code;
-treat it as you would any TypeScript project.
+**`app/`** is a TypeScript rewrite, and where new work goes. It is playable end to end, has a full
+quality gate (`cd app && pnpm check`) and is checked against the Java build's recorded behaviour.
+Modern code; treat it as you would any TypeScript project.
+
+It is **deliberately no longer the same game**. The daily quest ration, gear decay and the death
+penalty are gone — everything that existed to make a 1997 browser game a daily habit. Parity with
+the Java build now means *combat and the economy*, not pacing. Before changing a rule in `app/`,
+read the first section of [docs/porting-notes.md](docs/porting-notes.md), which says what was taken
+out and why.
 
 **Everything else** is a 1997 Java applet, decompiled, now a desktop AWT program that also runs in a
 browser. It still works, and it is the reference the rewrite is measured against, so it stays.
@@ -97,6 +103,11 @@ a real subprocess with a working native stack, scrub the environment first:
   Look for the chokepoint before editing thirty call sites.
 - **New gameplay work goes in `app/`, not the Java build.** The Java build is the reference; change
   it only to fix something genuinely broken, and never to add a feature.
+- **A number the player sees should come from the game, not from a guess.** Item effects, healing
+  amounts, shop rates and prices are all in the Java source or the exported content. When something
+  needs a value the port does not have, record it in the harness and regenerate the baseline rather
+  than inventing one — that is how the weapon pricing was ported, and how the trait values in
+  `shop.ts` are held honest.
 - **Any gameplay change ships with a regenerated baseline.** Run `./gradlew baseline`, look at the
   diff, and say in the commit message what moved. The Java build is the reference the TypeScript
   port is checked against, so a rule change that nobody noticed would quietly corrupt it. This

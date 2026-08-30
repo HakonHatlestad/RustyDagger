@@ -33,27 +33,32 @@ now keeps improving whatever happens to the rewrite.
 
 ## Where this has got to
 
-**Phases 0 to 4 are done; the game is playable in a browser.** `app/` holds the TypeScript port —
-run `cd app && pnpm install && pnpm dev`. You can load an existing `.hero` character or start a new
-one, go questing in the fields, fight, take what a monster was carrying, spend it in the weapon
-shop, and equip what you buy. 198 tests, plus a smoke test that boots the built bundle and plays
-through it.
+**Phases 0 to 4 are done and the game is playable end to end in a browser.** `app/` holds the
+TypeScript port — run `cd app && pnpm install && pnpm dev`. Make a character or load an existing
+`.hero`, hunt in any of four regions, fight, drink what you looted mid-fight, take the spoils, spend
+them in three shops, rest for free at the temple, and pick up where you left off tomorrow because it
+autosaves. 259 tests, plus a smoke test that boots the built bundle and plays through it.
+
+**It is no longer the same game as the Java build, on purpose.** The daily quest ration, gear decay
+and the death penalty are gone — everything that existed to make you put a 1997 browser game down
+and come back the next day. What is left is a single-player game you can sit down and finish.
+[porting-notes.md](porting-notes.md) has the reasoning and the table.
 
 | Phase | State |
 |---|---|
 | 0 — Ground truth | **Done.** Harness, baseline, content export. |
 | 1 — New project, quality net | **Done.** Type checking, linting, formatting and tests gate every commit, and CI runs them. |
-| 2 — The maths, under parity | **Mostly done.** Generator, levelling, decay, combat, the battle round, monster balancing and behaviour, save import. Not ported: the consumables, where a wounded monster drinks something to buy back actions. |
+| 2 — The maths, under parity | **Mostly done.** Generator, levelling, combat, the battle round, monster balancing and behaviour, weapon traits, the economy, saves both ways. Decay is ported and then deliberately removed. Not ported: the consumables a *monster* drinks to buy back actions — the hero's side of that is done. |
 | 3 — Vertical slice | **Done.** Hero, quest, battle, shop, equip, end to end. |
-| 4 — Menu cluster and levelling display | **Done.** Experience and health bars, item descriptions, and the stat comparison shared across inventory and shop. |
-| 5 — Breadth | Not started. One region of the world exists. |
+| 4 — Menu cluster and levelling display | **Done.** Experience and health bars, item descriptions, the stat comparison shared across inventory and shop, and using what you carry. |
+| 5 — Breadth | **Part done.** Four hunting regions and the whole town: three shops, the temple, character creation. Not there: the castle, the queen's minigames, the bank and the guild. |
 | 6 — Presentation | **Half done.** Text and interface are sharp and reflow; the artwork is untouched. |
 | 7 — Portable remake features | Not started. |
 | 8 — Retire the Java build | Not started, and should not be until the gaps in Phase 2 close. |
 
-**What is not there yet**, stated plainly so nobody has to discover it: the town's other shops, the
-forest, hills, mound and castle, the queen's minigames, the bank, the guild, the healer, character
-creation as a screen, and the artwork. The loop is complete; the world is one region of it.
+**What is not there yet**, stated plainly so nobody has to discover it: the castle, the queen's
+minigames, the bank, the guild, and the artwork — the game still ships the 1997 images and the
+rewrite does not draw them at all. The loop is complete and the world is most of the way there.
 
 ## Phases
 
@@ -180,11 +185,19 @@ are sentences rather than three integers. Health and experience bars sit on ever
 *What changes for the player:* the biggest visible improvement in the whole plan.
 *Docs touched:* [gameplay.md](gameplay.md), [porting-notes.md](porting-notes.md).
 
-### Phase 5 — Breadth
+### Phase 5 — Breadth — part done
 
 The remaining screens: the town and its shops, the four wilderness zones, the castle, the queen's
 minigames, the bank, the guild, the healer. Enumerated from the package map in
 [architecture.md](architecture.md).
+
+**Done:** the four hunting regions, all three town shops with the names, rates and stock the Java
+gives them, the temple, and character creation. The regions cost almost nothing — every creature in
+them was already in the exported content — which is why they came in ahead of the rest of this
+phase rather than waiting for it.
+
+**Left:** the castle, the queen's minigames, the bank and the guild. The guild is the substantial
+one: guild ranks feed straight into `calcCombat`, and nothing in the rewrite grants them yet.
 
 *What changes for the player:* the new app becomes the whole game rather than a slice of it.
 *Docs touched:* [architecture.md](architecture.md).

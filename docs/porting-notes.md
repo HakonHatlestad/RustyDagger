@@ -3,6 +3,41 @@
 Every deliberate departure from the 1997 original, and why. **Add to this when you change
 behaviour** — otherwise the next person cannot tell a decision from a bug.
 
+Two builds live in this repository and they no longer agree, on purpose. Notes that apply only to
+the TypeScript rewrite in [`app/`](../app) say so; everything else is about the Java build, which
+remains the reference the rewrite's *combat* is measured against.
+
+## The rewrite is a single-player game now
+
+**Applies to `app/` only. The Java build is unchanged.**
+
+The 1997 game is a *daily* game. You get a ration of quests, you spend it, you come back tomorrow —
+and gear wears out, and dying costs you something, so there is always a reason to return. That
+shape is not an accident and it is not bad design; it is how a 1997 browser game earned its living
+off a shared server.
+
+There is no server, and nobody is coming back tomorrow. So the rewrite takes all of it out:
+
+| Removed | What it was | Why |
+|---|---|---|
+| The daily quest ration | `27 + 3 * level` quests a day, spent by fatigue | A wall between the player and the game, with nothing on the other side of it |
+| Gear decay | Every swing risked damaging what you held | A tax on playing, paid in trips to a shop. Its only function was to keep money mattering, and the money economy stands up without it |
+| The death penalty | You lost progress when you died | Losing a fight is the punishment. Anything on top of it just makes losing tedious |
+| Fatigue | Counted every action against the day | Nothing reads it any more |
+
+What replaces the pressure is the fight itself, which is the one place this game was always tense.
+Within a fight your health is the resource, and the only way to get it back is something you are
+carrying. Measured over a 250-quest campaign in the Fields, a level-1 character with a starting
+weapon dies 47 times — see `app/test/balance.test.ts`, which plays whole sessions and asserts the
+game is still losable.
+
+**Resting is free and complete**, at the temple. Charging for it was considered and dropped: with
+no death penalty there is nothing to charge against, because a player who does not want to pay can
+simply walk into the fields and lose, and be returned to town in the same state. A fee any player
+can decline by losing on purpose is not a cost, it is a chore.
+
+The Java build keeps all four. `-Ddragoncourt.dailyQuestLimit=true` still restores the ration there.
+
 ## Rules that changed
 
 ### The daily quest limit is off
@@ -119,6 +154,60 @@ commented-out network call in `Loader` that was its only consumer.
 The old root `index.html` was an `<applet>` tag pointing at that 1997 address. Dead in every
 browser since 2017; replaced by the CheerpJ page in `web/`.
 
+## Added to the rewrite
+
+**All of these apply to `app/` only.**
+
+### Using what you are carrying
+
+The original lets you drink a salve on the status screen between quests, and never during a fight —
+which is where you need it. The rewrite lets you use anything, anywhere, and **using something in a
+fight costs you the round**: the monster still swings. That keeps a potion a real choice rather
+than a strictly better move than fighting.
+
+The amounts are `itAgent`'s, unchanged, because they set how long a fight can be sustained: a salve
+is 15 points (25 for a Medic), a Gold Apple 30 (50), food 2 (3). What an item does is read from the
+`effect` number in the exported gear table rather than from a second list kept here, so the two
+cannot drift apart.
+
+### Weapon traits and thrown dust settle through one rule
+
+`arBattle.spellEffects` resolves blinding, panic and disease from a single queue on the attacker,
+which is why a blinding weapon and a handful of Blinding Dust behave identically in the original —
+both just add to that queue. The rewrite models the queue rather than the two cases, so they cannot
+diverge. It also means blinding and panic get *stronger the more you throw*, since the opposed
+check multiplies the thrower's Wits by the count.
+
+The Java build's monster gear traits — a Harpy's disease, a Wyvern's panic — were not implemented
+in the port at all before this. They are now, and it moved the port toward the Java, not away.
+
+### Four regions rather than one
+
+The Fields, Forest, Hills and Goblin Mound. Every creature in them was already in the exported
+content, so this cost nothing but naming them. Each says what level it suits, because the game has
+no other way to warn you and the Hills will kill a new character in two rounds — a claim the
+balance test checks rather than asserts.
+
+### Character creation, with traits that are real
+
+You pick a name and one of four backgrounds. Every trait a background grants is one the rules
+already read — `Strong`, `Sturdy`, `Agile`, `Reflex`, `Merchant`, `Stubborn`, `Medic`, `Hardy` —
+and the chooser says what each one does. Nothing there is flavour. All four spend the same thirty
+points, so the choice is shape rather than strength.
+
+`Hardy` is the one addition: the Java names it in `Constants` and halves disease with it, and the
+port had no disease to halve until now.
+
+### Autosaving, and a copy you can keep
+
+The rewrite could read a `.hero` save and write one back from the day it was written, and never
+called the writer — so a session's marks, loot and levels vanished on refresh. Every move now goes
+through one dispatcher, so saving is a single hook on it. The stored text is the same
+`{type|field|field}` a `.hero` file holds, not JSON, so a character can be moved between this and
+the Java build. "Save a copy" downloads one.
+
+Wounds and disease persist between sessions, in the hero's `temp` list where the Java keeps them.
+
 ## Things added
 
 ### A browser build
@@ -149,6 +238,28 @@ since they are all `FTextList`.
 See [saves.md](saves.md). Heroes used to be bare files in the working directory.
 
 ## Bugs fixed
+
+### Every weapon and every piece of armour was free
+
+**In `app/` only, and never in the Java build.** The rewrite priced equipment by looking it up in
+the gear table, and the gear table contains no weapons — those are in the arms table, which has no
+costs in it at all. So `buyPrice` returned 0 for everything in the weapon shop, and you could buy
+the shop out for nothing and sell it back for money.
+
+A weapon's price is not stored anywhere: `itArms.stockValue` computes it from the item's own stats,
+squaring Attack plus Defence, and adds the trait values from `ArmsTrait.traitValue` — where a
+blinding weapon carries four thousand Marks of trait on top of whatever it swings for. The shop
+then marks up what it specialises in by a third. All of it is now ported and checked against
+`baseline/rules.txt`, which was extended to record five trait-bearing weapons precisely because
+nothing in any shop's stock has a trait, so nothing would otherwise have covered that path.
+
+### Monsters read every hero as harmless
+
+**In `app/` only.** `itMonster.chooseActions` decides whether to reach for magic by comparing the
+hero's power against its own. The port's parity test passed that figure; the actual game did not,
+so it defaulted to zero and every creature judged every hero to be no threat. The verified code
+path and the played one were different code paths.
+
 
 | Fix | Symptom |
 |---|---|

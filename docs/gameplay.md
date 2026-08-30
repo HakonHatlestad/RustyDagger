@@ -229,10 +229,43 @@ Weapons and armour are [`itArms`](../src/main/java/DCourt/Items/List/itArms.java
 attack/defend/skill plus trait flags (`RIGHT` hand slot, `BLAST`, `Blind`, `SECRET`). Their stats
 are shown inline in every list as `Name[+3a+2d+1s]` via `toShow()`.
 
-**Gear wears out.** After each fight, `decay((rate + fightRank) * 5)` rolls against every item in
-gear *and* pack; a hit permanently subtracts roughly `1 + stat/12` from each of the item's three
-stats, and one time in twelve strips a trait as well. There is no separate durability counter —
-decay just erodes the stats you can already see. Replacing gear is the game's main money sink.
+**Gear wears out — in the Java build.** After each fight, `decay((rate + fightRank) * 5)` rolls
+against every item in gear *and* pack; a hit permanently subtracts roughly `1 + stat/12` from each
+of the item's three stats, and one time in twelve strips a trait as well. There is no separate
+durability counter — decay just erodes the stats you can already see, and replacing gear is that
+build's main money sink.
+
+**The rewrite has no decay at all.** It was ported, checked against 91 recorded item trajectories,
+and then deliberately removed along with the rest of the daily-game scaffolding —
+[porting-notes.md](porting-notes.md) says why. What money is for in `app/` is better gear and the
+supplies that keep you alive inside a fight.
+
+### What a piece of equipment is worth
+
+Nothing stores a weapon's price. `itArms.stockValue()` derives it:
+
+```
+worth = ((attack + defend)² × 5  ±  skill² × 2) / 2      both terms signed, integer division
+      + the trait values below
+```
+
+Squaring is what stops good gear being a formality: twice the Attack costs about four times as
+much. Traits are worth far more than the stats they sit on, from
+[`ArmsTrait.traitValue`](../src/main/java/DCourt/Static/ArmsTrait.java):
+
+| Trait | Worth | Trait | Worth |
+|---|---|---|---|
+| Glows | 50 | Disease | 1500 |
+| Lucky | 250 | Blast | 2000 |
+| Bless | 300 | Panic | 3000 |
+| Flame | 800 | Blind | 4000 |
+| Enchant | 100 (per point) | | |
+
+Anything `SECRET` or `CURSE` is worth exactly 2, because nobody pays for a promise. A shop then
+marks up what it specialises in by a third — `arWeapon` anything held in the right hand, `arArmour`
+anything worn on the body — with a floor of 2.
+
+These numbers are recorded in `baseline/rules.txt` and checked by `app/test/economy.test.ts`.
 
 ## Quests (the day allowance)
 

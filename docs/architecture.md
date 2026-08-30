@@ -135,7 +135,8 @@ screens.
 app/src/
   format/   the {type|field|field} grammar: parse and serialise
   rules/    the game's maths -- nothing here imports anything below it
-  game/     content, characters, monsters, loot, shops, and the state machine
+  game/     content, characters, monsters, loot, items, shops, the world,
+            saving, and the state machine
   ui/       drawing, and the item descriptions and comparisons a player reads
 ```
 
@@ -156,3 +157,36 @@ and monster names come from content files and from hand-editable saves.
 The one deliberate coupling: `ui/describe.ts` imports from `rules/combat.ts` so that the stat
 comparison a shop shows is computed by the same code that decides a fight. Showing a player a
 number the rules disagree with would be worse than showing nothing.
+
+### Where each thing lives
+
+| File | What it decides |
+|---|---|
+| `rules/battle.ts` | A round: swings, initiative, the special actions, and the queue that settles blinding, panic and disease |
+| `rules/combat.ts` | Gear and traits into Attack, Defence and Skill, and what a blow does |
+| `rules/levelling.ts` | What the next level costs |
+| `game/monster.ts` | Scaling a template into the thing you actually meet, and what it decides to do |
+| `game/items.ts` | What a potion does, read off the `effect` number in the exported gear table |
+| `game/shop.ts` | The three town shops, and what anything is worth — computed from an item's own stats, not looked up |
+| `game/world.ts` | The four hunting regions and what level each suits |
+| `game/creation.ts` | The four backgrounds, and the save text a new character starts from |
+| `game/save.ts` | Where a character is kept, and reading one back that will not parse |
+| `game/state.ts` | Every move a player can make, and what it costs |
+
+### What the tests are for
+
+They are not all the same kind of thing, and treating them as one pile hides which failures matter.
+
+| Suite | Question |
+|---|---|
+| `parity.test.ts` | Does a whole fight come out like a whole fight in the Java build? |
+| `economy.test.ts` | Does a shop charge and pay what the Java charges and pays? |
+| `levelling`, `combat`, `random`, `parse` | Does this rule match its recorded values, exactly? |
+| `balance.test.ts` | Is the game any *good*? Winnable, losable, and does progress happen? |
+| `ui/render.test.ts` | Does the interface a player touches actually work? |
+| `scripts/smoke.mjs` | Does the built artefact boot, play and save? |
+
+`balance.test.ts` is the odd one and the most easily lost: it plays whole sessions through `apply`
+and asserts things like "a new character still dies sometimes" and "the Hills are as dangerous as
+the warning says". Removing the day cycle took out everything that used to pace the game, so those
+properties stopped being free and started needing a check.

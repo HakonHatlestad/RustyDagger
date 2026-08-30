@@ -19,8 +19,8 @@ Gradle downloads the Java 17 toolchain it compiles with.
 ### Desktop
 
 ```
-$ ./gradlew run              # 400x300, the original size
-$ ./gradlew run -Pscale=3    # 3x -- see the note on scaling below
+$ ./gradlew run              # 4x, the default
+$ ./gradlew run -Pscale=1    # 400x300, the original size
 ```
 
 or build the jar and launch it yourself:
@@ -67,11 +67,11 @@ can move between machines with a `git pull`. See [docs/saves.md](docs/saves.md).
 ## Options
 
 All set with `-D` on the command line, e.g.
-`java -Ddragoncourt.scale=3 -jar build/libs/RustyDagger.jar`.
+`java -Ddragoncourt.scale=1 -jar build/libs/RustyDagger.jar`.
 
 | Property | Default | Effect |
 |---|---|---|
-| `dragoncourt.scale` | `1` | Window scale. **Experimental** -- values above 1 misalign clicks, see [porting-notes](docs/porting-notes.md). The browser build scales properly. |
+| `dragoncourt.scale` | `4` | Window scale -- 400x300 is a postage stamp on a modern display. Set `1` for the original size. See [porting-notes](docs/porting-notes.md). |
 | `dragoncourt.saveDir` | `saves` | Where hero files live. |
 | `dragoncourt.autosave` | `true` | Save on every screen change. `false` = save on exit only. |
 | `dragoncourt.dailyQuestLimit` | `false` | `true` restores the original daily quest allowance. |

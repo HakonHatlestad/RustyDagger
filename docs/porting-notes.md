@@ -23,29 +23,42 @@ ration.
 Taken from the remake, where it is the most-cited quality-of-life change. `Trader` and `Merchant`
 still add 20 each.
 
-### Window scaling exists but is opt-in, and is not correct
+### Window scaling is on, and it works
 
 The game draws into a fixed 400x300 canvas and positions children at hard-coded pixel
 coordinates, so it cannot reflow -- the only way to make it bigger is to scale the whole
 surface. Its widgets are heavyweight AWT components, which a parent `Graphics2D` transform
 cannot touch, so `sun.java2d.uiScale` is the only lever available.
 
-`-Ddragoncourt.scale=N` sets it, **defaulting to 1**. `DCourtFrame.applyScale()` applies it
-before the first AWT call, since the property is only read while the graphics environment
-initialises. An explicit `sun.java2d.uiScale` always wins.
+`-Ddragoncourt.scale=N` sets it, **defaulting to 4** -- 400x300 is a postage stamp on a modern
+display. `DCourtFrame.applyScale()` applies it before the first AWT call, since the property is
+only read while the graphics environment initialises. An explicit `sun.java2d.uiScale` always
+wins. Set `-Ddragoncourt.scale=1` for the original size.
 
-**Why it is off by default:** AWT components are not harmonized with HiDPI scaling the way Swing
-is ([JDK-8143406](https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8143406)). The surface
-scales, but the components keep hit-testing in unscaled coordinates, so clicks land in the wrong
-place and widgets sit slightly off. It shipped as the default briefly and was wrong to.
+**It was off by default for a while, on a diagnosis that turned out to be wrong.** The reason
+given was that AWT components are not harmonized with HiDPI scaling the way Swing is
+([JDK-8143406](https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8143406)), so the surface
+would scale while the components kept hit-testing in unscaled coordinates. The symptom that
+supposedly proved it was that clicking a list row did nothing.
+
+That symptom had nothing to do with scaling. Adding wheel and keyboard listeners to `FTextList`
+set `Component.newEventsOnly`, after which AWT silently stopped calling the AWT-1.0 `mouseDown`
+where the row hit-testing lived -- so clicking a row did nothing at *any* scale, in both the
+desktop and browser builds. See the Components section of [architecture.md](architecture.md) for
+the mechanism; it is a trap that will catch the next person too.
+
+Once that was fixed, scaling was actually tested rather than assumed: `./gradlew run -Pscale=3`,
+clicking rows in a shop list, on 2026-08-30. Clicks land on the row you click. The JDK issue
+above is real, but it does not bite this game, and the default is now 4.
 
 On X11 a value below 2 is ignored entirely, so fractional scales do nothing there.
 
-**The real fix** is to make the widget tree lightweight -- `FTools` and `Screen` extending
-`Container` rather than `Panel`, `Portrait` off `Canvas`, and lightweight replacements for
-`FTextField`/`FTextArea`, which are native `TextField`/`TextArea` today. Then `DCourtPanel` can
-scale its children with a transform and inverse-transform mouse coordinates, which is correct by
-construction. That is a real piece of work and has not been done.
+**Superseded:** this section used to propose making the widget tree lightweight -- `FTools` and
+`Screen` extending `Container` rather than `Panel`, `Portrait` off `Canvas`, lightweight
+replacements for `FTextField`/`FTextArea` -- so that `DCourtPanel` could scale its children with a
+transform. That work was never scheduled and now will not be, on two counts: scaling works without
+it, and the game is being rebuilt as a web app where the problem does not exist. See
+[roadmap.md](roadmap.md) and [adr/2026-08-30-typescript-rewrite.md](adr/2026-08-30-typescript-rewrite.md).
 
 The browser build does not have this problem: CheerpJ scales the display outside the JVM, so
 `web/index.html` offers 1x/2x/3x and all of them behave.

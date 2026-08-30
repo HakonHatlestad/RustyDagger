@@ -9,8 +9,12 @@ import java.awt.event.WindowEvent;
 /** Desktop window hosting the game. */
 public class DCourtFrame extends Frame {
 
-  /** Off by default. See applyScale() -- scaling is opt-in because it misaligns input. */
-  private static final String DEFAULT_SCALE = "1";
+  /**
+   * 400x300 is a postage stamp on a modern display. Scaling was off for a while on a wrong
+   * diagnosis -- the click bug blamed on it was really FTextList's newEventsOnly trap. Retested at
+   * 3x once that was fixed: clicks land correctly. See applyScale() and docs/porting-notes.md.
+   */
+  private static final String DEFAULT_SCALE = "4";
 
   public DCourtFrame(String title) {
     super(title);

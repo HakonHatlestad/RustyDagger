@@ -1,9 +1,8 @@
 package DCourt;
 
-import DCourt.Tools.Tools;
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Frame;
-import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -37,16 +36,14 @@ public class DCourtFrame extends Frame {
         () -> {
           DCourtPanel game = new DCourtPanel();
           DCourtFrame win = new DCourtFrame("FFI Presents: Dragon Court");
+          win.add(game, BorderLayout.CENTER);
+          win.setResizable(false);
+          // pack() sizes the frame around the panel's preferred size. The original did the
+          // inset arithmetic by hand, before the window was mapped, so on window managers
+          // that report insets late it sized the frame short and clipped the bottom row.
+          win.pack();
+          win.setLocationRelativeTo(null);
           win.setVisible(true);
-
-          // The frame must be showing before its insets are known, and the game draws into a
-          // fixed-size canvas, so the window is sized around that rather than packed.
-          Insets edge = win.getInsets();
-          win.add("Center", game);
-          win.setSize(
-              edge.left + edge.right + Tools.DEFAULT_WIDTH,
-              edge.top + edge.bottom + Tools.DEFAULT_HEIGHT);
-          game.setBounds(edge.left, edge.top, Tools.DEFAULT_WIDTH, Tools.DEFAULT_HEIGHT);
           game.init();
           game.repaint();
         });

@@ -78,6 +78,12 @@ a real subprocess with a working native stack, scrub the environment first:
   one-line change. The same is true of navigation (`DCourtPanel.setRegion`, where autosave hangs)
   and of item lists (`FTextList`, where wheel and keyboard support went in once for every screen).
   Look for the chokepoint before editing thirty call sites.
+- **Any gameplay change ships with a regenerated baseline.** Run `./gradlew baseline`, look at the
+  diff, and say in the commit message what moved. The Java build is the reference the TypeScript
+  port is checked against, so a rule change that nobody noticed would quietly corrupt it. This
+  replaces the blanket freeze the roadmap originally proposed — a freeze was the right precaution
+  before the harness existed, but changes are no longer silent, so stopping the only playable build
+  from improving buys nothing. See [docs/development.md](docs/development.md).
 - **Record behaviour changes in `docs/porting-notes.md` in the same commit.** Six months on, the
   question is always "was this a bug or a decision?"
 - Commit messages say what a player would notice, then why. The decompiled names mean nothing on

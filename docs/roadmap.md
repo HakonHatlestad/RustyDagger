@@ -4,27 +4,32 @@
 
 The game is being rebuilt as a TypeScript web app rather than modernised further in Java — the
 reasoning is in [adr/2026-08-30-typescript-rewrite.md](adr/2026-08-30-typescript-rewrite.md). The
-Java build stays alive as the reference the new one is checked against, and becomes behaviourally
-frozen once Phase 0 has recorded that reference. Each phase below is a separate planning session
+Java build stays alive as the reference the new one is checked against, and goes on improving while
+that happens. Each phase below is a separate planning session
 when it is picked up; this document is sequencing and intent, not instructions.
 
-## The freeze
+## Instead of a freeze: regenerate the baseline
 
-**It starts when Phase 0's parity baseline exists, and not before.** From that point the Java build
-takes bug fixes and presentation-only changes, but no gameplay, balance or rule changes. The reason
-is narrow and worth stating plainly: the recorded baseline is the only written record of how this
-game actually behaves, and any rule change silently invalidates it — a well-meant balance tweak
-would destroy the only safety net the rewrite has.
+An earlier version of this roadmap froze the Java build behaviourally once the parity baseline
+existed — no gameplay, balance or rule changes until the port caught up. **That has been dropped,
+and it is worth knowing why, because the reasoning was sound when it was written.**
 
-It does **not** apply yet. With no baseline recorded, a freeze protects nothing and only stops the
-one playable build from improving. Until Phase 0 runs, ordinary work continues here as normal.
+The freeze existed because a rule change would *silently* invalidate the baseline. Once the harness
+was actually built, that word stopped being true. A gameplay change now shows up as a diff in a text
+file, and regenerating takes one command. It was demonstrated three times on the day the harness
+landed: a crash fix moved exactly four lines out of nearly two thousand recorded outcomes, an
+attempt at monster scaling moved 446, and two candidate combat rules moved measurable percentages.
+None of them could have slipped past unnoticed.
 
-The cost, for when it does apply: **the game playable today stops gaining features until the port
-catches up.** That is months, not weeks. It is the price of the port being faithful rather than
-approximately right, and it was accepted knowingly.
+So the protection was never the freeze — it was the harness. The rule that replaces it, and which
+now lives in [../CLAUDE.md](../CLAUDE.md):
 
-The matching entry in `CLAUDE.md` — the file every agent reads first — gets added as part of
-Phase 0's own session, when the constraint becomes real. Not now.
+> Any gameplay change ships with a regenerated baseline and a note saying what moved.
+
+That keeps the reference honest and costs nothing, where the freeze cost the only playable build
+months of improvement. It also removes the plan's worst property: that every phase before parity
+left you worse off than not starting, so a stall in the middle was strictly harmful. The Java build
+now keeps improving whatever happens to the rewrite.
 
 ## Phases
 
@@ -48,7 +53,7 @@ worth doing even if the rewrite were abandoned tomorrow.
 first run (the Mound Queen) and settled two long-standing questions about monster scaling and the
 to-hit rule by measurement rather than argument. The content extraction is the half still to do.
 
-This phase is also what switches the freeze on.
+This phase is what makes the regeneration rule above meaningful.
 
 *What changes for the player:* nothing. Deliberately.
 *Docs touched:* [development.md](development.md), [gameplay.md](gameplay.md),

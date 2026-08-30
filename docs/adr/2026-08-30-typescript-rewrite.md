@@ -92,11 +92,17 @@ it, both go away at the end.
 **What gets worse, and this is not small.** The maths is being retyped in another language, so
 the parity harness described in `docs/roadmap.md` stops being a nice-to-have and becomes
 mandatory — it is the only thing standing between a faithful port and a lookalike that quietly
-plays differently. And once that harness has recorded its baseline, the Java build freezes
-behaviourally: bug fixes and presentation changes only, no gameplay or balance changes, because
-any rule change silently invalidates the baseline. In plain terms, **the game that is playable
-today stops gaining features until the rewrite catches up.** That is a real cost paid in real
-months, not a technicality.
+plays differently.
+
+This originally came with a second cost: a behavioural freeze on the Java build, on the grounds
+that a rule change would silently invalidate the baseline. **That has since been dropped.** Once
+the harness existed it turned out changes are not silent — they are a diff in a text file, and
+regenerating is one command — so the freeze was stopping the only playable build from improving in
+exchange for protection the harness already provided. The rule now is that a gameplay change ships
+with a regenerated baseline. See `docs/roadmap.md`.
+
+What remains a real cost is attention: every hour spent on the Java build is an hour not spent on
+the port, and work done there is thrown away at parity.
 
 **The effort comparison is an estimate, not a measurement.** The judgement that TypeScript is
 roughly 1.5x the work of a Swing migration rather than 5x is reasoning from the line counts above,

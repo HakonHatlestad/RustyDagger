@@ -9,6 +9,9 @@ import java.awt.event.WindowEvent;
 /** Desktop window hosting the game. */
 public class DCourtFrame extends Frame {
 
+  /** 400x300 is unreadably small on a current display; 2x is the sane floor. */
+  private static final String DEFAULT_SCALE = "2";
+
   public DCourtFrame(String title) {
     super(title);
     addWindowListener(
@@ -31,7 +34,34 @@ public class DCourtFrame extends Frame {
         });
   }
 
+  /**
+   * Applies the window scale before anything touches AWT.
+   *
+   * <p>The game draws into a fixed 400x300 canvas, which is postage-stamp sized on a modern
+   * display. Its widgets are heavyweight AWT components, so a parent transform cannot scale them --
+   * but sun.java2d.uiScale scales the whole native surface, decorations included, and that works.
+   * It is only read once, while the graphics environment initialises, so this has to happen before
+   * the first AWT call.
+   */
+  private static void applyScale() {
+    if (System.getProperty("sun.java2d.uiScale") != null) {
+      return; // An explicit JDK setting wins; so does a HiDPI desktop that set it for us.
+    }
+    String requested = System.getProperty("dragoncourt.scale", DEFAULT_SCALE);
+    try {
+      double scale = Double.parseDouble(requested);
+      if (scale > 0) {
+        System.setProperty("sun.java2d.uiScale", requested);
+        return;
+      }
+      System.err.println("Ignoring dragoncourt.scale=" + requested + ": must be greater than 0");
+    } catch (NumberFormatException e) {
+      System.err.println("Ignoring dragoncourt.scale=" + requested + ": not a number");
+    }
+  }
+
   public static void main(String[] args) {
+    applyScale();
     EventQueue.invokeLater(
         () -> {
           DCourtPanel game = new DCourtPanel();

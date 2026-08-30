@@ -39,7 +39,16 @@
   <body>
     <h1>Dragon Court</h1>
     <div id="display"></div>
-    <p id="status"><button id="launch">Play</button></p>
+    <p id="controls">
+      <label for="scale">Size</label>
+      <select id="scale">
+        <option value="1">1x &mdash; 400x300</option>
+        <option value="2" selected>2x &mdash; 800x600</option>
+        <option value="3">3x &mdash; 1200x900</option>
+      </select>
+      <button id="launch">Play</button>
+    </p>
+    <p id="status"></p>
     <small>
       Dragon Court by Fred Haslam (Fiends.com). Runs in the browser via
       <a href="https://cheerpj.com/" style="color: #c8a96a">CheerpJ</a>, a WebAssembly JVM by Leaning
@@ -48,17 +57,20 @@
 
     <script src="https://cjrtnc.leaningtech.com/4.3/loader.js"></script>
     <script>
-      // 400x300 is Tools.DEFAULT_WIDTH/HEIGHT; 2x keeps it legible without resampling artefacts.
-      const SCALE = 2;
+      // Tools.DEFAULT_WIDTH/HEIGHT. The game draws into this and cannot reflow, so the only
+      // way to make it bigger is to scale the whole display.
       const WIDTH = 400;
       const HEIGHT = 300;
 
-      document.getElementById("launch").addEventListener("click", async (e) => {
+      document.getElementById("launch").addEventListener("click", async () => {
         const status = document.getElementById("status");
+        const scale = Number(document.getElementById("scale").value);
+        // The display cannot be resized once created, so lock the picker at launch.
+        document.getElementById("controls").remove();
         status.textContent = "Loading the Java runtime, this can take a minute…";
         try {
           await cheerpjInit();
-          cheerpjCreateDisplay(WIDTH * SCALE, HEIGHT * SCALE, document.getElementById("display"));
+          cheerpjCreateDisplay(WIDTH * scale, HEIGHT * scale, document.getElementById("display"));
           status.textContent = "";
           // "/app/" is CheerpJ's mount for the web server root this page came from.
           await cheerpjRunJar("/app/RustyDagger.jar");

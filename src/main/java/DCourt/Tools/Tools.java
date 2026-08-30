@@ -297,11 +297,10 @@ public class Tools {
     if (value < 1) {
       return 0;
     }
-    int num = rand.nextInt();
-    if (num < 0) {
-      num = -num;
-    }
-    return num % value;
+    // The original negated a raw nextInt() and took a modulus. Integer.MIN_VALUE negates to
+    // itself, so roll() could return a negative -- which reaches select() as a array index and
+    // throws. nextInt(bound) is also free of the modulo bias the old form had.
+    return rand.nextInt(value);
   }
 
   public static int fourTest(int a, int b) {

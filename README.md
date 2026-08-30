@@ -43,12 +43,20 @@ $ python3 -m http.server -d build/web 8000
 Then open <http://localhost:8000>. The first load pulls down the Java runtime and is slow;
 after that it is cached.
 
-## Development
+## Saves
 
-```
-$ ./gradlew spotlessApply    # format (google-java-format)
-$ ./gradlew spotlessCheck    # what CI enforces
-```
+Heroes live in [saves/](saves/) as plain-text files, committed to this repo so a character
+can move between machines with a `git pull`. See [docs/saves.md](docs/saves.md).
+
+## Documentation
+
+- [docs/gameplay.md](docs/gameplay.md) - character creation, combat maths, RNG, items, decay
+- [docs/architecture.md](docs/architecture.md) - package map and the Screen/Item models
+- [docs/saves.md](docs/saves.md) - save format and git syncing
+- [docs/porting-notes.md](docs/porting-notes.md) - every departure from the 1997 original
+- [docs/development.md](docs/development.md) - building, and how to verify a UI change
+- [SPEC.md](SPEC.md) - the `{type|field|field}` serialization format
+- [CLAUDE.md](CLAUDE.md) - orientation for agents working in this repo
 
 ## House rules
 
@@ -62,6 +70,9 @@ $ java -Ddragoncourt.dailyQuestLimit=true -jar build/libs/RustyDagger.jar
 ```
 
 Pack overload still costs quests either way: an over-stuffed bag slows you down.
+
+Bag space is 75 rather than the original 60, and the login screen lists your saved heroes
+instead of asking for a password. Full list: [docs/porting-notes.md](docs/porting-notes.md).
 
 ## Limitations
 

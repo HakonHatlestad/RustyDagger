@@ -198,6 +198,16 @@ points, so the choice is shape rather than strength.
 `Hardy` is the one addition: the Java names it in `Constants` and halves disease with it, and the
 port had no disease to halve until now.
 
+### A fight can be fought from the keyboard
+
+A, B, Z, H, S, R for the six actions, and Enter to move on once it is over. A long session is
+several hundred repetitions of the same click, which makes this the one screen where a keyboard
+genuinely earns its place. The shortcut is drawn from a `data-key` attribute in CSS rather than
+appended to the button, so it never becomes part of the button's accessible name.
+
+The binding is cleared on every render and re-attached only by the screens that want it — a fight
+binding that outlived its screen would have you swinging at something that is no longer there.
+
 ### Autosaving, and a copy you can keep
 
 The rewrite could read a `.hero` save and write one back from the day it was written, and never

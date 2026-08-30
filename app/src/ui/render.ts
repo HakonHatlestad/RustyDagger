@@ -56,6 +56,40 @@ function el<K extends keyof HTMLElementTagNameMap>(
   return node;
 }
 
+/**
+ * The one document-level key listener, swapped on every render.
+ *
+ * A fight is hundreds of repetitions of the same click, which makes it the one screen where a
+ * keyboard genuinely matters. Held here rather than on an element because a player expects to press
+ * A and swing, not to click something first and then press A.
+ */
+let boundKeys: ((event: KeyboardEvent) => void) | null = null;
+
+function bindKeys(handler: ((key: string) => boolean) | null): void {
+  if (boundKeys !== null) {
+    document.removeEventListener("keydown", boundKeys);
+    boundKeys = null;
+  }
+  if (handler === null) {
+    return;
+  }
+  boundKeys = (event: KeyboardEvent): void => {
+    // Never steal a keystroke from someone typing a name, or from a browser shortcut.
+    if (
+      event.ctrlKey ||
+      event.metaKey ||
+      event.altKey ||
+      event.target instanceof HTMLInputElement
+    ) {
+      return;
+    }
+    if (handler(event.key.toLowerCase())) {
+      event.preventDefault();
+    }
+  };
+  document.addEventListener("keydown", boundKeys);
+}
+
 function button(
   label: string,
   onClick: () => void,
@@ -596,29 +630,73 @@ function questScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTML
   if (quest.ending !== null) {
     // Losing never reaches here: that ending sends the player to the fallen screen instead.
     panel.append(backTo({ kind: "fields" }, dispatch, rerender, "Back to the hunt"));
+    bindKeys((key) => {
+      if (key !== "enter" && key !== " ") {
+        return false;
+      }
+      dispatch({ kind: "leaveQuest" });
+      rerender();
+      return true;
+    });
   } else {
     const actions = el("div", "actions");
-    const choices: [string, string, string][] = [
-      ["Attack", Action.ATTACK, "An ordinary swing."],
-      ["Backstab", Action.BACKSTAB, "Double Guts and Speed, but it only gets one blow in."],
-      ["Berzerk", Action.BERZERK, "Double Guts and Speed and four swings. You will be hit back."],
-      ["Hypnotise", Action.CONTROL, "Opposed Wits. Wins the fight outright, or wastes the round."],
-      ["Swindle", Action.SWINDLE, "Opposed Charm. Takes what it carries without a fight."],
-      ["Run away", Action.RUNAWAY, "Leave. You always act last."],
+    const choices: { label: string; action: string; key: string; hint: string }[] = [
+      { label: "Attack", action: Action.ATTACK, key: "a", hint: "An ordinary swing." },
+      {
+        label: "Backstab",
+        action: Action.BACKSTAB,
+        key: "b",
+        hint: "Double Guts and Speed, but it only gets one blow in.",
+      },
+      {
+        label: "Berzerk",
+        action: Action.BERZERK,
+        key: "z",
+        hint: "Double Guts and Speed and four swings. You will be hit back.",
+      },
+      {
+        label: "Hypnotise",
+        action: Action.CONTROL,
+        key: "h",
+        hint: "Opposed Wits. Wins the fight outright, or wastes the round.",
+      },
+      {
+        label: "Swindle",
+        action: Action.SWINDLE,
+        key: "s",
+        hint: "Opposed Charm. Takes what it carries without a fight.",
+      },
+      { label: "Run away", action: Action.RUNAWAY, key: "r", hint: "Leave. You always act last." },
     ];
-    for (const [label, action, hint] of choices) {
-      actions.append(
-        button(
-          label,
-          () => {
-            dispatch({ kind: "fight", action });
-            rerender();
-          },
-          { primary: action === Action.ATTACK, hint },
-        ),
+    const swing = (action: string): void => {
+      dispatch({ kind: "fight", action });
+      rerender();
+    };
+    for (const choice of choices) {
+      const node = button(
+        choice.label,
+        () => {
+          swing(choice.action);
+        },
+        {
+          primary: choice.action === Action.ATTACK,
+          hint: `${choice.hint} (${choice.key.toUpperCase()})`,
+        },
       );
+      // Drawn by CSS from the attribute rather than appended as a node, so the shortcut never
+      // becomes part of the button's accessible name: it is still called "Attack", not "AttackA".
+      node.dataset["key"] = choice.key.toUpperCase();
+      actions.append(node);
     }
     panel.append(actions);
+    bindKeys((key) => {
+      const chosen = choices.find((c) => c.key === key);
+      if (chosen === undefined) {
+        return false;
+      }
+      swing(chosen.action);
+      return true;
+    });
     const items = usableRow(game, character, true, dispatch, rerender);
     if (items !== null) {
       panel.append(items);
@@ -903,6 +981,9 @@ export function render(root: HTMLElement, game: Game, ui: UiState, onChange?: ()
   };
 
   root.replaceChildren();
+  // Cleared here and re-bound only by the screens that want it, so a binding never outlives its
+  // screen -- pressing A in a shop must not swing at something that is no longer there.
+  bindKeys(null);
   if (game.character !== null && game.place.kind !== "creation") {
     root.append(statusPanel(game.character));
   }

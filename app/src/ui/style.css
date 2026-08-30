@@ -497,3 +497,14 @@ button.choice.is-selected {
 .itemlist li.is-dear {
   opacity: 0.5;
 }
+
+/* The keyboard shortcut on a fight action: present, but never the loudest thing on the button. */
+button[data-key]::after {
+  content: attr(data-key);
+  margin-left: 0.45rem;
+  padding: 0 0.3rem;
+  font-size: 0.7rem;
+  border: 1px solid currentcolor;
+  opacity: 0.6;
+  vertical-align: 0.05em;
+}

@@ -238,6 +238,27 @@ describe("a fight", () => {
     }
   });
 
+  it("can be fought entirely from the keyboard, which is the most repeated thing in the game", () => {
+    const before = root.querySelectorAll(".log p").length;
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "a", bubbles: true }));
+    expect(root.querySelectorAll(".log p").length).toBeGreaterThan(before);
+  });
+
+  it("shows the shortcut without putting it in the button's name", () => {
+    const attack = [...root.querySelectorAll("button")].find((b) => b.textContent === "Attack")!;
+    expect(attack.dataset["key"]).toBe("A");
+  });
+
+  it("stops listening for fight keys once you have left the fight", () => {
+    // A binding that outlives its screen would have you swinging at something that is not there.
+    apply(game, { kind: "leaveQuest" });
+    render(root, game, ui);
+    const wounds = game.character!.wounds;
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "a", bubbles: true }));
+    expect(game.place.kind).toBe("fields");
+    expect(game.character!.wounds).toBe(wounds);
+  });
+
   it("explains what each action does, which the original never did", () => {
     const backstab = [...root.querySelectorAll("button")].find(
       (b) => b.textContent === "Backstab",

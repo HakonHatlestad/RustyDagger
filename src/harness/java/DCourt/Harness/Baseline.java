@@ -30,7 +30,7 @@ public final class Baseline {
   /**
    * Bumped whenever the recording format changes, so a stale baseline cannot be diffed silently.
    */
-  private static final String FORMAT = "1";
+  private static final String FORMAT = "2";
 
   private Baseline() {}
 
@@ -108,9 +108,10 @@ public final class Baseline {
   }
 
   /**
-   * Every monster in the game fought by four hero builds at five seeds. The full battle text is
-   * recorded, not a summary: it encodes the swing count, who went first, every hit's power band and
-   * every wound's severity, so a divergence anywhere in the round shows up here.
+   * Every monster in the game fought by four hero builds, at each quest weight the game actually
+   * uses, at three seeds. The full battle text is recorded, not a summary: it encodes the swing
+   * count, who went first, every hit's power band and every wound's severity, so a divergence
+   * anywhere in the round shows up here.
    */
   private static void combat(PrintWriter w) {
     w.println("== COMBAT ==");
@@ -120,34 +121,41 @@ public final class Baseline {
       {80, 40, 40, 60, 50, 70}, // well geared
       {200, 90, 90, 150, 120, 180}, // late game
     };
+    // The weights the game actually passes to arQuest: 2 in the forest and fields, 3 in the
+    // hills and the mound, 5 for the deep mines. Sweeping a value the game never uses would
+    // record a game nobody plays.
+    int[] weights = {2, 3, 5};
     List<String> monsters = Harness.monsterKeys();
     for (String key : monsters) {
       for (int b = 0; b < builds.length; b++) {
         int[] v = builds[b];
-        for (int seed : new int[] {1, 7, 42, 1234, 98765}) {
-          itHero h = Harness.hero("H" + b, v[0], v[1], v[2], v[3], v[4], v[5]);
-          itMonster mob = Harness.monster(key);
-          if (mob == null) {
-            continue;
-          }
-          String prefix = "monster=" + key + " build=" + b + " seed=" + seed;
-          Tools.setSeed(seed);
-          try {
-            arQuest q = new arQuest(null, 10, "baseline", mob);
-            arBattle battle = new arBattle(q, "baseline");
-            w.println(
-                prefix
-                    + " | text="
-                    + Harness.oneLine(Harness.battleText(battle))
-                    + " | hero="
-                    + Harness.agentState(h)
-                    + " | mob="
-                    + Harness.agentState(mob));
-          } catch (RuntimeException e) {
-            // Recorded rather than swallowed: a monster that throws is a fact about the
-            // game, and the port has to be told about it rather than quietly matching a
-            // baseline that skipped it.
-            w.println(prefix + " | THREW=" + e.getClass().getName() + ": " + e.getMessage());
+        for (int weight : weights) {
+          for (int seed : new int[] {1, 42, 98765}) {
+            itHero h = Harness.hero("H" + b, v[0], v[1], v[2], v[3], v[4], v[5]);
+            itMonster mob = Harness.monster(key);
+            if (mob == null) {
+              continue;
+            }
+            String prefix =
+                "monster=" + key + " build=" + b + " weight=" + weight + " seed=" + seed;
+            Tools.setSeed(seed);
+            try {
+              arQuest q = new arQuest(null, weight, "baseline", mob);
+              arBattle battle = new arBattle(q, "baseline");
+              w.println(
+                  prefix
+                      + " | text="
+                      + Harness.oneLine(Harness.battleText(battle))
+                      + " | hero="
+                      + Harness.agentState(h)
+                      + " | mob="
+                      + Harness.agentState(mob));
+            } catch (RuntimeException e) {
+              // Recorded rather than swallowed: a monster that throws is a fact about the
+              // game, and the port has to be told about it rather than quietly matching a
+              // baseline that skipped it.
+              w.println(prefix + " | THREW=" + e.getClass().getName() + ": " + e.getMessage());
+            }
           }
         }
       }

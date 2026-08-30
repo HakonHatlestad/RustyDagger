@@ -28,6 +28,14 @@ export interface CarriedArms {
   readonly defend: number;
   readonly skill: number;
   readonly traits: readonly string[];
+  /**
+   * How many times this has been enchanted.
+   *
+   * Stored inside the item as a count named `Enchant`, not as a bare trait, which is why it needs
+   * reading out of the nested fields rather than off the trait list: `itArms.getEnchant()` is
+   * `getCount(ArmsTrait.ENCHANT)`.
+   */
+  readonly enchant: number;
 }
 
 /** Anything the port does not model yet — notes, nested oddities — kept verbatim so it survives. */
@@ -88,6 +96,7 @@ function toCarried(field: Field): Carried | null {
   if (field.type === "itArms") {
     const [attack, defend, skill, ...rest] = field.fields;
     const num = (f: Field | undefined): number => (typeof f === "string" ? Number(f) : 0);
+    const enchant = rest.find((f): f is Entity => typeof f !== "string" && f.name === "Enchant");
     return {
       kind: "arms",
       name: field.name,
@@ -95,6 +104,7 @@ function toCarried(field: Field): Carried | null {
       defend: num(defend),
       skill: num(skill),
       traits: rest.filter((f): f is string => typeof f === "string" && f.length > 0),
+      enchant: enchant === undefined ? 0 : num(enchant.fields[0]),
     };
   }
   if (field.type === "itCount" || field.type === "itPercent" || field.type === "itRandom") {
@@ -206,7 +216,16 @@ function carriedToEntity(item: Carried): Entity {
       return {
         type: "itArms",
         name: item.name,
-        fields: [String(item.attack), String(item.defend), String(item.skill), ...item.traits],
+        fields: [
+          String(item.attack),
+          String(item.defend),
+          String(item.skill),
+          ...item.traits,
+          // Written only when there is one, so an ordinary sword round-trips byte for byte.
+          ...(item.enchant > 0
+            ? [{ type: "itCount", name: "Enchant", fields: [String(item.enchant)] }]
+            : []),
+        ],
       };
     case "opaque":
       return item.entity;

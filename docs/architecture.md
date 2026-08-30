@@ -168,7 +168,8 @@ number the rules disagree with would be worse than showing nothing.
 | `game/monster.ts` | Scaling a template into the thing you actually meet, and what it decides to do |
 | `game/items.ts` | What a potion does, read off the `effect` number in the exported gear table |
 | `game/shop.ts` | The three town shops, and what anything is worth — computed from an item's own stats, not looked up |
-| `game/world.ts` | The four hunting regions and what level each suits |
+| `game/world.ts` | The regions, their weighted encounter tables, what unlocks each, and how dangerous one looks to you |
+| `game/scrolls.ts` | What a scroll does to an item, and when enchanting one too far destroys it |
 | `game/guild.ts` | What a rank costs, and who the guild will teach |
 | `rules/growth.ts` | Whether a win teaches you something, and how the chance falls away |
 | `game/creation.ts` | The four backgrounds, and the save text a new character starts from |

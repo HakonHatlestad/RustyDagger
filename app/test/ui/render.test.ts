@@ -6,6 +6,7 @@ import { parseHero } from "../../src/game/hero.js";
 import { apply, characterFrom, type Game } from "../../src/game/state.js";
 import { GameRandom } from "../../src/rules/random.js";
 import { initialUi, render, type UiState } from "../../src/ui/render.js";
+import { REGIONS } from "../../src/game/world.js";
 
 /**
  * The interface, driven the way a player drives it.
@@ -182,13 +183,50 @@ describe("choosing where to hunt", () => {
     click("Go hunting");
   });
 
-  it("offers four regions, not one", () => {
-    expect(root.querySelectorAll("button.choice").length).toBe(4);
+  it("offers the whole world, not one field", () => {
+    expect(root.querySelectorAll("button.choice").length).toBe(REGIONS.length);
     expect(root.textContent).toContain("The Goblin Mound");
+    expect(root.textContent).toContain("Shangala");
   });
 
-  it("warns a low-level character off the dangerous ones", () => {
-    expect(root.textContent).toContain("Dangerous below level");
+  it("locks what you have no way into, and names what would open it", () => {
+    // A disabled button with no explanation is just a dead end. This says which map to go and buy.
+    const locked = [...root.querySelectorAll<HTMLButtonElement>("button.choice")].filter(
+      (b) => b.disabled,
+    );
+    expect(locked.length).toBeGreaterThan(0);
+    expect(root.textContent).toContain("Needs: Castle Permit");
+  });
+
+  it("opens a region the moment you are carrying its key", () => {
+    game.character!.pack.push({ kind: "count", name: "Castle Permit", count: 1 });
+    render(root, game, ui);
+    const dungeons = [...root.querySelectorAll<HTMLButtonElement>("button.choice")].find((b) =>
+      b.textContent.startsWith("The Castle Dungeons"),
+    )!;
+    expect(dungeons.disabled).toBe(false);
+    dungeons.click();
+    expect(game.place.kind).toBe("quest");
+    expect(game.quest?.monster.key.startsWith("Dunjeon:")).toBe(true);
+  });
+
+  it("does not consume the key: a map does not wear out", () => {
+    game.character!.pack.push({ kind: "count", name: "Castle Permit", count: 1 });
+    render(root, game, ui);
+    clickCard("The Castle Dungeons");
+    expect(game.character!.pack.some((c) => c.name === "Castle Permit")).toBe(true);
+  });
+
+  it("says where a new character stands, in words rather than a level number", () => {
+    // A hand-written "advised level" cannot know about guild ranks or stats grown by use, so the
+    // card works it out against what actually lives there and against your own power.
+    expect(root.textContent).toContain("outmatched");
+    expect(root.querySelector(".choice__verdict--deadly")).not.toBeNull();
+    // And not the same verdict everywhere, or it is telling the player nothing.
+    const verdicts = new Set(
+      [...root.querySelectorAll(".choice__verdict")].map((v) => v.className),
+    );
+    expect(verdicts.size).toBeGreaterThan(1);
   });
 
   it("starts an encounter in the region you picked", () => {
@@ -239,9 +277,9 @@ describe("a fight", () => {
   });
 
   it("can be fought entirely from the keyboard, which is the most repeated thing in the game", () => {
-    const before = root.querySelectorAll(".log p").length;
+    const before = game.quest!.log.length;
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "a", bubbles: true }));
-    expect(root.querySelectorAll(".log p").length).toBeGreaterThan(before);
+    expect(game.quest!.log.length).toBeGreaterThan(before);
   });
 
   it("shows the shortcut without putting it in the button's name", () => {
@@ -271,9 +309,11 @@ describe("a fight", () => {
   });
 
   it("writes a line to the log for every blow", () => {
-    const before = root.querySelectorAll(".log p").length;
+    // Asserted against the game rather than the DOM: a blow can end the fight, and a fight that
+    // ends in a death navigates away from the log entirely.
+    const before = game.quest!.log.length;
     click("Attack");
-    expect(root.querySelectorAll(".log p").length).toBeGreaterThan(before);
+    expect(game.quest!.log.length).toBeGreaterThan(before);
   });
 
   it("offers what you are carrying, and warns that using it costs the round", () => {
@@ -522,6 +562,7 @@ describe("the character screen", () => {
       defend: 0,
       skill: 0,
       traits: ["right"],
+      enchant: 0,
     });
     render(root, game, ui);
     expect(root.querySelector(".delta--better")?.textContent.trim()).toBe("+15");
@@ -535,6 +576,7 @@ describe("the character screen", () => {
       defend: 0,
       skill: 1,
       traits: ["right"],
+      enchant: 0,
     });
     render(root, game, ui);
     const rows = [...root.querySelectorAll<HTMLElement>(".itemlist li")];

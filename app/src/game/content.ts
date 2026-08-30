@@ -7,6 +7,7 @@
  */
 
 import { parseEntity, type Entity, type Field } from "../format/parse.js";
+import type { CarriedArms } from "./hero.js";
 
 export interface WeaponDefinition {
   readonly key: string;
@@ -49,6 +50,25 @@ export interface MonsterDefinition {
   readonly gearTraits: readonly string[];
   /** The flavour text shown when you meet it, with its `$name$`-style slots already chosen. */
   readonly entity: Entity;
+}
+
+/**
+ * A weapon from the table, as a thing a character can carry.
+ *
+ * One place rather than four, because a piece of equipment has grown a field twice now and the
+ * copies do not all get updated when it does.
+ */
+export function armsOf(weapon: WeaponDefinition): CarriedArms {
+  return {
+    kind: "arms",
+    name: weapon.key,
+    attack: weapon.attack,
+    defend: weapon.defend,
+    skill: weapon.skill,
+    traits: weapon.traits,
+    // Anything the table sells is plain. Enchantment is something you do to it afterwards.
+    enchant: 0,
+  };
 }
 
 export interface GearDefinition {

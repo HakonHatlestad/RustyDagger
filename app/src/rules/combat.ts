@@ -78,6 +78,18 @@ export interface CombatStats {
   readonly skill: number;
 }
 
+/**
+ * How much item there is to work magic on: `itArms.getPower()`.
+ *
+ * Attack counts triple and Defence double, so a weapon is "bigger" than armour of the same numbers.
+ * Nothing in a fight reads this — it is what an enchantment is weighed against, and it is why a
+ * great sword absorbs enchantments a knife cannot.
+ */
+export function itemPower(item: Equipment): number {
+  const power = item.attack * 3 + item.defend * 2 + item.skill;
+  return power < 1 ? 1 : power;
+}
+
 /** A ten percent bonus, rounded up — the shape the game uses for Agile, Strong and Sturdy. */
 function tenPercentUp(value: number): number {
   return value + Math.trunc((value + 9) / 10);

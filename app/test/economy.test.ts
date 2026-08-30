@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { loadContent, type Content } from "../src/game/content.js";
+import { armsOf, loadContent, type Content } from "../src/game/content.js";
 import { WEAPON_SHOP, armsValue, sellPrice, stockValue } from "../src/game/shop.js";
 import type { Carried } from "../src/game/hero.js";
 
@@ -58,14 +58,7 @@ function armsFrom(name: string): Arms {
   if (weapon === undefined) {
     throw new Error(`no weapon ${name}`);
   }
-  return {
-    kind: "arms",
-    name,
-    attack: weapon.attack,
-    defend: weapon.defend,
-    skill: weapon.skill,
-    traits: weapon.traits,
-  };
+  return armsOf(weapon);
 }
 
 describe("the weapon shop, against the Java build", () => {

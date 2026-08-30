@@ -12,7 +12,7 @@
 
 import type { Entity, Field } from "../format/parse.js";
 import type { GameRandom } from "../rules/random.js";
-import type { Content } from "./content.js";
+import { armsOf, type Content } from "./content.js";
 import type { Carried } from "./hero.js";
 
 /** How many of a token to make, which depends on which kind it is. */
@@ -90,14 +90,7 @@ export function rollLoot(monster: Entity, content: Content, rng: GameRandom): Lo
       if (name.startsWith("Silver") && !rng.percent(10)) {
         return;
       }
-      items.push({
-        kind: "arms",
-        name: weapon.key,
-        attack: weapon.attack,
-        defend: weapon.defend,
-        skill: weapon.skill,
-        traits: weapon.traits,
-      });
+      items.push(armsOf(weapon));
       return;
     }
 

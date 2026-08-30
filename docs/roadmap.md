@@ -37,7 +37,7 @@ now keeps improving whatever happens to the rewrite.
 TypeScript port — run `cd app && pnpm install && pnpm dev`. Make a character or load an existing
 `.hero`, hunt in any of four regions, fight, drink what you looted mid-fight, take the spoils, spend
 them in three shops, rest for free at the temple, and pick up where you left off tomorrow because it
-autosaves. 297 tests, plus a smoke test that boots the built bundle and plays through it.
+autosaves. 325 tests, plus a smoke test that boots the built bundle and plays through it.
 
 **It is no longer the same game as the Java build, on purpose.** The daily quest ration, gear decay
 and the death penalty are gone — everything that existed to make you put a 1997 browser game down
@@ -51,7 +51,7 @@ and come back the next day. What is left is a single-player game you can sit dow
 | 2 — The maths, under parity | **Mostly done.** Generator, levelling, combat, the battle round, monster balancing and behaviour, weapon traits, the economy, saves both ways. Decay is ported and then deliberately removed. Not ported: the consumables a *monster* drinks to buy back actions — the hero's side of that is done. |
 | 3 — Vertical slice | **Done.** Hero, quest, battle, shop, equip, end to end. |
 | 4 — Menu cluster and levelling display | **Done.** Experience and health bars, item descriptions, the stat comparison shared across inventory and shop, and using what you carry. |
-| 5 — Breadth | **Part done.** Four hunting regions and the town: three shops, the temple, the guild, character creation. Not there: the castle and the queen's minigames. The bank is not coming — it protected money from other players' thieves. |
+| 5 — Breadth | **Mostly done.** Ten hunting regions with the Java's own weighted encounter tables, four town shops, the temple, the guild, character creation. Not there: the queen's minigames and the Vortex. The bank is not coming — it protected money from other players' thieves. |
 | 6 — Presentation | **Half done.** Text and interface are sharp and reflow; the artwork is untouched. |
 | 7 — Portable remake features | Not started. |
 | 8 — Retire the Java build | Not started, and should not be until the gaps in Phase 2 close. |

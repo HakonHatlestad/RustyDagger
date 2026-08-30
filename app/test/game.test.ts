@@ -286,7 +286,15 @@ describe("the loop", () => {
   it("equips and unequips gear", () => {
     const game = newGame();
     const c = game.character!;
-    c.pack.push({ kind: "arms", name: "Knife", attack: 2, defend: 0, skill: 1, traits: ["right"] });
+    c.pack.push({
+      kind: "arms",
+      name: "Knife",
+      attack: 2,
+      defend: 0,
+      skill: 1,
+      traits: ["right"],
+      enchant: 0,
+    });
     const index = c.pack.length - 1;
     const beforeAttack = asFighter(c).attack;
     apply(game, { kind: "equip", index });

@@ -38,7 +38,7 @@ single-player game you can sit down and finish; the fight itself is where the te
 $ cd app
 $ pnpm install
 $ pnpm dev              # play it at the address printed
-$ pnpm verify           # type check, lint, format, 297 tests, build, smoke test
+$ pnpm verify           # type check, lint, format, 325 tests, build, smoke test
 ```
 
 Needs Node 20+ and pnpm. On first run it asks you to make a character; after that it picks up where

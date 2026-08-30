@@ -514,3 +514,36 @@ button[data-key]::after {
   color: var(--ink-soft);
   margin-top: 0.35rem;
 }
+
+/* A region you cannot get into yet, and the item that would open it. */
+button.choice.is-locked {
+  opacity: 0.6;
+}
+
+.choice__locked {
+  font-size: 0.85rem;
+  color: var(--blood);
+  font-weight: 600;
+}
+
+/* How a place looks to you right now, rather than a level number you cannot act on. */
+.choice__verdict {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.choice__verdict--safe {
+  color: var(--green);
+}
+
+.choice__verdict--fair {
+  color: var(--ink-soft);
+}
+
+.choice__verdict--risky {
+  color: var(--gold);
+}
+
+.choice__verdict--deadly {
+  color: var(--blood);
+}

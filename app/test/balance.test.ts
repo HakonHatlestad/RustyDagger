@@ -6,7 +6,7 @@ import { apply, characterFrom, recover, type Character, type Game } from "../src
 import { parseHero } from "../src/game/hero.js";
 import { newHeroText, backgroundByKey } from "../src/game/creation.js";
 import { WEAPON_SHOP, buyPrice, sellPrice, stockOf } from "../src/game/shop.js";
-import { REGIONS } from "../src/game/world.js";
+import { REGIONS, pickEncounter } from "../src/game/world.js";
 import { GameRandom } from "../src/rules/random.js";
 import { killExperience } from "../src/game/monster.js";
 import { grows } from "../src/rules/growth.js";
@@ -73,7 +73,7 @@ interface Session {
 function play(game: Game, region: string, quests: number): Session {
   const character = game.character!;
   const found = REGIONS.find((r) => r.key === region)!;
-  const quarry = [...content.monsters.keys()].filter((k) => k.startsWith(`${found.prefix}:`));
+  const known = new Set(content.monsters.keys());
   const session: Session = { level: 1, marks: 0, deaths: 0, wins: 0, fights: 0 };
 
   for (let i = 0; i < quests; i++) {
@@ -81,11 +81,11 @@ function play(game: Game, region: string, quests: number): Session {
     if (character.wounds > character.guts / 2) {
       apply(game, { kind: "rest" });
     }
-    apply(game, {
-      kind: "startQuest",
-      monsterKey: game.rng.select(quarry),
-      weight: found.weight,
-    });
+    const quarry = pickEncounter(found, character.level, known, game.rng);
+    if (quarry === null) {
+      break;
+    }
+    apply(game, { kind: "startQuest", monsterKey: quarry, weight: found.weight });
     let guard = 0;
     while (game.quest?.ending === null && guard < 300) {
       apply(game, { kind: "fight", action: "Attack" });
@@ -120,10 +120,23 @@ describe("a campaign, played end to end", () => {
     expect(session.fights).toBeGreaterThan(150);
     expect(session.level).toBeGreaterThan(4);
     expect(session.wins).toBeGreaterThan(50);
-    // Measured after the experience and growth fixes: 221 wins, 45 deaths, level 11, ~900 Marks
-    // over 400 quests. Before them it was 122 wins, 47 deaths and level 6 -- the port awarded only
-    // a monster's base experience and none of the weight-scaled bonus, and never grew a stat by use.
-    expect(session.marks).toBeGreaterThan(500);
+    // Measured: 199 fights, 169 wins, 15 deaths, level 9, 414 Marks over 250 quests. Two earlier
+    // readings, for the shape of what changed: 122 wins and 47 deaths before experience and
+    // use-based growth were fixed, and still 45 deaths while encounters were picked uniformly over
+    // everything sharing the area's prefix -- which put the Hills' dragon in front of newcomers.
+    // The Fields are poorer than they were on purpose: `arQuest` weights them 1, and it is the
+    // ladder out of them that money is for.
+    expect(session.marks).toBeGreaterThan(300);
+  });
+
+  it("is a beginner's area again, which is what the early table is for", () => {
+    // Below level 3 the Fields swap to a gentler table: no soldiers, barely a gypsy. Skipping that
+    // and picking uniformly is what used to make a first afternoon so lethal.
+    const game = freshGame(31);
+    armUp(game);
+    const session = play(game, "fields", 250);
+    expect(session.wins / session.fights).toBeGreaterThan(0.6);
+    expect(session.deaths).toBeLessThan(session.wins / 3);
   });
 
   it("still lets you lose, so the fights are not a formality", () => {
@@ -138,8 +151,8 @@ describe("a campaign, played end to end", () => {
     expect(deaths).toBeGreaterThan(0);
   });
 
-  it("kills a new character in the Hills, which is what the warning says", () => {
-    // The region warnings have to be true, because they are the only guidance the game gives.
+  it("kills a new character in the Hills, which is what the card says", () => {
+    // The verdict on a region card has to be true, because it is the only guidance the game gives.
     const game = freshGame(5);
     armUp(game);
     const session = play(game, "hills", 40);

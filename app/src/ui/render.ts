@@ -24,9 +24,11 @@ import {
 } from "../game/state.js";
 import { raiseFor } from "../rules/levelling.js";
 import { SHOPS, sellPrice, shopByKey, stockOf } from "../game/shop.js";
-import { REGIONS } from "../game/world.js";
+import { REGIONS, assess, canEnter, pickEncounter, tableFor } from "../game/world.js";
+import { powerOf, typicalPower } from "../game/monster.js";
 import { BACKGROUNDS } from "../game/creation.js";
 import { describeUse, effectOf, isUsable, isUsableHere } from "../game/items.js";
+import { describeScroll, isScroll } from "../game/scrolls.js";
 import {
   JOINING_FEE,
   TRACKS,
@@ -121,7 +123,7 @@ function toItemView(item: Carried): ItemView | null {
         attack: item.attack,
         defend: item.defend,
         skill: item.skill,
-        enchant: 0,
+        enchant: item.enchant,
         traits: item.traits,
       }
     : null;
@@ -326,7 +328,13 @@ function detailPanel(game: Game, ui: UiState, character: Character): HTMLElement
       panel.append(el("div", "detail__line", `You are carrying ${String(item.count)}.`));
       const effect = effectOf(game.content, item.name);
       panel.append(
-        el("div", "detail__line", describeUse(effect, character.traits.has("Medic"))),
+        el(
+          "div",
+          "detail__line",
+          isScroll(game.content, item.name)
+            ? `${describeScroll(effect)} Choose something you are wearing, then read it at that.`
+            : describeUse(effect, character.traits.has("Medic")),
+        ),
         el(
           "div",
           "detail__line",
@@ -351,7 +359,56 @@ function detailPanel(game: Game, ui: UiState, character: Character): HTMLElement
       selection.list === "pack" ? "Double-click or press Enter to equip." : "Enter to take it off.",
     ),
   );
+  if (item.kind === "arms" && item.enchant > 0) {
+    panel.append(el("div", "detail__line", `Enchanted to ${String(item.enchant)}.`));
+  }
   return panel;
+}
+
+/**
+ * Reading a scroll at what you are wearing.
+ *
+ * Deliberately one click from the item, rather than a workbench screen of its own: you pick the
+ * thing, and the scrolls that would do something to it are right there. Only worn equipment can be
+ * improved, which keeps the choice about the sword you actually swing.
+ */
+function scrollRow(
+  game: Game,
+  ui: UiState,
+  character: Character,
+  dispatch: Dispatch,
+  rerender: () => void,
+): HTMLElement | null {
+  const selection = ui.selected;
+  if (selection === null || selection.list !== "gear") {
+    return null;
+  }
+  const target = character.gear[selection.index];
+  if (target === undefined || target.kind !== "arms") {
+    return null;
+  }
+  const scrolls = character.pack
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) => isScroll(game.content, item.name));
+  if (scrolls.length === 0) {
+    return null;
+  }
+  const row = el("div", "actions actions--items");
+  row.append(el("span", "actions__label", `Read at the ${target.name}:`));
+  for (const { item, index } of scrolls) {
+    const count = item.kind === "count" && item.count > 1 ? ` x${String(item.count)}` : "";
+    row.append(
+      button(
+        `${item.name}${count}`,
+        () => {
+          dispatch({ kind: "readScroll", scrollIndex: index, target: selection.index });
+          rerender();
+        },
+        { hint: describeScroll(effectOf(game.content, item.name)) },
+      ),
+    );
+  }
+  return row;
 }
 
 /* ------------------------------------------------------------ fragments ---- */
@@ -540,36 +597,50 @@ function fieldsScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTM
   panel.append(el("h1", undefined, "Where to?"));
   const character = game.character;
 
+  const known = new Set(game.content.monsters.keys());
   const list = el("div", "choices");
   for (const region of REGIONS) {
-    const quarry = [...game.content.monsters.keys()].filter((k) =>
-      k.startsWith(`${region.prefix}:`),
-    );
+    const open = character !== null && canEnter(region, character.pack);
     const card = el("button", "choice");
     card.type = "button";
-    card.disabled = quarry.length === 0;
+    card.disabled = !open;
+    if (!open) {
+      card.classList.add("is-locked");
+    }
     card.append(el("span", "choice__name", region.name));
     card.append(el("span", "choice__blurb", region.blurb));
-    card.append(
-      el(
-        "span",
-        "choice__stats",
-        character !== null && character.level < region.advisedLevel
-          ? `Dangerous below level ${String(region.advisedLevel)} — you are ${String(character.level)}.`
-          : `Suits level ${String(region.advisedLevel)} and up.`,
-      ),
-    );
+    if (!open && region.key_item !== null) {
+      // Named, not hinted at. A locked door you cannot identify is just a disabled button.
+      card.append(el("span", "choice__locked", `Needs: ${region.key_item}`));
+    } else if (character !== null) {
+      // Worked out against what actually lives there, not against a number written down once.
+      const theirs = typicalPower(
+        tableFor(region, character.level),
+        region.prefix,
+        game.content,
+        character.level,
+      );
+      const verdict = assess(powerOf(asFighter(character)), theirs);
+      card.append(
+        el("span", `choice__verdict choice__verdict--${verdict.verdict}`, verdict.advice),
+      );
+    }
     card.addEventListener("click", () => {
-      dispatch({
-        kind: "startQuest",
-        monsterKey: game.rng.select(quarry),
-        weight: region.weight,
-      });
+      const quarry = pickEncounter(region, character?.level ?? 1, known, game.rng);
+      if (quarry === null) {
+        return;
+      }
+      dispatch({ kind: "startQuest", monsterKey: quarry, weight: region.weight });
       rerender();
     });
     list.append(card);
   }
   panel.append(list);
+  if (character !== null && REGIONS.some((r) => !canEnter(r, character.pack))) {
+    panel.append(
+      el("p", "aside", "The ways onward are bought and found. Sally Trader sells most of them."),
+    );
+  }
   panel.append(backTo({ kind: "town" }, dispatch, rerender));
   return panel;
 }
@@ -777,6 +848,10 @@ function statusScreen(
       const section = el("section");
       section.append(el("h2", undefined, "Description"));
       section.append(detailPanel(game, ui, character));
+      const scrolls = scrollRow(game, ui, character, dispatch, rerender);
+      if (scrolls !== null) {
+        section.append(scrolls);
+      }
       return section;
     })(),
   );

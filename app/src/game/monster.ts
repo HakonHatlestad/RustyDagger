@@ -9,7 +9,7 @@
 import { State, noPending, type Fighter } from "../rules/battle.js";
 import { calcCombat } from "../rules/combat.js";
 import type { GameRandom } from "../rules/random.js";
-import type { MonsterDefinition } from "./content.js";
+import type { Content, MonsterDefinition } from "./content.js";
 
 /**
  * A random spread around a value: at least five sevenths of it, plus a triangular roll on the rest.
@@ -342,4 +342,52 @@ export function chooseMonsterAction(
   const against = first ? known - skill(monster, "fight") : known - skill(monster, "thief");
 
   return rng.contest(dust, against) ? "Spells" : useSkills(monster, rng, first);
+}
+
+/**
+ * How dangerous a region's creatures are to someone of this level, on average.
+ *
+ * Weighted by how often each one turns up, because an area is as dangerous as what you actually
+ * meet in it, not as its worst inhabitant. Scaled by level the same way {@link balance} scales it,
+ * so the comparison is against the monster you would really be handed.
+ */
+export function typicalPower(
+  entries: readonly { name: string; weight: number }[],
+  prefix: string,
+  content: Content,
+  level: number,
+): number {
+  const ratio = 0.9 + level * 0.1;
+  let total = 0;
+  let weight = 0;
+  for (const entry of entries) {
+    const def = content.monsters.get(`${prefix}:${entry.name}`);
+    if (def === undefined || entry.weight <= 0) {
+      continue;
+    }
+    const guts = Math.trunc(def.guts * ratio);
+    const wits = Math.trunc(def.wits * ratio);
+    const charm = Math.trunc(def.charm * ratio);
+    const stats = calcCombat({
+      wits,
+      charm,
+      gear: [
+        {
+          attack: def.baseAttack,
+          defend: def.baseDefend,
+          skill: def.baseSkill,
+          enchant: 0,
+          traits: new Set<string>(),
+        },
+      ],
+      fightRank: 0,
+      magicRank: 0,
+      thiefRank: 0,
+      traits: new Set<string>(),
+    });
+    total +=
+      entry.weight * powerOf({ ...stats, guts, wits, charm, fight: def.skills.get("fight") ?? 0 });
+    weight += entry.weight;
+  }
+  return weight === 0 ? 0 : Math.round(total / weight);
 }

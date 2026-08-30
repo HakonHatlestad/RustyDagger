@@ -35,7 +35,7 @@ import {
 import { calcCombat, type Equipment } from "../rules/combat.js";
 import { raiseFor, tryToLevel } from "../rules/levelling.js";
 import type { GameRandom } from "../rules/random.js";
-import type { Content, MonsterDefinition } from "./content.js";
+import { armsOf, type Content, type MonsterDefinition } from "./content.js";
 import {
   Stance,
   advanceStance,
@@ -51,6 +51,7 @@ import { GROWTH, grows } from "../rules/growth.js";
 import { rollLoot } from "./loot.js";
 import { buyPrice, sellPrice, shopByKey, type ShopDefinition } from "./shop.js";
 import { effectOf, endOfFight, isUsableHere, useItem } from "./items.js";
+import { isScroll, readScroll } from "./scrolls.js";
 import { backgroundByKey, newHeroText } from "./creation.js";
 import {
   JOINING_FEE,
@@ -220,7 +221,7 @@ function equipmentOf(character: Character): Equipment[] {
       attack: c.attack,
       defend: c.defend,
       skill: c.skill,
-      enchant: 0,
+      enchant: c.enchant,
       traits: new Set(c.traits.map(capitalise)),
     }));
 }
@@ -286,6 +287,7 @@ export type Move =
   | { readonly kind: "rest" }
   | { readonly kind: "joinGuild" }
   | { readonly kind: "train"; readonly track: TrackKey }
+  | { readonly kind: "readScroll"; readonly scrollIndex: number; readonly target: number }
   | { readonly kind: "equip"; readonly index: number }
   | { readonly kind: "unequip"; readonly index: number }
   | { readonly kind: "buy"; readonly shop: string; readonly name: string }
@@ -332,6 +334,9 @@ export function apply(game: Game, move: Move): Game {
 
     case "train":
       return train(game, move.track);
+
+    case "readScroll":
+      return applyScroll(game, move.scrollIndex, move.target);
 
     case "equip":
       return moveBetween(game, "pack", "gear", move.index);
@@ -422,6 +427,47 @@ function train(game: Game, track: TrackKey): Game {
   return game;
 }
 
+/**
+ * Reading a scroll at something you are wearing.
+ *
+ * The target is an index into `gear` on purpose: you improve what you are actually using, which
+ * keeps the choice concrete and means the stat change is visible the moment it happens.
+ */
+function applyScroll(game: Game, scrollIndex: number, target: number): Game {
+  const character = game.character;
+  if (character === null) {
+    return game;
+  }
+  const scroll = character.pack[scrollIndex];
+  const item = character.gear[target];
+  if (scroll === undefined || item === undefined || item.kind !== "arms") {
+    return game;
+  }
+  const effect = effectOf(game.content, scroll.name);
+  if (!isScroll(game.content, scroll.name)) {
+    return game;
+  }
+
+  const result = readScroll(effect, item, character.wits, character.ranks.magic, game.rng);
+  if (!result.used) {
+    game.notices = [result.message];
+    return game;
+  }
+  spendOne(character, scrollIndex);
+  if (result.item === null) {
+    character.gear.splice(target, 1);
+    character.wounds += result.wounds;
+  } else {
+    character.gear[target] = result.item;
+  }
+  game.notices = [result.message];
+  // An enchantment can go badly enough to kill you outright.
+  if (character.wounds >= character.guts) {
+    game.place = { kind: "fallen" };
+  }
+  return game;
+}
+
 function moveBetween(game: Game, from: "pack" | "gear", to: "pack" | "gear", index: number): Game {
   const character = game.character;
   if (character === null) {
@@ -480,14 +526,7 @@ function buy(game: Game, shop: ShopDefinition, name: string): Game {
   }
   const weapon = game.content.weapons.get(name);
   if (weapon !== undefined) {
-    character.pack.push({
-      kind: "arms",
-      name: weapon.key,
-      attack: weapon.attack,
-      defend: weapon.defend,
-      skill: weapon.skill,
-      traits: weapon.traits,
-    });
+    character.pack.push(armsOf(weapon));
   } else if (game.content.gear.has(name)) {
     addToPack(character, { kind: "count", name, count: 1 });
   } else {

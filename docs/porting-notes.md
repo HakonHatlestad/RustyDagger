@@ -199,6 +199,32 @@ check multiplies the thrower's Wits by the count.
 The Java build's monster gear traits — a Harpy's disease, a Wyvern's panic — were not implemented
 in the port at all before this. They are now, and it moved the port toward the Java, not away.
 
+### Scrolls, and what gold is actually for
+
+Both gear shops together come to about three thousand Marks. The best weapon in the game is worth
+forty-one thousand and **cannot be bought at all** — sixty-three of the ninety-one pieces of
+equipment are loot only. So gold bought out the shops in the first hour, funded the guild in the
+second, and then piled up doing nothing.
+
+The original already had two answers and the port had connected neither.
+
+**Scrolls.** Six of them, 60 to 3,500 Marks, and every trait they grant is one `combat.ts` already
+read and applied — Glow, Bless, Luck, Flame. This adds no combat rule at all; it adds a way to reach
+the rules that were there. Enchanting is the one that repeats: safe while the enchantment is below
+the item's own power, so a great sword absorbs many and a knife almost none, and past that every
+further scroll is an opposed check against the overshoot — lose it and the item explodes and wounds
+you. Your Wits decides whether the spell takes at all, and a Magic guild rank counts towards it,
+which is that track's job beyond the Skill it already grants.
+
+Identify is deliberately left out: nothing in the arms table is unidentified, so it would have
+nothing to identify.
+
+**The way onward.** Six regions behind key items, at the 1997 gear table's own prices — Map to
+Warrens 500, Map to Treasury 2,000, Castle Permit 5,000, Map to Throne Room 5,000, Rutter for Hie
+Brasil 6,000, Rutter for Shangala 12,000. Fifty-eight thousand Marks of ladder against three
+thousand of shop. They are bought *and* found, as in the original, and never consumed: a map does
+not wear out.
+
 ### Four regions rather than one
 
 The Fields, Forest, Hills and Goblin Mound. Every creature in them was already in the exported
@@ -310,6 +336,34 @@ Losing to one costs something again, too. The original empties your whole pack w
 creature swindles you; here it takes half your Marks, which is the same idea scaled to a game that
 no longer punishes you for losing. **Thief Insurance** stops it, which is why that item survived the
 cull below.
+
+### Every encounter was equally likely, including the ones that are not encounters
+
+**In `app/` only.** Each area in the original holds a weighted table of creatures and rolls against
+it — `arField`, `arForest`, `arHills`, `arMound` and `arCastle` each have one, and
+`WildsScreen.selectQuest` does the rolling. The port picked uniformly from every monster carrying
+the area's prefix, which is wrong twice over: common creatures stopped being common, and **things
+that are not random encounters at all started turning up**. The Dragon is not in the Hills table.
+The Mound's Queen appears only in the deepest of its three tables.
+
+The Fields go further and swap to a gentler table below level 3 — no soldiers, barely a gypsy. That
+is the only difficulty ramp the original has and it was missing entirely.
+
+Measured over 250 quests in the Fields, fixing this took a first campaign from 122 wins and 47
+deaths to 169 wins and 15 deaths. One creature in a hundred is the wandering Faery, wherever you
+are, which is where that prefix-less monster in the content belongs.
+
+### The region warning is worked out, not written down
+
+The rewrite briefly carried a hand-picked "advised level" per region and printed it. It was a guess,
+it did not survive contact with a character who had grown by use or bought guild ranks, and a wrong
+warning is worse than none — it sends a player somewhere that empties their purse and tells them it
+was fine.
+
+What a region card shows now is computed: your power against the average of what actually lives
+there, weighted by how often you meet it and scaled to your level exactly as `balance` will scale
+it. Both sides go through `powerOf`, the game's own way of weighing two fighters, so the advice
+moves as you do.
 
 ### Killing things far from home paid no more than killing things nearby
 

@@ -9,7 +9,7 @@
  * economy rests on it and rounding differences compound over a campaign.
  */
 
-import type { Content } from "./content.js";
+import { armsOf, type Content } from "./content.js";
 import type { Carried } from "./hero.js";
 
 export interface ShopDefinition {
@@ -106,10 +106,43 @@ export const TRADER_SHOP: ShopDefinition = {
     "Blast Powder",
     "Food",
     "Fish",
+    // The way onward, priced. Sally sells the Permit in the Java too; the rest are hers here
+    // because a map you can only find is a map that can refuse to appear.
+    "Map to Warrens",
+    "Map to Treasury",
+    "Castle Permit",
+    "Map to Throne Room",
+    "Rutter for Hie Brasil",
+    "Map to Vortex",
+    "Rutter for Shangala",
   ],
 };
 
-export const SHOPS: readonly ShopDefinition[] = [WEAPON_SHOP, ARMOUR_SHOP, TRADER_SHOP];
+/**
+ * Djinni's, which is where gold stops being a scoreboard.
+ *
+ * Its rates and stock are `arMagicShop`'s. The Java puts it in the Hills; here it is in town beside
+ * the others, because what actually gates it is the price of a scroll.
+ */
+export const MAGIC_SHOP: ShopDefinition = {
+  key: "magic",
+  name: "Djinni's Ethereal Magic Shop",
+  greeting: "Seek and ye shall find. Mind the ones that pulse.",
+  resale: 55,
+  base: 22,
+  favours: null,
+  stock: [
+    "Glow Scroll",
+    "Bless Scroll",
+    "Luck Scroll",
+    "Enchant Scroll",
+    "Flame Scroll",
+    "Gold Apple",
+    "Seltzer Water",
+  ],
+};
+
+export const SHOPS: readonly ShopDefinition[] = [WEAPON_SHOP, ARMOUR_SHOP, TRADER_SHOP, MAGIC_SHOP];
 
 export function shopByKey(key: string): ShopDefinition {
   return SHOPS.find((s) => s.key === key) ?? WEAPON_SHOP;
@@ -192,14 +225,7 @@ export function stockValue(content: Content, shop: ShopDefinition, item: Carried
 export function buyPrice(content: Content, shop: ShopDefinition, name: string): number {
   const weapon = content.weapons.get(name);
   if (weapon !== undefined) {
-    return stockValue(content, shop, {
-      kind: "arms",
-      name,
-      attack: weapon.attack,
-      defend: weapon.defend,
-      skill: weapon.skill,
-      traits: weapon.traits,
-    });
+    return stockValue(content, shop, armsOf(weapon));
   }
   return content.gear.get(name)?.cost ?? 0;
 }
@@ -249,18 +275,7 @@ export function stockOf(content: Content, shop: ShopDefinition): ShopRow[] {
     const price = buyPrice(content, shop, name);
     const weapon = content.weapons.get(name);
     if (weapon !== undefined) {
-      rows.push({
-        name,
-        price,
-        item: {
-          kind: "arms",
-          name: weapon.key,
-          attack: weapon.attack,
-          defend: weapon.defend,
-          skill: weapon.skill,
-          traits: weapon.traits,
-        },
-      });
+      rows.push({ name, price, item: armsOf(weapon) });
       continue;
     }
     if (content.gear.has(name)) {

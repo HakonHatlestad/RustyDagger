@@ -1,0 +1,6 @@
+allowBuilds:
+  esbuild: false
+
+# esbuild's postinstall is only a sanity check on its prebuilt native binary; vite and
+# vitest both run correctly without it, which the test suite demonstrates. Declined rather
+# than approved so no dependency executes install scripts in this project.

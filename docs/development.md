@@ -159,6 +159,35 @@ Two self-checks run before anything is written, and both earned their place imme
 - **The output is checked for structural JSON validity.** This caught the second bug: a header
   string spanning a raw newline produced a file that looked fine and would not load.
 
+## The TypeScript app
+
+```
+cd app
+pnpm install
+pnpm dev            # local dev server
+pnpm check          # typecheck + lint + format check + tests -- what CI runs
+pnpm test           # tests alone
+```
+
+`app/` is the rewrite ([roadmap.md](roadmap.md)). Unlike the Java side, which is gated on
+formatting alone and has no tests, this has type checking, linting, formatting and tests from its
+first commit — that absence on the Java side is what let two defects ship in one session and be
+misdiagnosed twice, and it is far cheaper to establish before there is code than to retrofit.
+
+TypeScript runs in `strict` mode with `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`
+on, and ESLint uses `strictTypeChecked`. Two rules are relaxed and both say why in
+`app/eslint.config.js`.
+
+**No dependency in this project is allowed to run install scripts.** `pnpm-workspace.yaml` records
+`allowBuilds: { esbuild: false }` — esbuild's postinstall only sanity-checks its prebuilt binary,
+and the suite passes without it.
+
+The first module is `src/format/parse.ts`, the reader for the `{type|field|field}` format
+([../SPEC.md](../SPEC.md)). It comes first because the port needs it twice over: to read the
+exported content, and to import existing `.hero` saves. Its tests run against every one of the 146
+arms and monsters the Java build exports, so the grammar is checked against the real game rather
+than against invented examples.
+
 ## Testing the browser build
 
 CheerpJ needs a real HTTP origin; `file://` will not work.

@@ -48,10 +48,17 @@ currently embedded as string literals in Java source — into JSON that both bui
 is already specified in [../SPEC.md](../SPEC.md), so this is mechanical and checkable, and it is
 worth doing even if the rewrite were abandoned tomorrow.
 
-**The harness and its baseline now exist** — `./gradlew baseline` writes
-`baseline/baseline.txt`, and [development.md](development.md) describes it. It found a crash on its
-first run (the Mound Queen) and settled two long-standing questions about monster scaling and the
-to-hit rule by measurement rather than argument. The content extraction is the half still to do.
+**Done.** `./gradlew baseline` writes `baseline/rules.txt` and `baseline/distributions.txt`;
+`./gradlew exportContent` writes `content/*.json`. Both are described in
+[development.md](development.md). The phase paid for itself: it found a crash that had been in the
+game the whole time (the Mound Queen), a serialisation bug that made one token type unreadable, and
+settled two long-standing questions — monster scaling and the to-hit rule — by measurement rather
+than argument, in both cases against the change.
+
+One deliberate departure from what this phase originally said: the content is **exported**, not
+shared. The Java build goes on reading its own string literals. It is the reference the port is
+checked against, and a reference whose data loading has been rewritten underneath it is not a
+reference.
 
 This phase is what makes the regeneration rule above meaningful.
 

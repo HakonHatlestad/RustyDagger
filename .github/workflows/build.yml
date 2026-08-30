@@ -44,6 +44,7 @@ jobs:
           cache-dependency-path: app/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
+      - run: pnpm build
 
   # The exported content is generated from the Java build, so it can go stale silently.
   # Regenerating it in CI and diffing catches that.

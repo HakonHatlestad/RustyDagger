@@ -1,0 +1,357 @@
+/*
+ * The look: the 1997 game's character, without its constraints.
+ *
+ * The original was a 400x300 canvas with every widget at a hard-coded pixel position, so it could
+ * not reflow and had nowhere to put anything new. The palette and the bevelled panels are kept
+ * because they are what the game looks like; the fixed geometry is not, because it is what stopped
+ * the game growing an experience bar or a readable inventory.
+ *
+ * Everything below is layout-driven. Nothing is given a fixed width, which also means the text
+ * clipping the remake had to patch out cannot come back.
+ */
+
+:root {
+  --parchment: #d9c9a3;
+  --parchment-dark: #b8a67f;
+  --ink: #2b1d0e;
+  --ink-soft: #5a452a;
+  --bevel-light: #f0e4c6;
+  --bevel-dark: #7d6a48;
+  --blood: #8c1c13;
+  --blood-bright: #c02a1d;
+  --gold: #b8860b;
+  --green: #3f6b34;
+  --panel: #c6b48c;
+
+  color-scheme: light dark;
+  font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at top, #3a2c1a 0%, #1c150c 70%), #1c150c;
+  color: var(--ink);
+  display: flex;
+  justify-content: center;
+  padding: clamp(0.5rem, 2vw, 2rem);
+}
+
+#app {
+  width: min(70rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* The bevelled panel that everything in the original sat inside. */
+.panel {
+  background: var(--parchment);
+  border: 2px solid var(--bevel-dark);
+  border-top-color: var(--bevel-light);
+  border-left-color: var(--bevel-light);
+  box-shadow: 0 0 0 1px #00000033;
+  padding: 1rem 1.25rem;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  font-size: 1.6rem;
+  color: var(--blood);
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+
+/* ---- the status bar ---- */
+
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: center;
+}
+
+.status__name {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.status__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  /* No fixed width anywhere: this is what the remake had to patch, twice. */
+  min-width: 0;
+}
+
+.stat {
+  white-space: nowrap;
+}
+
+.stat__label {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat__value {
+  font-weight: 700;
+  margin-left: 0.35rem;
+}
+
+/* ---- bars: the thing the fixed canvas had no room for ---- */
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1 1 16rem;
+  min-width: 12rem;
+}
+
+.bar {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bar__label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+
+.bar__track {
+  height: 0.9rem;
+  background: #00000022;
+  border: 1px solid var(--bevel-dark);
+  overflow: hidden;
+}
+
+.bar__fill {
+  height: 100%;
+  transition: width 220ms ease-out;
+}
+
+.bar__fill--health {
+  background: linear-gradient(180deg, var(--blood-bright), var(--blood));
+}
+
+.bar__fill--exp {
+  background: linear-gradient(180deg, #d9a441, var(--gold));
+}
+
+.bar__value {
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+/* ---- buttons ---- */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+button {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.45rem 1rem;
+  color: var(--ink);
+  background: var(--panel);
+  border: 2px solid var(--bevel-dark);
+  border-top-color: var(--bevel-light);
+  border-left-color: var(--bevel-light);
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--bevel-light);
+}
+
+button:active:not(:disabled) {
+  border-color: var(--bevel-light);
+  border-top-color: var(--bevel-dark);
+  border-left-color: var(--bevel-dark);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+li:focus-visible {
+  outline: 3px solid var(--blood-bright);
+  outline-offset: 2px;
+}
+
+button.primary {
+  background: var(--blood);
+  color: #f6ecd4;
+  border-color: #5e120c;
+  border-top-color: var(--blood-bright);
+  border-left-color: var(--blood-bright);
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--blood-bright);
+}
+
+/* ---- lists: inventory, shop, anywhere a row is chosen ---- */
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.itemlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 22rem;
+  overflow-y: auto;
+  border: 1px solid var(--bevel-dark);
+  background: #00000011;
+}
+
+.itemlist li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  border-bottom: 1px solid #00000018;
+}
+
+.itemlist li:last-child {
+  border-bottom: none;
+}
+
+.itemlist li:hover,
+.itemlist li[aria-selected="true"] {
+  background: #00000022;
+}
+
+.itemlist li[aria-selected="true"] {
+  box-shadow: inset 3px 0 0 var(--blood);
+}
+
+.item__name {
+  font-weight: 600;
+}
+
+.item__meta {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* A signed stat difference against what you are wearing. */
+.delta--better {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.delta--worse {
+  color: var(--blood);
+  font-weight: 700;
+}
+
+.delta--same {
+  color: var(--ink-soft);
+}
+
+.empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+/* ---- item description: what the original had nowhere to put ---- */
+
+.detail {
+  border: 1px solid var(--bevel-dark);
+  background: #00000011;
+  padding: 0.75rem;
+  min-height: 6rem;
+}
+
+.detail__title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.detail__line {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+/* ---- the battle log ---- */
+
+.log {
+  max-height: 16rem;
+  overflow-y: auto;
+  border: 1px solid var(--bevel-dark);
+  background: #1c150c;
+  color: #e8dcc0;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.log p {
+  margin: 0;
+}
+
+.log p.hit {
+  color: #ffd591;
+}
+
+.log p.kill {
+  color: #ff9f8a;
+  font-weight: 700;
+}
+
+.log p.level {
+  color: #b8e08a;
+  font-weight: 700;
+}
+
+.notice {
+  color: var(--blood);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar__fill {
+    transition: none;
+  }
+}

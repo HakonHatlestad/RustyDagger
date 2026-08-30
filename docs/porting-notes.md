@@ -115,7 +115,10 @@ browser since 2017; replaced by the CheerpJ page in `web/`.
 `main()`, so there is no separate web codebase and no applet.
 
 **This is why the compile target is Java 17** — CheerpJ supports Java 8, 11 and 17, and nothing
-newer.
+newer. The page must also *ask* for that runtime: `cheerpjInit()` with no arguments loads the
+Java 8 one, which cannot read our Java 17 class files. It fails inside the JVM rather than
+rejecting the promise, so the symptom is a loader that spins forever with no error — hence
+`cheerpjInit({ version: 17 })` in `web/index.html`.
 
 ### A hero picker
 

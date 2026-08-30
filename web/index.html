@@ -69,7 +69,9 @@
         document.getElementById("controls").remove();
         status.textContent = "Loading the Java runtime, this can take a minute…";
         try {
-          await cheerpjInit();
+          // The jar is Java 17 bytecode; cheerpjInit() defaults to the Java 8 runtime,
+          // which cannot load it and leaves the loader spinning forever.
+          await cheerpjInit({ version: 17 });
           cheerpjCreateDisplay(WIDTH * scale, HEIGHT * scale, document.getElementById("display"));
           status.textContent = "";
           // "/app/" is CheerpJ's mount for the web server root this page came from.

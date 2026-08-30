@@ -25,13 +25,16 @@ Your three raw stats do not fight for you. [`itAgent.calcCombat()`](../src/main/
 derives the numbers that actually get used:
 
 ```
-Skill (initiative) = (2*Wits + Charm + 2) / 3  + gearSkill  + magicRank
-Attack             = gearAttack + fightRank
-Defence            = gearDefend + thiefRank
+Skill (initiative + accuracy) = (2*Wits + Charm + 2) / 3  + gearSkill  + magicRank
+Attack                        = gearAttack + fightRank
+Defence                       = gearDefend + thiefRank
 ```
 
 **Attack and Defence come entirely from equipment and guild rank.** A naked hero with maxed Guts
-has zero attack. Guts is your health pool and your damage multiplier, not your accuracy.
+has zero attack. Guts is your health pool and your damage multiplier.
+
+**Skill is the accuracy stat, not Attack.** Attack and Defence only size a blow that has already
+landed — see the hit roll below.
 
 Traits add 10% on top: `Agile`→Skill, `Strong`→Attack, `Sturdy`→Defence.
 
@@ -45,8 +48,13 @@ One round, in [`arBattle.battle()`](../src/main/java/DCourt/Screens/Quest/arBatt
    means you flail for the round.
 2. **Initiative** — `contest(yourSpeed, theirSpeed)`, so you act first with probability
    `yours / (yours + theirs)`.
-3. **Hit or miss** — a miss when `roll(theirDefence) > yourAttack`. Note the consequence: **once
-   your Attack meets or exceeds their Defence you cannot miss at all.**
+3. **Hit or miss** — a miss when `roll(theirSkill) > yourSkill`, so this is **Skill against
+   Skill; Attack and Defence do not enter it.** `agentAct` takes the two speeds as `as`/`ds`
+   ([`arBattle.java:216`](../src/main/java/DCourt/Screens/Quest/arBattle.java), called from line
+   159), which is easy to misread as attack and defence. The consequences: `roll(n)` tops out at
+   `n-1`, so **once your Skill is within one of theirs you cannot miss at all**, and below that
+   you connect `(yourSkill + 1) / theirSkill` of the time. A defender with `Alert` against a
+   Backstab, or `Fencer` against a Berzerk or Ieatsu, gets +30 Skill for this roll only.
 4. **Damage** — `(Guts * (2 + swings)) / 10 + Attack - Defence`.
 5. **Severity** — scaled against the defender's *remaining* health, not their maximum. If damage
    is at least what they have left, it is an instant kill.
@@ -61,6 +69,31 @@ Special actions are multipliers, not modifiers:
 | Swindle | replaces your Speed with Charm |
 | `Reflex` trait | flat +30 Speed — decisive at low levels |
 | `Blind` | halves Speed and swings |
+
+## How monsters scale
+
+[`itMonster.balance()`](../src/main/java/DCourt/Items/List/itMonster.java) runs once per
+encounter. Guts, Wits and Charm are multiplied by `0.9 + 0.1 * heroLevel` and then passed through
+`spread()`; **Attack and Defence are the literal numbers in the `Quests` string and never move.**
+So a monster tracks your level but not your gear, and every area gets permanently easier as you
+buy armour. Encounter tables also swap at a level threshold — the Fields use `loweight` below
+level 3 and `hiweight` from 3 up, which is where the Soldier first appears.
+
+### The `adjust` flag does nothing
+
+Five monsters are tagged `adjust` (field Wizard and Soldier, forest Unicorn, mound Queen, the
+Faery), which was meant to scale them to the hero's `getPower()`. It never fires:
+`itAgent.hasTrait` only looks at the `temp` and `stat` lists, and `adjust` is declared inside
+`values`. Verified by instrumenting `balance()` — with a hero geared to power 949, the field
+Wizard still rolls 1–2 Guts at hero levels 1, 3, 5, 10 and 20.
+
+**Do not simply move the flag into `stat` to "fix" it.** The guarded block divides by
+`(float) (getPower() / heroPower)` — an *integer* division, so any monster weaker than the hero
+gives `0`, the ratio becomes `Infinity`, and `alterGuts()` writes `Integer.MAX_VALUE`. The damage
+term `(guts * (2 + swings)) / 10` then overflows, and because the sign flips with the parity of
+`2 + swings` it comes out as either `0` or `214748364` — a monster that is unkillable, harmless
+on even swings, and an instant death on odd ones. The division has to become floating point in
+the same change.
 
 ## Randomness
 

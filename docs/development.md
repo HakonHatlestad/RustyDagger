@@ -119,6 +119,13 @@ Things that cost time to find, and will cost it again:
   monsters, so a fight driver that skips it records a different game.
 - The harness redirects `dragoncourt.saveDir` to a temp directory, because levelling triggers the
   game's autosave and would otherwise drop characters into `saves/`.
+- **Every stat write advances the random generator.** `itCount` stores each number split across a
+  random offset and the remainder, to hide it from a memory scanner
+  ([gameplay.md](gameplay.md)). So a rule that looks like two draws in the source can cost five,
+  and any recording that depends on *how often* something happened is pinning that, not the rule.
+  This is the single strongest argument for the two-halves split above, and it was found the hard
+  way: an earlier decay recording captured which of forty uses damaged an item, which a correct
+  port could not have reproduced without reimplementing the obfuscation.
 - **Shops are the one part that will not run headless.** They build real AWT `Button`s, unlike the
   combat screens. `PricingShop` subclasses the real weapon shop and overrides only the two widget
   hooks, so every input to a price — resale and base numbers, your Charm, the Merchant trait — is

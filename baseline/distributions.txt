@@ -14,6 +14,15 @@ as=80   -> 100 100 100 100 100 100  50  25
 as=160  -> 100 100 100 100 100 100 100  50
 as=320  -> 100 100 100 100 100 100 100 100
 
+== DECAY FREQUENCY BY RATE ==
+rate=1 decayedPercent=49
+rate=2 decayedPercent=49
+rate=3 decayedPercent=33
+rate=5 decayedPercent=19
+rate=10 decayedPercent=10
+rate=20 decayedPercent=4
+rate=50 decayedPercent=2
+
 == FIGHT OUTCOMES (complete fights, per monster and hero build) ==
 monster=Brasil:Fighter build=0 heroDied=100% meanRounds=1
 monster=Brasil:Fighter build=1 heroDied=100% meanRounds=1

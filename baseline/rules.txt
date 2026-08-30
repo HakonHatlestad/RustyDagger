@@ -1439,280 +1439,98 @@ level=40 fatigue=50 packOver=0 -> quests=147 overload=0 packMax=75
 level=40 fatigue=50 packOver=3 -> quests=144 overload=3 packMax=75
 level=40 fatigue=50 packOver=25 -> quests=122 overload=25 packMax=75
 
-== DECAY ==
-item=Asaura rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-8 s=-12
-item=Asaura rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=7 s=3
-item=Asaura rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=16 s=9
-item=Battle Axe rate=2 decayed=1101001001101000001111110101101110011110 -> a=-11 d=-40 s=-36
-item=Battle Axe rate=5 decayed=0001010011000010000000100100000000100000 -> a=4 d=-8 s=-7
-item=Battle Axe rate=20 decayed=0000000001000000010000000000000000000000 -> a=10 d=-2 s=-1
-item=Bill Hook rate=2 decayed=1101001001101000001111110101101110011110 -> a=-9 d=-40 s=-24
-item=Bill Hook rate=5 decayed=0001010011000010000000100100000000100000 -> a=6 d=-8 s=-3
-item=Bill Hook rate=20 decayed=0000000001000000010000000000000000000000 -> a=13 d=-2 s=3
-item=Boots rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-27 s=-20
-item=Boots rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-4 s=-1
-item=Boots rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=2 s=5
-item=Brigandine rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-22 s=-44
-item=Brigandine rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-2 s=-9
-item=Brigandine rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=4 s=-3
-item=Broad Sword rate=2 decayed=1101001001101000001111110101101110011110 -> a=-12 d=-40 s=-36
-item=Broad Sword rate=5 decayed=0001010011000010000000100100000000100000 -> a=3 d=-8 s=-7
-item=Broad Sword rate=20 decayed=0000000001000000010000000000000000000000 -> a=9 d=-2 s=-1
-item=Buckler rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-33 s=-44
-item=Buckler rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-6 s=-9
-item=Buckler rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=0 s=-3
-item=Chain Coif rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-22 s=-53
-item=Chain Coif rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-2 s=-11
-item=Chain Coif rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=4 s=-5
-item=Chain Suit rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-18 s=-48
-item=Chain Suit rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=0 s=-10
-item=Chain Suit rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=6 s=-4
-item=Clothes rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-33 s=-40
-item=Clothes rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-6 s=-8
-item=Clothes rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=0 s=-2
-item=Cross Bow rate=2 decayed=1101001001101000001111110101101110011110 -> a=-8 d=-40 s=-8
-item=Cross Bow rate=5 decayed=0001010011000010000000100100000000100000 -> a=7 d=-8 s=7
-item=Cross Bow rate=20 decayed=0000000001000000010000000000000000000000 -> a=16 d=-2 s=16
-item=Doc Martins rate=2 decayed=1101001001101000001111110101101110011110 -> a=-27 d=-22 s=-24
-item=Doc Martins rate=5 decayed=0001010011000010000000100100000000100000 -> a=-4 d=-2 s=-3
-item=Doc Martins rate=20 decayed=0000000001000000010000000000000000000000 -> a=2 d=4 s=3
-item=Dragon Shield rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-6 s=-9
-item=Dragon Shield rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=9 s=6
-item=Dragon Shield rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=20 s=14
-item=Dwarf Axe rate=2 decayed=1101001001101000001111110101101110011110 -> a=-11 d=-33 s=-24
-item=Dwarf Axe rate=5 decayed=0001010011000010000000100100000000100000 -> a=4 d=-6 s=-3
-item=Dwarf Axe rate=20 decayed=0000000001000000010000000000000000000000 -> a=10 d=0 s=3
-item=Elf Bow rate=2 decayed=1101001001101000001111110101101110011110 -> a=-7 d=-40 s=-14
-item=Elf Bow rate=5 decayed=0001010011000010000000100100000000100000 -> a=8 d=-8 s=2
-item=Elf Bow rate=20 decayed=0000000001000000010000000000000000000000 -> a=17 d=-2 s=8
-item=Flaming Sword rate=2 decayed=1101001001101000001111110101101110011110 -> a=-10 d=-40 s=-24
-item=Flaming Sword rate=5 decayed=0001010011000010000000100100000000100000 -> a=5 d=-8 s=-3
-item=Flaming Sword rate=20 decayed=0000000001000000010000000000000000000000 -> a=11 d=-2 s=3
-item=Foul Axe rate=2 decayed=1101001001101000001111110101101110011110 -> a=-4 d=-40 s=-10
-item=Foul Axe rate=5 decayed=0001010011000010000000100100000000100000 -> a=11 d=-8 s=5
-item=Foul Axe rate=20 decayed=0000000001000000010000000000000000000000 -> a=24 d=-2 s=11
-item=Full Plate rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-10 s=-89
-item=Full Plate rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=5 s=-22
-item=Full Plate rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=11 s=-11
-item=Giant Maul rate=2 decayed=1101001001101000001111110101101110011110 -> a=0 d=-40 s=-161
-item=Giant Maul rate=5 decayed=0001010011000010000000100100000000100000 -> a=19 d=-8 s=-44
-item=Giant Maul rate=20 decayed=0000000001000000010000000000000000000000 -> a=37 d=-2 s=-24
-item=Gladius rate=2 decayed=1101001001101000001111110101101110011110 -> a=1 d=-40 s=-8
-item=Gladius rate=5 decayed=0001010011000010000000100100000000100000 -> a=21 d=-8 s=7
-item=Gladius rate=20 decayed=0000000001000000010000000000000000000000 -> a=41 d=-2 s=16
-item=Goblin Mithril rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-10 s=-63
-item=Goblin Mithril rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=5 s=-14
-item=Goblin Mithril rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=11 s=-7
-item=Goblin Pick rate=2 decayed=1101001001101000001111110101101110011110 -> a=-9 d=-40 s=-40
-item=Goblin Pick rate=5 decayed=0001010011000010000000100100000000100000 -> a=6 d=-8 s=-8
-item=Goblin Pick rate=20 decayed=0000000001000000010000000000000000000000 -> a=14 d=-2 s=-2
-item=Goblin Pike rate=2 decayed=1101001001101000001111110101101110011110 -> a=-7 d=-40 s=-24
-item=Goblin Pike rate=5 decayed=0001010011000010000000100100000000100000 -> a=8 d=-8 s=-3
-item=Goblin Pike rate=20 decayed=0000000001000000010000000000000000000000 -> a=18 d=-2 s=3
-item=Goblin Plate rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-9 s=-63
-item=Goblin Plate rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=6 s=-14
-item=Goblin Plate rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=14 s=-7
-item=Goblin Shield rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-11 s=-63
-item=Goblin Shield rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=4 s=-14
-item=Goblin Shield rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=10 s=-7
-item=Great Bow rate=2 decayed=1101001001101000001111110101101110011110 -> a=1 d=-40 s=-2
-item=Great Bow rate=5 decayed=0001010011000010000000100100000000100000 -> a=21 d=-8 s=15
-item=Great Bow rate=20 decayed=0000000001000000010000000000000000000000 -> a=41 d=-2 s=29
-item=Great Pike rate=2 decayed=1101001001101000001111110101101110011110 -> a=2 d=-40 s=-10
-item=Great Pike rate=5 decayed=0001010011000010000000100100000000100000 -> a=23 d=-8 s=5
-item=Great Pike rate=20 decayed=0000000001000000010000000000000000000000 -> a=44 d=-2 s=11
-item=Great Targe rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-2 s=-14
-item=Great Targe rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=15 s=2
-item=Great Targe rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=29 s=8
-item=Half Plate rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-12 s=-69
-item=Half Plate rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=3 s=-16
-item=Half Plate rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=9 s=-8
-item=Hatchet rate=2 decayed=1101001001101000001111110101101110011110 -> a=-27 d=-40 s=-44
-item=Hatchet rate=5 decayed=0001010011000010000000100100000000100000 -> a=-4 d=-8 s=-9
-item=Hatchet rate=20 decayed=0000000001000000010000000000000000000000 -> a=2 d=-2 s=-3
-item=Knife rate=2 decayed=1101001001101000001111110101101110011110 -> a=-33 d=-40 s=-44
-item=Knife rate=5 decayed=0001010011000010000000100100000000100000 -> a=-6 d=-8 s=-9
-item=Knife rate=20 decayed=0000000001000000010000000000000000000000 -> a=0 d=-2 s=-3
-item=Koutetsu rate=2 decayed=1101001001101000001111110101101110011110 -> a=-14 d=3 s=-161
-item=Koutetsu rate=5 decayed=0001010011000010000000100100000000100000 -> a=2 d=26 s=-44
-item=Koutetsu rate=20 decayed=0000000001000000010000000000000000000000 -> a=8 d=49 s=-24
-item=Leather Cap rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-33 s=-44
-item=Leather Cap rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-6 s=-9
-item=Leather Cap rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=0 s=-3
-item=Leather Jacket rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-27 s=-40
-item=Leather Jacket rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-4 s=-8
-item=Leather Jacket rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=2 s=-2
-item=Long Bow rate=2 decayed=1101001001101000001111110101101110011110 -> a=-12 d=-40 s=-18
-item=Long Bow rate=5 decayed=0001010011000010000000100100000000100000 -> a=3 d=-8 s=0
-item=Long Bow rate=20 decayed=0000000001000000010000000000000000000000 -> a=9 d=-2 s=6
-item=Long Sword rate=2 decayed=1101001001101000001111110101101110011110 -> a=-20 d=-40 s=-40
-item=Long Sword rate=5 decayed=0001010011000010000000100100000000100000 -> a=-1 d=-8 s=-8
-item=Long Sword rate=20 decayed=0000000001000000010000000000000000000000 -> a=5 d=-2 s=-2
-item=Magic Robes rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-14 s=-30
-item=Magic Robes rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=2 s=-5
-item=Magic Robes rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=8 s=1
-item=Magic Staff rate=2 decayed=1101001001101000001111110101101110011110 -> a=-10 d=-14 s=-12
-item=Magic Staff rate=5 decayed=0001010011000010000000100100000000100000 -> a=5 d=2 s=3
-item=Magic Staff rate=20 decayed=0000000001000000010000000000000000000000 -> a=11 d=8 s=9
-item=Main Gauche rate=2 decayed=1101001001101000001111110101101110011110 -> a=-33 d=-33 s=-36
-item=Main Gauche rate=5 decayed=0001010011000010000000100100000000100000 -> a=-6 d=-6 s=-7
-item=Main Gauche rate=20 decayed=0000000001000000010000000000000000000000 -> a=0 d=0 s=-1
-item=Masamune rate=2 decayed=1101001001101000001111110101101110011110 -> a=3 d=-40 s=-1
-item=Masamune rate=5 decayed=0001010011000010000000100100000000100000 -> a=26 d=-8 s=17
-item=Masamune rate=20 decayed=0000000001000000010000000000000000000000 -> a=49 d=-2 s=32
-item=Matchlock Rifle rate=2 decayed=1101001001101000001111110101101110011110 -> a=6 d=-40 s=6
-item=Matchlock Rifle rate=5 decayed=0001010011000010000000100100000000100000 -> a=36 d=-8 s=36
-item=Matchlock Rifle rate=20 decayed=0000000001000000010000000000000000000000 -> a=66 d=-2 s=66
-item=Mercury Sandals rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-40 s=-8
-item=Mercury Sandals rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-8 s=7
-item=Mercury Sandals rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=-2 s=16
-item=Miners Cap rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-12 s=-63
-item=Miners Cap rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=3 s=-14
-item=Miners Cap rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=9 s=-7
-item=Mithril Mail rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-11 s=-48
-item=Mithril Mail rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=4 s=-10
-item=Mithril Mail rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=10 s=-4
-item=Mystic Robes rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-6 s=-12
-item=Mystic Robes rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=9 s=3
-item=Mystic Robes rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=20 s=9
-item=Mystic Staff rate=2 decayed=1101001001101000001111110101101110011110 -> a=-6 d=-6 s=-6
-item=Mystic Staff rate=5 decayed=0001010011000010000000100100000000100000 -> a=9 d=9 s=9
-item=Mystic Staff rate=20 decayed=0000000001000000010000000000000000000000 -> a=20 d=20 s=20
-item=Nunchaku rate=2 decayed=1101001001101000001111110101101110011110 -> a=-6 d=-40 s=-4
-item=Nunchaku rate=5 decayed=0001010011000010000000100100000000100000 -> a=9 d=-8 s=11
-item=Nunchaku rate=20 decayed=0000000001000000010000000000000000000000 -> a=20 d=-2 s=24
-item=Pike rate=2 decayed=1101001001101000001111110101101110011110 -> a=-10 d=-40 s=-33
-item=Pike rate=5 decayed=0001010011000010000000100100000000100000 -> a=5 d=-8 s=-6
-item=Pike rate=20 decayed=0000000001000000010000000000000000000000 -> a=11 d=-2 s=0
-item=Pot Helm rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-27 s=-48
-item=Pot Helm rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-4 s=-10
-item=Pot Helm rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=2 s=-4
-item=Rams Horn rate=2 decayed=1101001001101000001111110101101110011110 -> a=-20 d=-11 s=-82
-item=Rams Horn rate=5 decayed=0001010011000010000000100100000000100000 -> a=-1 d=4 s=-20
-item=Rams Horn rate=20 decayed=0000000001000000010000000000000000000000 -> a=5 d=10 s=-10
-item=Rat Tail Whip rate=2 decayed=1101001001101000001111110101101110011110 -> a=-6 d=-22 s=-6
-item=Rat Tail Whip rate=5 decayed=0001010011000010000000100100000000100000 -> a=9 d=-2 s=9
-item=Rat Tail Whip rate=20 decayed=0000000001000000010000000000000000000000 -> a=20 d=4 s=20
-item=Recurve Bow rate=2 decayed=1101001001101000001111110101101110011110 -> a=-10 d=-40 s=-16
-item=Recurve Bow rate=5 decayed=0001010011000010000000100100000000100000 -> a=5 d=-8 s=1
-item=Recurve Bow rate=20 decayed=0000000001000000010000000000000000000000 -> a=12 d=-2 s=7
-item=Roman Helm rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-20 s=-53
-item=Roman Helm rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-1 s=-11
-item=Roman Helm rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=5 s=-5
-item=Rusty Dagger rate=2 decayed=1101001001101000001111110101101110011110 -> a=-30 d=-40 s=-44
-item=Rusty Dagger rate=5 decayed=0001010011000010000000100100000000100000 -> a=-5 d=-8 s=-9
-item=Rusty Dagger rate=20 decayed=0000000001000000010000000000000000000000 -> a=1 d=-2 s=-3
-item=Sandals rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-40 s=-30
-item=Sandals rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-8 s=-5
-item=Sandals rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=-2 s=1
-item=Scale Suit rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-14 s=-48
-item=Scale Suit rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=2 s=-10
-item=Scale Suit rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=8 s=-4
-item=Sea Slippers rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-14 s=9
-item=Sea Slippers rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=2 s=47
-item=Sea Slippers rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=8 s=83
-item=Serpent Scale rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-8 s=-6
-item=Serpent Scale rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=7 s=9
-item=Serpent Scale rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=16 s=20
-item=Shakrum rate=2 decayed=1101001001101000001111110101101110011110 -> a=-11 d=-40 s=-20
-item=Shakrum rate=5 decayed=0001010011000010000000100100000000100000 -> a=4 d=-8 s=-1
-item=Shakrum rate=20 decayed=0000000001000000010000000000000000000000 -> a=10 d=-2 s=5
-item=Shield rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-22 s=-48
-item=Shield rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-2 s=-10
-item=Shield rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=4 s=-4
-item=Shoes rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-33 s=-24
-item=Shoes rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-6 s=-3
-item=Shoes rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=0 s=3
-item=Short Bow rate=2 decayed=1101001001101000001111110101101110011110 -> a=-18 d=-40 s=-22
-item=Short Bow rate=5 decayed=0001010011000010000000100100000000100000 -> a=0 d=-8 s=-2
-item=Short Bow rate=20 decayed=0000000001000000010000000000000000000000 -> a=6 d=-2 s=4
-item=Short Sword rate=2 decayed=1101001001101000001111110101101110011110 -> a=-24 d=-40 s=-40
-item=Short Sword rate=5 decayed=0001010011000010000000100100000000100000 -> a=-3 d=-8 s=-8
-item=Short Sword rate=20 decayed=0000000001000000010000000000000000000000 -> a=3 d=-2 s=-2
-item=Shuriken rate=2 decayed=1101001001101000001111110101101110011110 -> a=-4 d=-40 s=1
-item=Shuriken rate=5 decayed=0001010011000010000000100100000000100000 -> a=11 d=-8 s=21
-item=Shuriken rate=20 decayed=0000000001000000010000000000000000000000 -> a=24 d=-2 s=41
-item=Silver Elf Bow rate=2 decayed=1101001001101000001111110101101110011110 -> a=-1 d=-40 s=-14
-item=Silver Elf Bow rate=5 decayed=0001010011000010000000100100000000100000 -> a=18 d=-8 s=2
-item=Silver Elf Bow rate=20 decayed=0000000001000000010000000000000000000000 -> a=34 d=-2 s=8
-item=Silver Giant Maul rate=2 decayed=1101001001101000001111110101101110011110 -> a=7 d=-40 s=-161
-item=Silver Giant Maul rate=5 decayed=0001010011000010000000100100000000100000 -> a=42 d=-8 s=-44
-item=Silver Giant Maul rate=20 decayed=0000000001000000010000000000000000000000 -> a=75 d=-2 s=-24
-item=Silver Gladius rate=2 decayed=1101001001101000001111110101101110011110 -> a=9 d=-40 s=-8
-item=Silver Gladius rate=5 decayed=0001010011000010000000100100000000100000 -> a=47 d=-8 s=7
-item=Silver Gladius rate=20 decayed=0000000001000000010000000000000000000000 -> a=83 d=-2 s=16
-item=Silver Masamune rate=2 decayed=1101001001101000001111110101101110011110 -> a=10 d=-40 s=-1
-item=Silver Masamune rate=5 decayed=0001010011000010000000100100000000100000 -> a=56 d=-8 s=17
-item=Silver Masamune rate=20 decayed=0000000001000000010000000000000000000000 -> a=99 d=-2 s=32
-item=Silver Pike rate=2 decayed=1101001001101000001111110101101110011110 -> a=-4 d=-40 s=-33
-item=Silver Pike rate=5 decayed=0001010011000010000000100100000000100000 -> a=11 d=-8 s=-6
-item=Silver Pike rate=20 decayed=0000000001000000010000000000000000000000 -> a=24 d=-2 s=0
-item=Silver Sea Slippers rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-8 s=21
-item=Silver Sea Slippers rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=7 s=98
-item=Silver Sea Slippers rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=16 s=167
-item=Silver Staff rate=2 decayed=1101001001101000001111110101101110011110 -> a=-4 d=-14 s=-12
-item=Silver Staff rate=5 decayed=0001010011000010000000100100000000100000 -> a=11 d=2 s=3
-item=Silver Staff rate=20 decayed=0000000001000000010000000000000000000000 -> a=24 d=8 s=9
-item=Silver Tail Whip rate=2 decayed=1101001001101000001111110101101110011110 -> a=1 d=-12 s=1
-item=Silver Tail Whip rate=5 decayed=0001010011000010000000100100000000100000 -> a=21 d=3 s=21
-item=Silver Tail Whip rate=20 decayed=0000000001000000010000000000000000000000 -> a=41 d=9 s=41
-item=Silver Throwing Knife rate=2 decayed=1101001001101000001111110101101110011110 -> a=-14 d=-40 s=-14
-item=Silver Throwing Knife rate=5 decayed=0001010011000010000000100100000000100000 -> a=2 d=-8 s=2
-item=Silver Throwing Knife rate=20 decayed=0000000001000000010000000000000000000000 -> a=8 d=-2 s=8
-item=Silver Weird Knife rate=2 decayed=1101001001101000001111110101101110011110 -> a=-6 d=-18 s=-12
-item=Silver Weird Knife rate=5 decayed=0001010011000010000000100100000000100000 -> a=9 d=0 s=3
-item=Silver Weird Knife rate=20 decayed=0000000001000000010000000000000000000000 -> a=20 d=6 s=9
-item=Sling rate=2 decayed=1101001001101000001111110101101110011110 -> a=-27 d=-40 s=-27
-item=Sling rate=5 decayed=0001010011000010000000100100000000100000 -> a=-4 d=-8 s=-4
-item=Sling rate=20 decayed=0000000001000000010000000000000000000000 -> a=2 d=-2 s=2
-item=Snake Scale Suit rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=1 s=-126
-item=Snake Scale Suit rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=21 s=-34
-item=Snake Scale Suit rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=41 s=-19
-item=Spear rate=2 decayed=1101001001101000001111110101101110011110 -> a=-16 d=-40 s=-36
-item=Spear rate=5 decayed=0001010011000010000000100100000000100000 -> a=1 d=-8 s=-7
-item=Spear rate=20 decayed=0000000001000000010000000000000000000000 -> a=7 d=-2 s=-1
-item=Spike Helm rate=2 decayed=1101001001101000001111110101101110011110 -> a=-30 d=-24 s=-48
-item=Spike Helm rate=5 decayed=0001010011000010000000100100000000100000 -> a=-5 d=-3 s=-10
-item=Spike Helm rate=20 decayed=0000000001000000010000000000000000000000 -> a=1 d=3 s=-4
-item=Spike Shield rate=2 decayed=1101001001101000001111110101101110011110 -> a=-30 d=-24 s=-53
-item=Spike Shield rate=5 decayed=0001010011000010000000100100000000100000 -> a=-5 d=-3 s=-11
-item=Spike Shield rate=20 decayed=0000000001000000010000000000000000000000 -> a=1 d=3 s=-5
-item=Spirit Katana rate=2 decayed=1101001001101000001111110101101110011110 -> a=1 d=-40 s=6
-item=Spirit Katana rate=5 decayed=0001010011000010000000100100000000100000 -> a=21 d=-8 s=36
-item=Spirit Katana rate=20 decayed=0000000001000000010000000000000000000000 -> a=41 d=-2 s=66
-item=Staff rate=2 decayed=1101001001101000001111110101101110011110 -> a=-24 d=-40 s=-30
-item=Staff rate=5 decayed=0001010011000010000000100100000000100000 -> a=-3 d=-8 s=-5
-item=Staff rate=20 decayed=0000000001000000010000000000000000000000 -> a=3 d=-2 s=1
-item=Steel Buckler rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-24 s=-44
-item=Steel Buckler rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-3 s=-9
-item=Steel Buckler rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=3 s=-3
-item=Steel Sword rate=2 decayed=1101001001101000001111110101101110011110 -> a=-10 d=-40 s=-53
-item=Steel Sword rate=5 decayed=0001010011000010000000100100000000100000 -> a=5 d=-8 s=-11
-item=Steel Sword rate=20 decayed=0000000001000000010000000000000000000000 -> a=11 d=-2 s=-5
-item=Sword Breaker rate=2 decayed=1101001001101000001111110101101110011110 -> a=-22 d=-22 s=-30
-item=Sword Breaker rate=5 decayed=0001010011000010000000100100000000100000 -> a=-2 d=-2 s=-5
-item=Sword Breaker rate=20 decayed=0000000001000000010000000000000000000000 -> a=4 d=4 s=1
-item=Targe rate=2 decayed=1101001001101000001111110101101110011110 -> a=-40 d=-27 s=-44
-item=Targe rate=5 decayed=0001010011000010000000100100000000100000 -> a=-8 d=-4 s=-9
-item=Targe rate=20 decayed=0000000001000000010000000000000000000000 -> a=-2 d=2 s=-3
-item=Terror Rod rate=2 decayed=1101001001101000001111110101101110011110 -> a=-9 d=-40 s=-18
-item=Terror Rod rate=5 decayed=0001010011000010000000100100000000100000 -> a=6 d=-8 s=0
-item=Terror Rod rate=20 decayed=0000000001000000010000000000000000000000 -> a=13 d=-2 s=6
-item=Throwing Knife rate=2 decayed=1101001001101000001111110101101110011110 -> a=-24 d=-40 s=-24
-item=Throwing Knife rate=5 decayed=0001010011000010000000100100000000100000 -> a=-3 d=-8 s=-3
-item=Throwing Knife rate=20 decayed=0000000001000000010000000000000000000000 -> a=3 d=-2 s=3
-item=Unicorn Horn rate=2 decayed=1101001001101000001111110101101110011110 -> a=-9 d=-40 s=-18
-item=Unicorn Horn rate=5 decayed=0001010011000010000000100100000000100000 -> a=6 d=-8 s=0
-item=Unicorn Horn rate=20 decayed=0000000001000000010000000000000000000000 -> a=13 d=-2 s=6
-item=War Boots rate=2 decayed=1101001001101000001111110101101110011110 -> a=-20 d=-18 s=-14
-item=War Boots rate=5 decayed=0001010011000010000000100100000000100000 -> a=-1 d=0 s=2
-item=War Boots rate=20 decayed=0000000001000000010000000000000000000000 -> a=5 d=6 s=8
-item=War Tusk rate=2 decayed=1101001001101000001111110101101110011110 -> a=-20 d=-22 s=-53
-item=War Tusk rate=5 decayed=0001010011000010000000100100000000100000 -> a=-1 d=-2 s=-11
-item=War Tusk rate=20 decayed=0000000001000000010000000000000000000000 -> a=5 d=4 s=-5
-item=Weird Knife rate=2 decayed=1101001001101000001111110101101110011110 -> a=-12 d=-18 s=-12
-item=Weird Knife rate=5 decayed=0001010011000010000000100100000000100000 -> a=3 d=0 s=3
-item=Weird Knife rate=20 decayed=0000000001000000010000000000000000000000 -> a=9 d=6 s=9
+== DECAY (stat trajectory per decay, not per use) ==
+item=Asaura after1=a:-1,d:18,s:10 after2=a:-2,d:16,s:9 after3=a:-3,d:14,s:8 after4=a:-4,d:12,s:7 after5=a:-5,d:10,s:6
+item=Battle Axe after1=a:11,d:-1,s:0 after2=a:10,d:-2,s:-1 after3=a:9,d:-3,s:-2 after4=a:8,d:-4,s:-3 after5=a:7,d:-5,s:-4
+item=Bill Hook after1=a:15,d:-1,s:4 after2=a:13,d:-2,s:3 after3=a:11,d:-3,s:2 after4=a:10,d:-4,s:1 after5=a:9,d:-5,s:0
+item=Boots after1=a:-1,d:3,s:6 after2=a:-2,d:2,s:5 after3=a:-3,d:1,s:4 after4=a:-4,d:0,s:3 after5=a:-5,d:-1,s:2
+item=Brigandine after1=a:-1,d:5,s:-2 after2=a:-2,d:4,s:-3 after3=a:-3,d:3,s:-4 after4=a:-4,d:2,s:-5 after5=a:-5,d:1,s:-6
+item=Broad Sword after1=a:10,d:-1,s:0 after2=a:9,d:-2,s:-1 after3=a:8,d:-3,s:-2 after4=a:7,d:-4,s:-3 after5=a:6,d:-5,s:-4
+item=Buckler after1=a:-1,d:1,s:-2 after2=a:-2,d:0,s:-3 after3=a:-3,d:-1,s:-4 after4=a:-4,d:-2,s:-5 after5=a:-5,d:-3,s:-6
+item=Chain Coif after1=a:-1,d:5,s:-4 after2=a:-2,d:4,s:-5 after3=a:-3,d:3,s:-6 after4=a:-4,d:2,s:-7 after5=a:-5,d:1,s:-8
+item=Chain Suit after1=a:-1,d:7,s:-3 after2=a:-2,d:6,s:-4 after3=a:-3,d:5,s:-5 after4=a:-4,d:4,s:-6 after5=a:-5,d:3,s:-7
+item=Clothes after1=a:-1,d:1,s:-1 after2=a:-2,d:0,s:-2 after3=a:-3,d:-1,s:-3 after4=a:-4,d:-2,s:-4 after5=a:-5,d:-3,s:-5
+item=Cross Bow after1=a:18,d:-1,s:18 after2=a:16,d:-2,s:16 after3=a:14,d:-3,s:14 after4=a:12,d:-4,s:12 after5=a:10,d:-5,s:10
+item=Doc Martins after1=a:3,d:5,s:4 after2=a:2,d:4,s:3 after3=a:1,d:3,s:2 after4=a:0,d:2,s:1 after5=a:-1,d:1,s:0
+item=Dragon Shield after1=a:-1,d:22,s:16 after2=a:-2,d:20,s:14 after3=a:-3,d:18,s:12 after4=a:-4,d:16,s:10 after5=a:-5,d:14,s:9
+item=Dwarf Axe after1=a:11,d:1,s:4 after2=a:10,d:0,s:3 after3=a:9,d:-1,s:2 after4=a:8,d:-2,s:1 after5=a:7,d:-3,s:0
+item=Elf Bow after1=a:19,d:-1,s:9 after2=a:17,d:-2,s:8 after3=a:15,d:-3,s:7 after4=a:13,d:-4,s:6 after5=a:11,d:-5,s:5
+item=Flaming Sword after1=a:13,d:-1,s:4 after2=a:11,d:-2,s:3 after3=a:10,d:-3,s:2 after4=a:9,d:-4,s:1 after5=a:8,d:-5,s:0
+item=Foul Axe after1=a:27,d:-1,s:13 after2=a:24,d:-2,s:11 after3=a:21,d:-3,s:10 after4=a:19,d:-4,s:9 after5=a:17,d:-5,s:8
+item=Full Plate after1=a:-1,d:13,s:-10 after2=a:-2,d:11,s:-11 after3=a:-3,d:10,s:-12 after4=a:-4,d:9,s:-14 after5=a:-5,d:8,s:-16
+item=Giant Maul after1=a:41,d:-1,s:-22 after2=a:37,d:-2,s:-24 after3=a:33,d:-3,s:-27 after4=a:30,d:-4,s:-30 after5=a:27,d:-5,s:-33
+item=Gladius after1=a:45,d:-1,s:18 after2=a:41,d:-2,s:16 after3=a:37,d:-3,s:14 after4=a:33,d:-4,s:12 after5=a:30,d:-5,s:10
+item=Goblin Mithril after1=a:-1,d:13,s:-6 after2=a:-2,d:11,s:-7 after3=a:-3,d:10,s:-8 after4=a:-4,d:9,s:-9 after5=a:-5,d:8,s:-10
+item=Goblin Pick after1=a:16,d:-1,s:-1 after2=a:14,d:-2,s:-2 after3=a:12,d:-3,s:-3 after4=a:10,d:-4,s:-4 after5=a:9,d:-5,s:-5
+item=Goblin Pike after1=a:20,d:-1,s:4 after2=a:18,d:-2,s:3 after3=a:16,d:-3,s:2 after4=a:14,d:-4,s:1 after5=a:12,d:-5,s:0
+item=Goblin Plate after1=a:-1,d:16,s:-6 after2=a:-2,d:14,s:-7 after3=a:-3,d:12,s:-8 after4=a:-4,d:10,s:-9 after5=a:-5,d:9,s:-10
+item=Goblin Shield after1=a:-1,d:11,s:-6 after2=a:-2,d:10,s:-7 after3=a:-3,d:9,s:-8 after4=a:-4,d:8,s:-9 after5=a:-5,d:7,s:-10
+item=Great Bow after1=a:45,d:-1,s:32 after2=a:41,d:-2,s:29 after3=a:37,d:-3,s:26 after4=a:33,d:-4,s:23 after5=a:30,d:-5,s:21
+item=Great Pike after1=a:49,d:-1,s:13 after2=a:44,d:-2,s:11 after3=a:40,d:-3,s:10 after4=a:36,d:-4,s:9 after5=a:32,d:-5,s:8
+item=Great Targe after1=a:-1,d:32,s:9 after2=a:-2,d:29,s:8 after3=a:-3,d:26,s:7 after4=a:-4,d:23,s:6 after5=a:-5,d:21,s:5
+item=Half Plate after1=a:-1,d:10,s:-7 after2=a:-2,d:9,s:-8 after3=a:-3,d:8,s:-9 after4=a:-4,d:7,s:-10 after5=a:-5,d:6,s:-11
+item=Hatchet after1=a:3,d:-1,s:-2 after2=a:2,d:-2,s:-3 after3=a:1,d:-3,s:-4 after4=a:0,d:-4,s:-5 after5=a:-1,d:-5,s:-6
+item=Knife after1=a:1,d:-1,s:-2 after2=a:0,d:-2,s:-3 after3=a:-1,d:-3,s:-4 after4=a:-2,d:-4,s:-5 after5=a:-3,d:-5,s:-6
+item=Koutetsu after1=a:9,d:54,s:-22 after2=a:8,d:49,s:-24 after3=a:7,d:44,s:-27 after4=a:6,d:40,s:-30 after5=a:5,d:36,s:-33
+item=Leather Cap after1=a:-1,d:1,s:-2 after2=a:-2,d:0,s:-3 after3=a:-3,d:-1,s:-4 after4=a:-4,d:-2,s:-5 after5=a:-5,d:-3,s:-6
+item=Leather Jacket after1=a:-1,d:3,s:-1 after2=a:-2,d:2,s:-2 after3=a:-3,d:1,s:-3 after4=a:-4,d:0,s:-4 after5=a:-5,d:-1,s:-5
+item=Long Bow after1=a:10,d:-1,s:7 after2=a:9,d:-2,s:6 after3=a:8,d:-3,s:5 after4=a:7,d:-4,s:4 after5=a:6,d:-5,s:3
+item=Long Sword after1=a:6,d:-1,s:-1 after2=a:5,d:-2,s:-2 after3=a:4,d:-3,s:-3 after4=a:3,d:-4,s:-4 after5=a:2,d:-5,s:-5
+item=Magic Robes after1=a:-1,d:9,s:2 after2=a:-2,d:8,s:1 after3=a:-3,d:7,s:0 after4=a:-4,d:6,s:-1 after5=a:-5,d:5,s:-2
+item=Magic Staff after1=a:13,d:9,s:10 after2=a:11,d:8,s:9 after3=a:10,d:7,s:8 after4=a:9,d:6,s:7 after5=a:8,d:5,s:6
+item=Main Gauche after1=a:1,d:1,s:0 after2=a:0,d:0,s:-1 after3=a:-1,d:-1,s:-2 after4=a:-2,d:-2,s:-3 after5=a:-3,d:-3,s:-4
+item=Masamune after1=a:54,d:-1,s:36 after2=a:49,d:-2,s:32 after3=a:44,d:-3,s:29 after4=a:40,d:-4,s:26 after5=a:36,d:-5,s:23
+item=Matchlock Rifle after1=a:73,d:-1,s:73 after2=a:66,d:-2,s:66 after3=a:60,d:-3,s:60 after4=a:54,d:-4,s:54 after5=a:49,d:-5,s:49
+item=Mercury Sandals after1=a:-1,d:-1,s:18 after2=a:-2,d:-2,s:16 after3=a:-3,d:-3,s:14 after4=a:-4,d:-4,s:12 after5=a:-5,d:-5,s:10
+item=Miners Cap after1=a:-1,d:10,s:-6 after2=a:-2,d:9,s:-7 after3=a:-3,d:8,s:-8 after4=a:-4,d:7,s:-9 after5=a:-5,d:6,s:-10
+item=Mithril Mail after1=a:-1,d:11,s:-3 after2=a:-2,d:10,s:-4 after3=a:-3,d:9,s:-5 after4=a:-4,d:8,s:-6 after5=a:-5,d:7,s:-7
+item=Mystic Robes after1=a:-1,d:22,s:10 after2=a:-2,d:20,s:9 after3=a:-3,d:18,s:8 after4=a:-4,d:16,s:7 after5=a:-5,d:14,s:6
+item=Mystic Staff after1=a:22,d:22,s:22 after2=a:20,d:20,s:20 after3=a:18,d:18,s:18 after4=a:16,d:16,s:16 after5=a:14,d:14,s:14
+item=Nunchaku after1=a:22,d:-1,s:27 after2=a:20,d:-2,s:24 after3=a:18,d:-3,s:21 after4=a:16,d:-4,s:19 after5=a:14,d:-5,s:17
+item=Pike after1=a:13,d:-1,s:1 after2=a:11,d:-2,s:0 after3=a:10,d:-3,s:-1 after4=a:9,d:-4,s:-2 after5=a:8,d:-5,s:-3
+item=Pot Helm after1=a:-1,d:3,s:-3 after2=a:-2,d:2,s:-4 after3=a:-3,d:1,s:-5 after4=a:-4,d:0,s:-6 after5=a:-5,d:-1,s:-7
+item=Rams Horn after1=a:6,d:11,s:-9 after2=a:5,d:10,s:-10 after3=a:4,d:9,s:-11 after4=a:3,d:8,s:-12 after5=a:2,d:7,s:-14
+item=Rat Tail Whip after1=a:22,d:5,s:22 after2=a:20,d:4,s:20 after3=a:18,d:3,s:18 after4=a:16,d:2,s:16 after5=a:14,d:1,s:14
+item=Recurve Bow after1=a:14,d:-1,s:8 after2=a:12,d:-2,s:7 after3=a:10,d:-3,s:6 after4=a:9,d:-4,s:5 after5=a:8,d:-5,s:4
+item=Roman Helm after1=a:-1,d:6,s:-4 after2=a:-2,d:5,s:-5 after3=a:-3,d:4,s:-6 after4=a:-4,d:3,s:-7 after5=a:-5,d:2,s:-8
+item=Rusty Dagger after1=a:2,d:-1,s:-2 after2=a:1,d:-2,s:-3 after3=a:0,d:-3,s:-4 after4=a:-1,d:-4,s:-5 after5=a:-2,d:-5,s:-6
+item=Sandals after1=a:-1,d:-1,s:2 after2=a:-2,d:-2,s:1 after3=a:-3,d:-3,s:0 after4=a:-4,d:-4,s:-1 after5=a:-5,d:-5,s:-2
+item=Scale Suit after1=a:-1,d:9,s:-3 after2=a:-2,d:8,s:-4 after3=a:-3,d:7,s:-5 after4=a:-4,d:6,s:-6 after5=a:-5,d:5,s:-7
+item=Sea Slippers after1=a:-1,d:9,s:91 after2=a:-2,d:8,s:83 after3=a:-3,d:7,s:76 after4=a:-4,d:6,s:69 after5=a:-5,d:5,s:63
+item=Serpent Scale after1=a:-1,d:18,s:22 after2=a:-2,d:16,s:20 after3=a:-3,d:14,s:18 after4=a:-4,d:12,s:16 after5=a:-5,d:10,s:14
+item=Shakrum after1=a:11,d:-1,s:6 after2=a:10,d:-2,s:5 after3=a:9,d:-3,s:4 after4=a:8,d:-4,s:3 after5=a:7,d:-5,s:2
+item=Shield after1=a:-1,d:5,s:-3 after2=a:-2,d:4,s:-4 after3=a:-3,d:3,s:-5 after4=a:-4,d:2,s:-6 after5=a:-5,d:1,s:-7
+item=Shoes after1=a:-1,d:1,s:4 after2=a:-2,d:0,s:3 after3=a:-3,d:-1,s:2 after4=a:-4,d:-2,s:1 after5=a:-5,d:-3,s:0
+item=Short Bow after1=a:7,d:-1,s:5 after2=a:6,d:-2,s:4 after3=a:5,d:-3,s:3 after4=a:4,d:-4,s:2 after5=a:3,d:-5,s:1
+item=Short Sword after1=a:4,d:-1,s:-1 after2=a:3,d:-2,s:-2 after3=a:2,d:-3,s:-3 after4=a:1,d:-4,s:-4 after5=a:0,d:-5,s:-5
+item=Shuriken after1=a:27,d:-1,s:45 after2=a:24,d:-2,s:41 after3=a:21,d:-3,s:37 after4=a:19,d:-4,s:33 after5=a:17,d:-5,s:30
+item=Silver Elf Bow after1=a:38,d:-1,s:9 after2=a:34,d:-2,s:8 after3=a:31,d:-3,s:7 after4=a:28,d:-4,s:6 after5=a:25,d:-5,s:5
+item=Silver Giant Maul after1=a:82,d:-1,s:-22 after2=a:75,d:-2,s:-24 after3=a:68,d:-3,s:-27 after4=a:62,d:-4,s:-30 after5=a:56,d:-5,s:-33
+item=Silver Gladius after1=a:91,d:-1,s:18 after2=a:83,d:-2,s:16 after3=a:76,d:-3,s:14 after4=a:69,d:-4,s:12 after5=a:63,d:-5,s:10
+item=Silver Masamune after1=a:109,d:-1,s:36 after2=a:99,d:-2,s:32 after3=a:90,d:-3,s:29 after4=a:82,d:-4,s:26 after5=a:75,d:-5,s:23
+item=Silver Pike after1=a:27,d:-1,s:1 after2=a:24,d:-2,s:0 after3=a:21,d:-3,s:-1 after4=a:19,d:-4,s:-2 after5=a:17,d:-5,s:-3
+item=Silver Sea Slippers after1=a:-1,d:18,s:183 after2=a:-2,d:16,s:167 after3=a:-3,d:14,s:153 after4=a:-4,d:12,s:140 after5=a:-5,d:10,s:128
+item=Silver Staff after1=a:27,d:9,s:10 after2=a:24,d:8,s:9 after3=a:21,d:7,s:8 after4=a:19,d:6,s:7 after5=a:17,d:5,s:6
+item=Silver Tail Whip after1=a:45,d:10,s:45 after2=a:41,d:9,s:41 after3=a:37,d:8,s:37 after4=a:33,d:7,s:33 after5=a:30,d:6,s:30
+item=Silver Throwing Knife after1=a:9,d:-1,s:9 after2=a:8,d:-2,s:8 after3=a:7,d:-3,s:7 after4=a:6,d:-4,s:6 after5=a:5,d:-5,s:5
+item=Silver Weird Knife after1=a:22,d:7,s:10 after2=a:20,d:6,s:9 after3=a:18,d:5,s:8 after4=a:16,d:4,s:7 after5=a:14,d:3,s:6
+item=Sling after1=a:3,d:-1,s:3 after2=a:2,d:-2,s:2 after3=a:1,d:-3,s:1 after4=a:0,d:-4,s:0 after5=a:-1,d:-5,s:-1
+item=Snake Scale Suit after1=a:-1,d:45,s:-17 after2=a:-2,d:41,s:-19 after3=a:-3,d:37,s:-21 after4=a:-4,d:33,s:-23 after5=a:-5,d:30,s:-25
+item=Spear after1=a:8,d:-1,s:0 after2=a:7,d:-2,s:-1 after3=a:6,d:-3,s:-2 after4=a:5,d:-4,s:-3 after5=a:4,d:-5,s:-4
+item=Spike Helm after1=a:2,d:4,s:-3 after2=a:1,d:3,s:-4 after3=a:0,d:2,s:-5 after4=a:-1,d:1,s:-6 after5=a:-2,d:0,s:-7
+item=Spike Shield after1=a:2,d:4,s:-4 after2=a:1,d:3,s:-5 after3=a:0,d:2,s:-6 after4=a:-1,d:1,s:-7 after5=a:-2,d:0,s:-8
+item=Spirit Katana after1=a:45,d:-1,s:73 after2=a:41,d:-2,s:66 after3=a:37,d:-3,s:60 after4=a:33,d:-4,s:54 after5=a:30,d:-5,s:49
+item=Staff after1=a:4,d:-1,s:2 after2=a:3,d:-2,s:1 after3=a:2,d:-3,s:0 after4=a:1,d:-4,s:-1 after5=a:0,d:-5,s:-2
+item=Steel Buckler after1=a:-1,d:4,s:-2 after2=a:-2,d:3,s:-3 after3=a:-3,d:2,s:-4 after4=a:-4,d:1,s:-5 after5=a:-5,d:0,s:-6
+item=Steel Sword after1=a:13,d:-1,s:-4 after2=a:11,d:-2,s:-5 after3=a:10,d:-3,s:-6 after4=a:9,d:-4,s:-7 after5=a:8,d:-5,s:-8
+item=Sword Breaker after1=a:5,d:5,s:2 after2=a:4,d:4,s:1 after3=a:3,d:3,s:0 after4=a:2,d:2,s:-1 after5=a:1,d:1,s:-2
+item=Targe after1=a:-1,d:3,s:-2 after2=a:-2,d:2,s:-3 after3=a:-3,d:1,s:-4 after4=a:-4,d:0,s:-5 after5=a:-5,d:-1,s:-6
+item=Terror Rod after1=a:15,d:-1,s:7 after2=a:13,d:-2,s:6 after3=a:11,d:-3,s:5 after4=a:10,d:-4,s:4 after5=a:9,d:-5,s:3
+item=Throwing Knife after1=a:4,d:-1,s:4 after2=a:3,d:-2,s:3 after3=a:2,d:-3,s:2 after4=a:1,d:-4,s:1 after5=a:0,d:-5,s:0
+item=Unicorn Horn after1=a:15,d:-1,s:7 after2=a:13,d:-2,s:6 after3=a:11,d:-3,s:5 after4=a:10,d:-4,s:4 after5=a:9,d:-5,s:3
+item=War Boots after1=a:6,d:7,s:9 after2=a:5,d:6,s:8 after3=a:4,d:5,s:7 after4=a:3,d:4,s:6 after5=a:2,d:3,s:5
+item=War Tusk after1=a:6,d:5,s:-4 after2=a:5,d:4,s:-5 after3=a:4,d:3,s:-6 after4=a:3,d:2,s:-7 after5=a:2,d:1,s:-8
+item=Weird Knife after1=a:10,d:7,s:10 after2=a:9,d:6,s:9 after3=a:8,d:5,s:8 after4=a:7,d:4,s:7 after5=a:6,d:3,s:6
 
 == LEVELLING ==
 level=1 raise=50 quests=30

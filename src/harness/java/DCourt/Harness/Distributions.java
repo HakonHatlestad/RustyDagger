@@ -39,6 +39,7 @@ final class Distributions {
     w.println("# Percentages are over " + TRIALS + " trials at fixed seeds.");
     w.println();
     hitRates(w);
+    decayRates(w);
     fights(w);
   }
 
@@ -102,6 +103,30 @@ final class Distributions {
         w.println(
             "monster=" + key + " build=" + b + endings + " meanRounds=" + (totalRounds / runs));
       }
+    }
+    w.println();
+  }
+
+  /**
+   * How often gear actually wears out at each rate. A distribution rather than a fixed pattern,
+   * because the exact sequence depends on how many times the generator has been advanced by
+   * unrelated stat writes -- see the note on decay in the rules file.
+   */
+  private static void decayRates(PrintWriter w) {
+    w.println("== DECAY FREQUENCY BY RATE ==");
+    for (int rate : new int[] {1, 2, 3, 5, 10, 20, 50}) {
+      Tools.setSeed(20260830);
+      DCourt.Items.List.itArms item = Harness.arms("Long Sword");
+      if (item == null) {
+        continue;
+      }
+      int decays = 0;
+      for (int i = 0; i < TRIALS; i++) {
+        if (item.decay(rate)) {
+          decays++;
+        }
+      }
+      w.println("rate=" + rate + " decayedPercent=" + ((decays * 100) / TRIALS));
     }
     w.println();
   }

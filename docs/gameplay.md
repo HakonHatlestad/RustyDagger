@@ -121,6 +121,36 @@ rules-changing group that ships as an opt-in toggle.
 
 **Leave the flag dead.** It is not a latent feature waiting for a one-line fix.
 
+## Every number you own is stored obfuscated
+
+`itCount` — which holds your Marks, your stats, every weapon's attack value, every count in the
+game — does not store its number. It stores a random offset and the number minus that offset:
+
+```java
+public void setCount(int num) {
+  this.offset = Tools.roll(1024) + 1;
+  this.value = num - this.offset;
+}
+public int getCount() {
+  return this.value + this.offset;
+}
+```
+
+This is 1997 anti-cheat. The applet ran on the player's own machine, so a memory scanner looking
+for "you have 4000 Marks" would find nothing, and freezing either half corrupts the value rather
+than pinning it.
+
+**It has one consequence that matters far more than the protection does: every write to any count
+advances the random generator.** Wearing down a weapon looks like two random draws in the source and
+actually costs five, because the three stat reductions each set a count and each set consumes a
+roll. Nothing observable changes — `getCount` gives the same answer either way — but the generator
+moves.
+
+That is why parity for the rewrite is defined in two halves ([development.md](development.md)):
+demanding an identical sequence of random draws would require the TypeScript port to reimplement
+this obfuscation, purely to stay in step with a memory-protection trick that a local web app has no
+use for.
+
 ## Randomness
 
 All of it goes through a handful of helpers in

@@ -338,34 +338,44 @@ final class Rules {
     w.println();
   }
 
-  /** Gear wearing out. Already a function of one item and one rate, so it needs no fixture. */
+  /**
+   * Gear wearing out.
+   *
+   * <p>Records the <em>trajectory</em> -- what an item's stats become after one decay, two, three
+   * -- rather than which of forty uses happened to damage it. That earlier form looked stronger and
+   * was worse: how often decay fires depends on how many times the generator has been advanced, and
+   * every stat write advances it, because {@code itCount} stores each number split across a value
+   * and a random offset so a memory scanner cannot find it. Recording the pattern therefore pinned
+   * a 1997 anti-cheat trick rather than a rule, and a port would have had to reimplement the trick
+   * to pass. How often gear decays is a distribution, and lives in the distributions file.
+   */
   private static void decay(PrintWriter w) {
-    w.println("== DECAY ==");
+    w.println("== DECAY (stat trajectory per decay, not per use) ==");
     for (String key : Harness.armsKeys()) {
-      for (int rate : new int[] {2, 5, 20}) {
-        itArms a = Harness.arms(key);
-        if (a == null) {
-          continue;
-        }
-        Tools.setSeed(4242);
-        StringBuilder hits = new StringBuilder();
-        for (int i = 0; i < 40; i++) {
-          hits.append(a.decay(rate) ? '1' : '0');
-        }
-        w.println(
-            "item="
-                + key
-                + " rate="
-                + rate
-                + " decayed="
-                + hits
-                + " -> a="
-                + a.getAttack()
-                + " d="
-                + a.getDefend()
-                + " s="
-                + a.getSkill());
+      itArms a = Harness.arms(key);
+      if (a == null) {
+        continue;
       }
+      StringBuilder steps = new StringBuilder();
+      // Rate 2 to make each attempt likely; only the decays are recorded, so the rate does not
+      // affect what comes out -- just how many attempts it takes to get there.
+      Tools.setSeed(4242);
+      int seen = 0;
+      for (int attempt = 0; attempt < 400 && seen < 5; attempt++) {
+        if (a.decay(2)) {
+          seen++;
+          steps
+              .append(" after")
+              .append(seen)
+              .append("=a:")
+              .append(a.getAttack())
+              .append(",d:")
+              .append(a.getDefend())
+              .append(",s:")
+              .append(a.getSkill());
+        }
+      }
+      w.println("item=" + key + steps);
     }
     w.println();
   }

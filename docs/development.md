@@ -131,6 +131,34 @@ Things that cost time to find, and will cost it again:
 Regenerating and finding a diff means behaviour changed. That is either the bug you meant to fix, or
 one you did not.
 
+## Exporting the game content
+
+```
+./gradlew exportContent      # writes content/*.json
+```
+
+About 1,500 lines of this game are pure data — every weapon, monster and quest — living as
+brace-delimited strings inside Java source. The TypeScript port needs that content, and nobody
+should have to read it out of `.java` files twice.
+
+**This exports; it does not refactor.** The Java build goes on reading its own literals and is not
+touched, because it is the reference the port is checked against and a reference whose data loading
+has been rewritten underneath it is not a reference any more. The roadmap originally proposed having
+both builds read the JSON; that was changed for this reason.
+
+Each entry carries its own `{type|field|field}` source text rather than a decomposed schema. The
+port has to implement that grammar anyway to read existing `.hero` saves, so this means one parser
+rather than two, and inventing a schema now would be designing the port's data model before the port
+exists. Cheap numeric fields sit alongside so a reader can sanity-check without a parser.
+
+Two self-checks run before anything is written, and both earned their place immediately:
+
+- **Every exported string is parsed back and re-serialised**, and must come out identical. This
+  caught a real bug on the first run — `itRandom` wrote itself as `{*|` while the parser only reads
+  `{@|`, so all 55 monsters failed. See [porting-notes.md](porting-notes.md).
+- **The output is checked for structural JSON validity.** This caught the second bug: a header
+  string spanning a raw newline produced a file that looked fine and would not load.
+
 ## Testing the browser build
 
 CheerpJ needs a real HTTP origin; `file://` will not work.

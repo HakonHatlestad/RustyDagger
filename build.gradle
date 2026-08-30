@@ -70,6 +70,17 @@ tasks.register('baseline', JavaExec) {
     }
 }
 
+tasks.register('exportContent', JavaExec) {
+    group = 'build'
+    description = 'Exports the static game content to content/*.json for the TypeScript port'
+    mainClass = 'DCourt.Harness.ExportMain'
+    classpath = sourceSets.harness.runtimeClasspath
+    systemProperty 'java.awt.headless', 'true'
+    if (project.hasProperty('out')) {
+        args project.property('out')
+    }
+}
+
 jar {
     manifest {
         attributes('Main-Class': application.mainClass)

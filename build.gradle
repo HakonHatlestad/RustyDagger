@@ -1,12 +1,30 @@
 plugins {
     id 'java'
-    id "org.sonarqube" version "4.2.1.3168"
-    id "com.diffplug.spotless" version "6.20.0"
-    id 'test-report-aggregation'
+    id 'application'
+    id "com.diffplug.spotless" version "8.10.1"
 }
 
 repositories {
     mavenCentral()
+}
+
+// Java 17 bytecode. It is the newest level CheerpJ can run (see web/README.md), and
+// every JDK from 17 up can still target it -- including JDK 26, which dropped the
+// Applet API this game used to depend on.
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    // The game is a 1997 AWT applet: deprecation noise is expected and not actionable.
+    options.compilerArgs << '-Xlint:-deprecation,-removal'
+    options.encoding = 'UTF-8'
+}
+
+application {
+    mainClass = 'DCourt.DCourtFrame'
 }
 
 sourceSets {
@@ -15,6 +33,7 @@ sourceSets {
             srcDir 'src/main/java/'
         }
         resources {
+            // Art is addressed from the classpath root, e.g. "Faces/Hero.jpg".
             srcDir 'Images/'
         }
     }
@@ -22,32 +41,23 @@ sourceSets {
 
 jar {
     manifest {
-        attributes(
-            'Main-Class': 'DCourt.DCourtFrame',
-        )
+        attributes('Main-Class': application.mainClass)
     }
-}
-
-dependencies {
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:5.4.0'
 }
 
 spotless {
-  java {
-    googleJavaFormat()
-  }
-}
-
-test {
-  // Discover and execute JUnit4-based tests
-  useJUnit()
-}
-
-reporting {
-    reports {
-        testAggregateTestReport(AggregateTestReport) { 
-            testType = TestSuiteType.UNIT_TEST
-        }
+    java {
+        googleJavaFormat()
     }
+}
+
+// Assembles the browser build: the same jar, plus a page that boots it under CheerpJ.
+// Serve build/web over HTTP (CheerpJ needs a real origin, file:// will not work).
+tasks.register('webDist', Copy) {
+    group = 'distribution'
+    description = 'Builds the CheerpJ browser distribution into build/web'
+    into layout.buildDirectory.dir('web')
+    from(jar)
+    from('web')
+    rename { it == jar.archiveFileName.get() ? 'RustyDagger.jar' : it }
 }

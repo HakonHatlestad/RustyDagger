@@ -1,50 +1,54 @@
 package DCourt;
 
 import DCourt.Tools.Tools;
-import java.awt.AWTEvent;
+import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-/* loaded from: DCourt.jar:DCourt/DCourtFrame.class */
+/** Desktop window hosting the game. */
 public class DCourtFrame extends Frame {
-  static final String config = "config";
-  static final String cgibin = "cgibin";
-  static final String artpath = "artpath";
 
-  public DCourtFrame(String msg) {
-    super(msg);
+  public DCourtFrame(String title) {
+    super(title);
+    addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent e) {
+            dispose();
+            System.exit(0);
+          }
+
+          @Override
+          public void windowActivated(WindowEvent e) {
+            repaint();
+          }
+
+          @Override
+          public void windowDeiconified(WindowEvent e) {
+            repaint();
+          }
+        });
   }
 
   public static void main(String[] args) {
-    DCourtApplet app = new DCourtApplet();
-    app.setInBrowser(false);
-    DCourtFrame win = new DCourtFrame("FFI Presents: Dragon Court");
-    win.show();
-    Insets edge = win.insets();
-    win.add("Center", app);
-    win.resize(
-        edge.left + edge.right + Tools.DEFAULT_WIDTH,
-        edge.top + edge.bottom + Tools.DEFAULT_HEIGHT);
-    app.reshape(edge.left, edge.top, (int) Tools.DEFAULT_WIDTH, (int) Tools.DEFAULT_HEIGHT);
-    app.init();
-    app.repaint();
-  }
+    EventQueue.invokeLater(
+        () -> {
+          DCourtPanel game = new DCourtPanel();
+          DCourtFrame win = new DCourtFrame("FFI Presents: Dragon Court");
+          win.setVisible(true);
 
-  public void processEvent(AWTEvent e) {
-    /* https://docs.oracle.com/javase/8/docs/api/constant-values.html */
-    switch (e.getID()) {
-      case WindowEvent.WINDOW_CLOSING:
-        dispose();
-        System.exit(0);
-        return; // true;
-      case WindowEvent.WINDOW_CLOSED:
-      case WindowEvent.WINDOW_ICONIFIED:
-      case WindowEvent.WINDOW_DEICONIFIED:
-      case WindowEvent.WINDOW_ACTIVATED:
-        repaint();
-        break;
-    }
-    super.processEvent(e);
+          // The frame must be showing before its insets are known, and the game draws into a
+          // fixed-size canvas, so the window is sized around that rather than packed.
+          Insets edge = win.getInsets();
+          win.add("Center", game);
+          win.setSize(
+              edge.left + edge.right + Tools.DEFAULT_WIDTH,
+              edge.top + edge.bottom + Tools.DEFAULT_HEIGHT);
+          game.setBounds(edge.left, edge.top, Tools.DEFAULT_WIDTH, Tools.DEFAULT_HEIGHT);
+          game.init();
+          game.repaint();
+        });
   }
 }

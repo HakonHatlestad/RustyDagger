@@ -1,6 +1,6 @@
 package DCourt.Screens.Command;
 
-import DCourt.DCourtApplet;
+import DCourt.DCourtPanel;
 import DCourt.Screens.Screen;
 import DCourt.Tools.Tools;
 import java.awt.Color;
@@ -9,10 +9,10 @@ import java.awt.Graphics;
 /* loaded from: DCourt.jar:DCourt/Screens/Command/arLoading.class */
 public class arLoading extends Screen {
   int stage = 0;
-  DCourtApplet papa;
+  DCourtPanel papa;
   Tools tools;
 
-  public arLoading(DCourtApplet papa, Tools tools) {
+  public arLoading(DCourtPanel papa, Tools tools) {
     this.papa = papa;
     this.tools = tools;
     hideStatusBar();

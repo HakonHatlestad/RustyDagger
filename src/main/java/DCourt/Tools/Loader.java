@@ -33,31 +33,10 @@ public class Loader {
   }
 
   public static String cgi(String action, String data) {
+    // Multiplayer is gone: there is no server to call. FileLoader overrides the actions the
+    // single-player game still needs; everything else is a no-op.
     System.out.println(action + " : " + data);
     return "";
-    /*
-    try {
-      return operate(
-              new URL(
-                  String.valueOf(
-                      String.valueOf(
-                          new StringBuffer(String.valueOf(String.valueOf(Tools.getCgibin())))
-                              .append("/")
-                              .append(EXECFILE)
-                              .append("?")
-                              .append("cfg=")
-                              .append(Tools.getConfig())
-                              .append("&act=")
-                              .append(action)))),
-              data)
-          .trim();
-    } catch (MalformedURLException ex) {
-      System.err.println(
-          String.valueOf(
-              String.valueOf(new StringBuffer("Loader Exception: [").append(ex).append("]"))));
-      return "";
-    }
-    */
   }
 
   public String getText() {

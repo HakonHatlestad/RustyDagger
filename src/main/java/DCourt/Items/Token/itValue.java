@@ -78,7 +78,7 @@ public class itValue extends itToken {
   @Override // DCourt.Items.itToken, DCourt.Items.Item
   public long toLong() {
     try {
-      return new Long(this.value).longValue();
+      return Long.parseLong(this.value);
     } catch (NumberFormatException e) {
       return 0;
     }
@@ -86,7 +86,7 @@ public class itValue extends itToken {
 
   public int toInt() {
     try {
-      return new Long(this.value).intValue();
+      return (int) Long.parseLong(this.value);
     } catch (NumberFormatException e) {
       return 0;
     }

@@ -5,26 +5,23 @@ import DCourt.Control.GearTable;
 import DCourt.Control.MonsterTable;
 import DCourt.Control.PlaceTable;
 import DCourt.Control.Player;
-import DCourt.DCourtApplet;
+import DCourt.DCourtPanel;
 import DCourt.Items.List.itHero;
 import DCourt.Screens.Screen;
 import java.awt.Font;
 import java.awt.Image;
 import java.io.DataInputStream;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Random;
 
 /* loaded from: DCourt.jar:DCourt/Tools/Tools.class */
 public class Tools {
-  static DCourtApplet papa;
+  static DCourtPanel papa;
   static Hashtable resourceTable;
   static Random rand;
   static String today;
-  static boolean inBrowser;
   static int jvmVersion;
   static String version;
   static Player player;
@@ -49,7 +46,7 @@ public class Tools {
   public static String primeFont = null;
   static final String[] find = {"TimesRoman", "Serif", "SansSerif", "Helvitica", "Dialog"};
 
-  public Tools(DCourtApplet who) {
+  public Tools(DCourtPanel who) {
     papa = who;
     fixJvmVersion();
     chooseFont();
@@ -156,10 +153,6 @@ public class Tools {
     return papa.isPlaytest();
   }
 
-  public static String getCgibin() {
-    return papa.getCgibin();
-  }
-
   public static String getConfig() {
     return papa.getConfig();
   }
@@ -233,18 +226,8 @@ public class Tools {
       return tmp;
     }
 
-    String artPath = papa.getArtpath();
-
-    if (!papa.isInBrowser()) {
-      tmp = papa.getToolkit().getImage(artPath + "/" + path);
-    } else {
-      try {
-        tmp = papa.getToolkit().getImage(new URL(artPath + "/" + path));
-      } catch (MalformedURLException e) {
-        System.out.println("Failed to retrieve " + path);
-        return null;
-      }
-    }
+    // Fall back to a loose Images/ directory next to the jar, for running from a checkout.
+    tmp = papa.getToolkit().getImage(papa.getArtpath() + "/" + path);
     storeResource(path, tmp);
     return tmp;
   }
@@ -346,7 +329,7 @@ public class Tools {
 
   public static boolean percent(String s) {
     try {
-      return percent(new Integer(s).intValue());
+      return percent(Integer.parseInt(s));
     } catch (NumberFormatException ex) {
       System.err.println(ex);
       ex.printStackTrace();

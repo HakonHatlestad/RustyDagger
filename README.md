@@ -58,6 +58,19 @@ can move between machines with a `git pull`. See [docs/saves.md](docs/saves.md).
 - [SPEC.md](SPEC.md) - the `{type|field|field}` serialization format
 - [CLAUDE.md](CLAUDE.md) - orientation for agents working in this repo
 
+## Options
+
+All set with `-D` on the command line, e.g.
+`java -Ddragoncourt.scale=3 -jar build/libs/RustyDagger.jar`.
+
+| Property | Default | Effect |
+|---|---|---|
+| `dragoncourt.scale` | `2` | Window scale. `1` is the original 400x300. |
+| `dragoncourt.saveDir` | `saves` | Where hero files live. |
+| `dragoncourt.autosave` | `true` | Save on every screen change. `false` = save on exit only. |
+| `dragoncourt.dailyQuestLimit` | `false` | `true` restores the original daily quest allowance. |
+| `dragoncourt.multiplayerScreens` | `false` | `true` shows the clan hall, post office and rankings, which need a server that no longer exists. |
+
 ## House rules
 
 The original rationed play with a daily quest allowance -- `27 + 3 x level` quests, spent
@@ -71,8 +84,10 @@ $ java -Ddragoncourt.dailyQuestLimit=true -jar build/libs/RustyDagger.jar
 
 Pack overload still costs quests either way: an over-stuffed bag slows you down.
 
-Bag space is 75 rather than the original 60, and the login screen lists your saved heroes
-instead of asking for a password. Full list: [docs/porting-notes.md](docs/porting-notes.md).
+Bag space is 75 rather than the original 60, the window opens at 2x, the hero is saved on every
+screen change, shops show how gear compares to what you are wearing, and the login screen lists
+your saved heroes instead of asking for a password. Full list, with reasons:
+[docs/porting-notes.md](docs/porting-notes.md).
 
 ## Limitations
 

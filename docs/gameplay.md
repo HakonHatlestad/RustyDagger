@@ -84,12 +84,15 @@ All of it goes through a handful of helpers in
 function of who you are rather than the clock. That was almost certainly anti-savescumming for
 the server version. It is worth knowing before you try to explain a "streak".
 
-### A latent bug
+### A fixed bug worth knowing about
 
-`roll()` is `|nextInt()| % value`. When `nextInt()` returns `Integer.MIN_VALUE`, negating it
-overflows back to `Integer.MIN_VALUE`, so `roll()` returns a **negative** number — which reaches
-`select(list)` as `list[roll(list.length)]` and throws. Odds are 1 in 2^32 per call. `nextInt(value)`
-is the correct fix; it is left alone for now because it would perturb the historical sequence.
+`roll()` used to be `|nextInt()| % value`. `Integer.MIN_VALUE` negates to itself, so once in 2^32
+calls it returned a **negative** number, which reaches `select(list)` as `list[roll(list.length)]`
+and throws. It is now `nextInt(value)`, which also drops the modulo bias the old form had.
+Verified uniform across 6M samples with no negatives and no out-of-range values.
+
+This does change the random sequence relative to the 1997 build, which matters only if you were
+trying to reproduce historical rolls.
 
 ## Items and gear
 

@@ -69,7 +69,9 @@ a real subprocess with a working native stack, scrub the environment first:
 - **Rules that differ from the original go in `DCourt.Control.GameRules`**, as a flag read from a
   system property, defaulting to the modern behaviour. Do not scatter `if` checks — every quest
   gate in the game already funnels through one method, and that is why the daily limit was a
-  one-line change.
+  one-line change. The same is true of navigation (`DCourtPanel.setRegion`, where autosave hangs)
+  and of item lists (`FTextList`, where wheel and keyboard support went in once for every screen).
+  Look for the chokepoint before editing thirty call sites.
 - **Record behaviour changes in `docs/porting-notes.md` in the same commit.** Six months on, the
   question is always "was this a bug or a decision?"
 - Commit messages say what a player would notice, then why. The decompiled names mean nothing on

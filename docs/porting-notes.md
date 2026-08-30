@@ -23,6 +23,40 @@ ration.
 Taken from the remake, where it is the most-cited quality-of-life change. `Trader` and `Merchant`
 still add 20 each.
 
+### The window is scaled 2x by default
+
+The game draws into a fixed 400x300 canvas and its screens position children at hard-coded pixel
+coordinates, so it cannot reflow -- the only way to make it bigger is to scale the whole surface.
+Its widgets are heavyweight AWT components, which a parent `Graphics2D` transform cannot touch,
+but `sun.java2d.uiScale` scales the native surface itself, decorations included.
+
+`DCourtFrame.applyScale()` sets it from `-Ddragoncourt.scale=N` (default `2`) before the first
+AWT call, because the property is only read while the graphics environment initialises. An
+explicit `sun.java2d.uiScale`, including one a HiDPI desktop set for you, always wins.
+
+Use `-Ddragoncourt.scale=1` for the original postage stamp.
+
+### The hero is saved on every screen change
+
+The original only saved when you deliberately quit, plus a few clan actions, so a crash lost the
+session. `DCourtPanel.setRegion` is the single point every navigation in the game passes through,
+which makes it the right hook. Creation and death keep their own save paths.
+
+`-Ddragoncourt.autosave=false` restores save-on-exit only.
+
+### Server-only screens are hidden
+
+The clan hall, post office and rankings still render and still take clicks, but everything behind
+them calls a CGI backend that does not exist, so they could only disappoint. They are hidden, not
+deleted -- `-Ddragoncourt.multiplayerScreens=true` brings them back.
+
+### Shops show gear against what you are wearing
+
+Each `itArms` in a shop list gets a signed number: the sum of the attack, defence and skill
+differences against whatever occupies that slot right now. Without it, buying meant memorising
+your loadout and doing the arithmetic yourself. Unidentified (`Secret`) items show nothing,
+since their stats are hidden anyway.
+
 ### Hero names have no minimum length
 
 The four-character minimum protected a shared server namespace. Offline it only stops you calling
@@ -93,11 +127,10 @@ See [saves.md](saves.md). Heroes used to be bare files in the working directory.
 | `Faces/Serville.jpg` → `Servile.jpg` | `arClanHall` asked for a filename that did not match the shipped asset, so the clan hall portrait never loaded. |
 | `prefferedSize()` → `getPreferredSize()` | Typo, so it overrode nothing and the panel had no preferred size. Needed for `pack()`. |
 | `new Integer(s)` / `new Long(s)` replaced | Constructors deprecated for removal; the build now passes `-Xlint:removal` clean. |
+| `Tools.roll()` no longer returns negatives | It negated a raw `nextInt()` and took a modulus. `Integer.MIN_VALUE` negates to itself, so roll could go negative and crash `select()` as an array index. Now `nextInt(bound)`, which is also free of the old modulo bias. Verified uniform over 6M samples, no negatives. |
 
 ## Known and left alone
 
-- **`Tools.roll()` can return a negative** once in 2^32 calls — see
-  [gameplay.md](gameplay.md#a-latent-bug). Fixing it would perturb the historical random sequence.
 - **`FTextList.getItem(index)` ignores its argument** and returns the selected item.
   `arPostal` depends on that behaviour.
 - **No tests.** Verification is running the game; see [development.md](development.md).

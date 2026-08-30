@@ -5,6 +5,15 @@ import java.awt.Event;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /* loaded from: DCourt.jar:DCourt/Components/FTextList.class */
 public class FTextList extends FTools {
@@ -15,6 +24,7 @@ public class FTextList extends FTools {
   int selectVal = -1;
   int base = 0;
   boolean canSelect = true;
+  private final List<ActionListener> actionListeners = new ArrayList<>();
 
   public FTextList() {
     this.scroll = null;
@@ -22,6 +32,7 @@ public class FTextList extends FTools {
     this.scroll = fScrollbar;
     add(fScrollbar);
     reshape(0, 0, 50, 50);
+    installInput();
   }
 
   public FTextList(Font f) {
@@ -31,6 +42,123 @@ public class FTextList extends FTools {
     this.scroll = fScrollbar;
     add(fScrollbar);
     reshape(0, 0, 50, 50);
+    installInput();
+  }
+
+  /**
+   * Mouse wheel and keyboard navigation. The list itself still uses the AWT 1.0 event model it was
+   * decompiled with, but that model predates both the wheel and focus traversal, so these ride on
+   * the modern listener API alongside it.
+   */
+  private void installInput() {
+    setFocusable(true);
+    addMouseWheelListener(
+        (MouseWheelEvent e) -> {
+          // Two rows per notch, matching what the remake settled on.
+          scrollBy(e.getWheelRotation() * 2);
+        });
+    addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mousePressed(MouseEvent e) {
+            requestFocusInWindow();
+          }
+        });
+    addKeyListener(
+        new KeyAdapter() {
+          @Override
+          public void keyPressed(KeyEvent e) {
+            handleNavigation(e);
+          }
+        });
+  }
+
+  private void handleNavigation(KeyEvent e) {
+    if (this.text == null || this.text.length == 0) {
+      return;
+    }
+    int last = this.text.length - 1;
+    int page = Math.max(1, showLines());
+    switch (e.getKeyCode()) {
+      case KeyEvent.VK_UP:
+      case KeyEvent.VK_W:
+        moveSelection(-1, last);
+        break;
+      case KeyEvent.VK_DOWN:
+      case KeyEvent.VK_S:
+        moveSelection(1, last);
+        break;
+      case KeyEvent.VK_PAGE_UP:
+        moveSelection(-page, last);
+        break;
+      case KeyEvent.VK_PAGE_DOWN:
+        moveSelection(page, last);
+        break;
+      case KeyEvent.VK_HOME:
+        selectDirectly(0);
+        break;
+      case KeyEvent.VK_END:
+        selectDirectly(last);
+        break;
+      case KeyEvent.VK_ENTER:
+      case KeyEvent.VK_SPACE:
+        if (this.selectVal >= 0) {
+          fireAction();
+        }
+        return;
+      default:
+        return;
+    }
+    e.consume();
+  }
+
+  private void moveSelection(int delta, int last) {
+    int from = this.selectVal < 0 ? (delta > 0 ? -1 : last + 1) : this.selectVal;
+    selectDirectly(Math.max(0, Math.min(last, from + delta)));
+  }
+
+  /** Selects an index outright, unlike setSelect, which toggles a repeated pick off again. */
+  private void selectDirectly(int index) {
+    if (!this.canSelect || this.text == null || index < 0 || index >= this.text.length) {
+      return;
+    }
+    this.selectVal = index;
+    scrollIntoView(index);
+    repaint();
+    fireAction();
+  }
+
+  private void scrollBy(int rows) {
+    int max = this.scroll.getMax();
+    int next = Math.max(0, Math.min(max, this.scroll.getVal() + rows));
+    if (next != this.scroll.getVal()) {
+      this.scroll.setVal(next);
+      repaint();
+    }
+  }
+
+  private void scrollIntoView(int index) {
+    int shown = showLines();
+    int top = this.scroll.getVal();
+    if (index < top) {
+      this.scroll.setVal(index);
+    } else if (index >= top + shown) {
+      this.scroll.setVal(Math.min(this.scroll.getMax(), (index - shown) + 1));
+    }
+  }
+
+  /** Notified whenever the selection changes, by mouse or keyboard. */
+  public void addActionListener(ActionListener l) {
+    if (l != null) {
+      this.actionListeners.add(l);
+    }
+  }
+
+  private void fireAction() {
+    ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "select");
+    for (ActionListener l : new ArrayList<>(this.actionListeners)) {
+      l.actionPerformed(event);
+    }
   }
 
   public void reshape(Rectangle r) {
@@ -100,6 +228,7 @@ public class FTextList extends FTools {
       return true;
     }
     postEvent(new Event(this, 1001, (Object) null));
+    fireAction();
     return true;
   }
 
@@ -196,6 +325,10 @@ public class FTextList extends FTools {
 
   public int getSelect() {
     return this.selectVal;
+  }
+
+  public boolean isEmpty() {
+    return this.text == null || this.text.length == 0;
   }
 
   public void FixScroller() {

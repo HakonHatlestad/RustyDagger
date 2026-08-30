@@ -65,7 +65,7 @@ All set with `-D` on the command line, e.g.
 
 | Property | Default | Effect |
 |---|---|---|
-| `dragoncourt.scale` | `2` | Window scale. `1` is the original 400x300. |
+| `dragoncourt.scale` | `1` | Window scale. **Experimental** -- values above 1 misalign clicks, see [porting-notes](docs/porting-notes.md). The browser build scales properly. |
 | `dragoncourt.saveDir` | `saves` | Where hero files live. |
 | `dragoncourt.autosave` | `true` | Save on every screen change. `false` = save on exit only. |
 | `dragoncourt.dailyQuestLimit` | `false` | `true` restores the original daily quest allowance. |
@@ -84,8 +84,7 @@ $ java -Ddragoncourt.dailyQuestLimit=true -jar build/libs/RustyDagger.jar
 
 Pack overload still costs quests either way: an over-stuffed bag slows you down.
 
-Bag space is 75 rather than the original 60, the window opens at 2x, the hero is saved on every
-screen change, shops show how gear compares to what you are wearing, and the login screen lists
+Bag space is 75 rather than the original 60, the hero is saved on every screen change, shops show how gear compares to what you are wearing, and the login screen lists
 your saved heroes instead of asking for a password. Full list, with reasons:
 [docs/porting-notes.md](docs/porting-notes.md).
 

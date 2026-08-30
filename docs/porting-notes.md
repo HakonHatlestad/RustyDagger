@@ -23,18 +23,32 @@ ration.
 Taken from the remake, where it is the most-cited quality-of-life change. `Trader` and `Merchant`
 still add 20 each.
 
-### The window is scaled 2x by default
+### Window scaling exists but is opt-in, and is not correct
 
-The game draws into a fixed 400x300 canvas and its screens position children at hard-coded pixel
-coordinates, so it cannot reflow -- the only way to make it bigger is to scale the whole surface.
-Its widgets are heavyweight AWT components, which a parent `Graphics2D` transform cannot touch,
-but `sun.java2d.uiScale` scales the native surface itself, decorations included.
+The game draws into a fixed 400x300 canvas and positions children at hard-coded pixel
+coordinates, so it cannot reflow -- the only way to make it bigger is to scale the whole
+surface. Its widgets are heavyweight AWT components, which a parent `Graphics2D` transform
+cannot touch, so `sun.java2d.uiScale` is the only lever available.
 
-`DCourtFrame.applyScale()` sets it from `-Ddragoncourt.scale=N` (default `2`) before the first
-AWT call, because the property is only read while the graphics environment initialises. An
-explicit `sun.java2d.uiScale`, including one a HiDPI desktop set for you, always wins.
+`-Ddragoncourt.scale=N` sets it, **defaulting to 1**. `DCourtFrame.applyScale()` applies it
+before the first AWT call, since the property is only read while the graphics environment
+initialises. An explicit `sun.java2d.uiScale` always wins.
 
-Use `-Ddragoncourt.scale=1` for the original postage stamp.
+**Why it is off by default:** AWT components are not harmonized with HiDPI scaling the way Swing
+is ([JDK-8143406](https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8143406)). The surface
+scales, but the components keep hit-testing in unscaled coordinates, so clicks land in the wrong
+place and widgets sit slightly off. It shipped as the default briefly and was wrong to.
+
+On X11 a value below 2 is ignored entirely, so fractional scales do nothing there.
+
+**The real fix** is to make the widget tree lightweight -- `FTools` and `Screen` extending
+`Container` rather than `Panel`, `Portrait` off `Canvas`, and lightweight replacements for
+`FTextField`/`FTextArea`, which are native `TextField`/`TextArea` today. Then `DCourtPanel` can
+scale its children with a transform and inverse-transform mouse coordinates, which is correct by
+construction. That is a real piece of work and has not been done.
+
+The browser build does not have this problem: CheerpJ scales the display outside the JVM, so
+`web/index.html` offers 1x/2x/3x and all of them behave.
 
 ### The hero is saved on every screen change
 

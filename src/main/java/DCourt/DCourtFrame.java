@@ -9,8 +9,8 @@ import java.awt.event.WindowEvent;
 /** Desktop window hosting the game. */
 public class DCourtFrame extends Frame {
 
-  /** 400x300 is unreadably small on a current display; 2x is the sane floor. */
-  private static final String DEFAULT_SCALE = "2";
+  /** Off by default. See applyScale() -- scaling is opt-in because it misaligns input. */
+  private static final String DEFAULT_SCALE = "1";
 
   public DCourtFrame(String title) {
     super(title);

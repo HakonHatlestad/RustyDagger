@@ -18,6 +18,8 @@ import java.awt.Checkbox;
 import java.awt.CheckboxGroup;
 import java.awt.Color;
 import java.awt.Event;
+import java.util.ArrayList;
+import java.util.List;
 
 /* loaded from: DCourt.jar:DCourt/Screens/Template/Shop.class */
 public abstract class Shop extends Indoors {
@@ -259,23 +261,43 @@ public abstract class Shop extends Indoors {
     if (shopItem.hasTrait(ArmsTrait.SECRET)) {
       return "";
     }
-    String slot = null;
-    for (String candidate : WEAR_SLOTS) {
-      if (shopItem.hasTrait(candidate)) {
-        slot = candidate;
-        break;
+    // An item can occupy more than one slot: 16 of them are two-handed, carrying both `right`
+    // and `left`, so equipping a pike or a bow also costs you whatever shield you had. Compare
+    // against everything it would displace, counting a piece worn across two slots only once.
+    List<itArms> displaced = new ArrayList<>();
+    boolean wearable = false;
+    for (String slot : WEAR_SLOTS) {
+      if (!shopItem.hasTrait(slot)) {
+        continue;
+      }
+      wearable = true;
+      itArms worn = Screen.getGear().findArms(slot);
+      if (worn != null && !containsSame(displaced, worn)) {
+        displaced.add(worn);
       }
     }
-    if (slot == null) {
-      return ""; // Not something you wear.
+    if (!wearable) {
+      return "";
+    }
+    int held = 0;
+    for (itArms worn : displaced) {
+      held += worn.fullAttack() + worn.fullDefend() + worn.fullSkill();
     }
     int offered = shopItem.fullAttack() + shopItem.fullDefend() + shopItem.fullSkill();
-    itArms worn = Screen.getGear().findArms(slot);
-    int held = worn == null ? 0 : worn.fullAttack() + worn.fullDefend() + worn.fullSkill();
     int delta = offered - held;
     // Kept terse: the row already carries a name, stat block and price, and the list is
     // only ~180px wide. Parentheses cost two characters that the price then loses.
     return delta == 0 ? " =" : (delta > 0 ? " +" + delta : " " + delta);
+  }
+
+  /** Identity check -- two distinct items with equal stats are still two items. */
+  private static boolean containsSame(List<itArms> list, itArms item) {
+    for (itArms each : list) {
+      if (each == item) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public String shopName(Item it) {

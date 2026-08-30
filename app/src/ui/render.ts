@@ -449,6 +449,22 @@ function townScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTMLE
     );
   };
   go({ kind: "fields" }, "Go hunting", true);
+  // Resting is free and unlimited, so making the player walk to the temple for it is pure friction:
+  // measured over a long session it is four clicks, roughly every fourteenth quest. The temple is
+  // still where it happens and still worth visiting; this is the same action, offered where the
+  // player already is.
+  if (character !== null && (character.wounds > 0 || character.disease > 0)) {
+    actions.append(
+      button(
+        "Rest at the temple",
+        () => {
+          dispatch({ kind: "rest" });
+          rerender();
+        },
+        { hint: "Heals every wound and clears any disease, for nothing." },
+      ),
+    );
+  }
   for (const shop of SHOPS) {
     go({ kind: "shop", shop: shop.key }, shop.name.replace(/'s .*/, "'s"));
   }
@@ -701,6 +717,10 @@ function templeScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTM
         hint: "Heals every wound and clears any disease.",
       },
     ),
+    button("Go hunting", () => {
+      dispatch({ kind: "goTo", place: { kind: "fields" } });
+      rerender();
+    }),
     button("Back", () => {
       dispatch({ kind: "goTo", place: { kind: "town" } });
       rerender();

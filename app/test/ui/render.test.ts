@@ -327,6 +327,24 @@ describe("losing", () => {
   });
 });
 
+describe("resting", () => {
+  it("is offered in town when you need it, without a walk to the temple", () => {
+    game.character!.wounds = 10;
+    render(root, game, ui);
+    expect(buttons()).toContain("Rest at the temple");
+    click("Rest at the temple");
+    expect(game.character!.wounds).toBe(0);
+    expect(game.place.kind).toBe("town");
+  });
+
+  it("is not offered in town when there is nothing wrong with you", () => {
+    game.character!.wounds = 0;
+    game.character!.disease = 0;
+    render(root, game, ui);
+    expect(buttons()).not.toContain("Rest at the temple");
+  });
+});
+
 describe("the temple", () => {
   beforeEach(() => {
     click("Temple");
@@ -340,6 +358,11 @@ describe("the temple", () => {
     expect(game.character!.wounds).toBe(0);
     expect(game.character!.disease).toBe(0);
     expect(game.character!.marks).toBeGreaterThan(0);
+  });
+
+  it("sends you straight back out, rather than back through town", () => {
+    click("Go hunting");
+    expect(game.place.kind).toBe("fields");
   });
 
   it("does not offer a rest you do not need", () => {

@@ -1,0 +1,13 @@
+{itHero|Timber|10|7|4
+	|
+	{~|pack|{#|Marks|100}|{#|Cookie|3}|{#|Bottled Faery|1}|
+		{itNote|Letter|{=|from|Fred}|{=|date|2026-08-30}|
+			{=|body|A note the port does not model, kept verbatim so it survives a round trip.}}}|
+	{~|gear|{itArms|Clothes|0|2|0|body}}|
+	{~|stat|{#|Age|16}|Guild}|
+	{~|temp|{#|fight|1}}|
+	{~|rank|{#|fight|1}|{#|Level|1}|
+		{#|Social|0}}|
+	{~|values|{=|place|fields}|{=|state|Alive}}|
+	{~|store}|
+	{~|looks}|{=|Date|2026-08-30}}

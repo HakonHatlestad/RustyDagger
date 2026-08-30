@@ -31,7 +31,7 @@ function store(): SaveStore & { data: Map<string, string> } {
 }
 
 const TIMBER = readFileSync(
-  fileURLToPath(new URL("../../saves/Timber.hero", import.meta.url)),
+  fileURLToPath(new URL("./fixtures/hero.hero", import.meta.url)),
   "utf8",
 );
 

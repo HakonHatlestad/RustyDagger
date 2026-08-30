@@ -28,6 +28,22 @@ function save(name: string): string {
   return readFileSync(savesDir + name, "utf8");
 }
 
+/**
+ * The fixture, for anything that asserts what is *inside* a character.
+ *
+ * Deliberately not one of the files in `saves/`: those are played, the Java build writes to them,
+ * and three tests here silently came to depend on items a play session had added. See
+ * `test/fixtures/README.md`.
+ */
+const FIXTURE = readFileSync(
+  fileURLToPath(new URL("./fixtures/hero.hero", import.meta.url)),
+  "utf8",
+);
+
+/**
+ * The real saves are still tested — but only for properties that hold whatever anyone has played.
+ * A test that asserts a real save's *contents* is a test that breaks when its owner levels up.
+ */
 describe("the real saves in this repository", () => {
   it("there are some to test against", () => {
     expect(saveFiles.length).toBeGreaterThan(0);
@@ -48,8 +64,8 @@ describe("the real saves in this repository", () => {
   });
 
   it.each(saveFiles)("keeps everything it does not understand in %s", (fileName) => {
-    // Timber carries a note from Fred with an embedded multi-line letter. The port does not model
-    // notes, and must not quietly drop one when it saves.
+    // A real save can carry things the port does not model -- a note with an embedded letter, say.
+    // Whatever is in the pack must still be in the pack after a write.
     const before = parseHero(save(fileName));
     const written = serialiseHero(before);
     for (const item of before.pack) {
@@ -59,7 +75,7 @@ describe("the real saves in this repository", () => {
 });
 
 describe("reading a hero", () => {
-  const text = save("Timber.hero");
+  const text = FIXTURE;
   const hero = parseHero(text);
 
   it("reads the name and the three base stats", () => {
@@ -116,8 +132,7 @@ describe("rejecting what is not a hero", () => {
 
 describe("the serialiser", () => {
   it("round-trips any entity, pretty or flat", () => {
-    const text = save("Timber.hero");
-    const entity = parseEntity(text);
+    const entity = parseEntity(FIXTURE);
     expect(parseEntity(serialiseEntity(entity, { pretty: true }))).toEqual(entity);
     expect(parseEntity(serialiseEntity(entity, { pretty: false }))).toEqual(entity);
   });

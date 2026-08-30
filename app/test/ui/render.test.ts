@@ -35,7 +35,7 @@ const content: Content = loadContent({
   gear: json("content/gear.json"),
 });
 
-const TIMBER = readFileSync(fromRoot("saves/Timber.hero"), "utf8");
+const TIMBER = readFileSync(resolve(process.cwd(), "test/fixtures/hero.hero"), "utf8");
 
 let root: HTMLElement;
 let game: Game;

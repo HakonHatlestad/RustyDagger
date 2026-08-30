@@ -29,7 +29,7 @@ const content: Content = loadContent({
 
 function newGame(seed = 1): Game {
   const hero = parseHero(
-    readFileSync(fileURLToPath(new URL("../../saves/Timber.hero", import.meta.url)), "utf8"),
+    readFileSync(fileURLToPath(new URL("./fixtures/hero.hero", import.meta.url)), "utf8"),
   );
   return {
     content,

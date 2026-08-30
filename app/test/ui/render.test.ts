@@ -332,17 +332,19 @@ describe("losing", () => {
     render(root, game, ui);
   });
 
-  it("says plainly that it costs you nothing", () => {
-    expect(root.textContent).toContain("lose nothing but the fight");
+  it("says what losing actually costs", () => {
+    expect(root.textContent).toMatch(/tenth of your Marks/);
   });
 
-  it("takes no money, no level and no gear", () => {
+  it("takes a tenth of your money and nothing else", () => {
     const level = game.character!.level;
     const gear = game.character!.gear.length;
+    const pack = game.character!.pack.length;
     click("Wake up in town");
-    expect(game.character!.marks).toBe(500);
+    expect(game.character!.marks).toBe(450);
     expect(game.character!.level).toBe(level);
     expect(game.character!.gear).toHaveLength(gear);
+    expect(game.character!.pack).toHaveLength(pack);
     expect(game.character!.wounds).toBe(0);
     expect(game.place.kind).toBe("town");
   });
@@ -419,6 +421,62 @@ describe("the shops", () => {
     row.click();
     const salve = game.character!.pack.find((c) => c.name === "Healing Salve");
     expect(salve?.kind === "count" ? salve.count : 0).toBe(2);
+  });
+});
+
+describe("the guild", () => {
+  /** Timber is a real 1997 save and is already a member, so joining is tested on a fresh one. */
+  function asOutsider(): void {
+    game.character!.traits.delete("Guild");
+    game.character!.ranks = { fight: 0, magic: 0, thief: 0 };
+    game.character!.marks = 20000;
+    apply(game, { kind: "goTo", place: { kind: "guild" } });
+    render(root, game, ui);
+  }
+
+  it("reads the ranks out of a real save", () => {
+    // Timber carries `{#|fight|1}` in its rank list and the Guild trait in its stat flags.
+    expect(game.character!.ranks.fight).toBe(1);
+    expect(game.character!.traits.has("Guild")).toBe(true);
+    expect(root.textContent).toContain("Guild: Fighting 1");
+  });
+
+  it("asks an outsider to join before it teaches anything", () => {
+    asOutsider();
+    expect(root.textContent).toContain("Membership is 4000 Marks");
+  });
+
+  it("takes the fee and then offers all three tracks", () => {
+    asOutsider();
+    click("Join — 4000 Marks");
+    expect(game.character!.marks).toBe(16000);
+    expect(root.querySelectorAll("button.choice").length).toBe(3);
+  });
+
+  it("says what each track actually buys you", () => {
+    asOutsider();
+    click("Join — 4000 Marks");
+    expect(root.textContent).toContain("+1 Attack per rank");
+    expect(root.textContent).toContain("+1 Defence per rank");
+  });
+
+  it("trains a rank and shows it on the status panel", () => {
+    asOutsider();
+    game.character!.level = 5;
+    click("Join — 4000 Marks");
+    clickCard("Fighting");
+    expect(game.character!.ranks.fight).toBe(1);
+    expect(root.textContent).toContain("Guild: Fighting 1");
+  });
+
+  it("explains itself rather than just refusing", () => {
+    asOutsider();
+    game.character!.level = 1;
+    click("Join — 4000 Marks");
+    clickCard("Fighting");
+    render(root, game, ui);
+    // One rank at level 1 is the cap, so it has to say why there is no second.
+    expect(root.textContent).toMatch(/Come back when you have grown/);
   });
 });
 

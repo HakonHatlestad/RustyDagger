@@ -446,15 +446,27 @@ export function oneSidedRound(actor: Fighter, target: Fighter, rng: GameRandom):
   return act(actor, target, a.own.guts, a.own.swings, a.own.speed, t.own.speed, rng);
 }
 
-/** How a fight finished, in the order the game tests for it. */
+/**
+ * How a fight finished, in the order the game tests for it.
+ *
+ * **The names say who won, not which flag is set**, and that distinction has already cost one real
+ * bug. A fighter carries the Control or Swindle state when it *succeeds* at one, so a hero holding
+ * the Control flag has hypnotised the monster and is about to take its whole pack — naming that
+ * "heroControlled" reads exactly backwards, and this port did name it that, and then wrote the
+ * player-facing message to match the name rather than the rule.
+ */
 export type Ending =
   | "mobFled"
   | "heroDied"
-  | "heroControlled"
-  | "heroSwindled"
+  /** You hypnotised it: you take everything it had, and may grow a point of Wits. */
+  | "wonByHypnosis"
+  /** You talked it out of everything: its whole pack, and maybe a point of Charm. */
+  | "wonBySwindle"
   | "heroWon"
-  | "mobControlled"
-  | "mobSwindled"
+  /** It hypnotised you. You get nothing, and an aggressive one walks you off a cliff. */
+  | "lostToHypnosis"
+  /** It swindled you, and helps itself to your purse. */
+  | "lostToSwindle"
   | "roundCap";
 
 /**
@@ -465,11 +477,11 @@ export type Ending =
  */
 export function endingOf(hero: Fighter, mob: Fighter): Ending | null {
   if (hero.state === State.DEAD) return "heroDied";
-  if (hero.state === State.CONTROL) return "heroControlled";
-  if (hero.state === State.SWINDLE) return "heroSwindled";
+  if (hero.state === State.CONTROL) return "wonByHypnosis";
+  if (hero.state === State.SWINDLE) return "wonBySwindle";
   if (mob.state === State.DEAD) return "heroWon";
-  if (mob.state === State.CONTROL) return "mobControlled";
-  if (mob.state === State.SWINDLE) return "mobSwindled";
+  if (mob.state === State.CONTROL) return "lostToHypnosis";
+  if (mob.state === State.SWINDLE) return "lostToSwindle";
   return null;
 }
 

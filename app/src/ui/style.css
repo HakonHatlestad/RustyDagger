@@ -508,3 +508,9 @@ button[data-key]::after {
   opacity: 0.6;
   vertical-align: 0.05em;
 }
+
+.ranks {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-top: 0.35rem;
+}

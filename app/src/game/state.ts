@@ -23,6 +23,7 @@ import {
   Action,
   State as FighterState,
   battleRound,
+  isAction,
   endingOf,
   fleesBeforeFighting,
   noPending,
@@ -35,11 +36,32 @@ import { calcCombat, type Equipment } from "../rules/combat.js";
 import { raiseFor, tryToLevel } from "../rules/levelling.js";
 import type { GameRandom } from "../rules/random.js";
 import type { Content, MonsterDefinition } from "./content.js";
-import { advanceStance, balance, chooseMonsterAction, powerOf, type Monster } from "./monster.js";
+import {
+  Stance,
+  advanceStance,
+  balance,
+  chooseMonsterAction,
+  hypnosisExperience,
+  killExperience,
+  powerOf,
+  swindleExperience,
+  type Monster,
+} from "./monster.js";
+import { GROWTH, grows } from "../rules/growth.js";
 import { rollLoot } from "./loot.js";
 import { buyPrice, sellPrice, shopByKey, type ShopDefinition } from "./shop.js";
 import { effectOf, endOfFight, isUsableHere, useItem } from "./items.js";
 import { backgroundByKey, newHeroText } from "./creation.js";
+import {
+  JOINING_FEE,
+  TRACKS,
+  canJoin,
+  canTrain,
+  rankCost,
+  refusal,
+  type Ranks,
+  type TrackKey,
+} from "./guild.js";
 import {
   heroExp,
   heroFame,
@@ -58,6 +80,7 @@ export type Place =
   | { readonly kind: "status" }
   | { readonly kind: "shop"; readonly shop: string }
   | { readonly kind: "temple" }
+  | { readonly kind: "guild" }
   | { readonly kind: "quest" }
   | { readonly kind: "fallen" };
 
@@ -78,6 +101,8 @@ export interface Character {
   pack: Carried[];
   gear: Carried[];
   traits: Set<string>;
+  /** Guild ranks, which feed straight into Attack, Defence and Skill. */
+  ranks: Ranks;
   /**
    * The save this character was read from.
    *
@@ -135,6 +160,12 @@ export function characterFrom(hero: Hero): Character {
     pack: [...hero.pack].filter((c) => c.name !== "Marks"),
     gear: [...hero.gear],
     traits: new Set(hero.statFlags),
+    // Named in lower case in the save, as `Constants.FIGHT` and its siblings are.
+    ranks: {
+      fight: hero.rank.get("fight") ?? 0,
+      magic: hero.rank.get("magic") ?? 0,
+      thief: hero.rank.get("thief") ?? 0,
+    },
     origin: hero,
   };
 }
@@ -153,6 +184,9 @@ export function toHero(character: Character): Hero {
 
   const rank = new Map(origin.rank);
   rank.set("Level", character.level);
+  rank.set("fight", character.ranks.fight);
+  rank.set("magic", character.ranks.magic);
+  rank.set("thief", character.ranks.thief);
 
   const temp = new Map(origin.temp);
   temp.set("Wounds", character.wounds);
@@ -201,9 +235,9 @@ export function asFighter(character: Character): Fighter {
     wits: character.wits,
     charm: character.charm,
     gear: equipmentOf(character),
-    fightRank: 0,
-    magicRank: 0,
-    thiefRank: 0,
+    fightRank: character.ranks.fight,
+    magicRank: character.ranks.magic,
+    thiefRank: character.ranks.thief,
     traits: character.traits,
   });
   return {
@@ -250,6 +284,8 @@ export type Move =
   | { readonly kind: "useItem"; readonly index: number }
   | { readonly kind: "leaveQuest" }
   | { readonly kind: "rest" }
+  | { readonly kind: "joinGuild" }
+  | { readonly kind: "train"; readonly track: TrackKey }
   | { readonly kind: "equip"; readonly index: number }
   | { readonly kind: "unequip"; readonly index: number }
   | { readonly kind: "buy"; readonly shop: string; readonly name: string }
@@ -290,6 +326,12 @@ export function apply(game: Game, move: Move): Game {
 
     case "rest":
       return rest(game);
+
+    case "joinGuild":
+      return joinGuild(game);
+
+    case "train":
+      return train(game, move.track);
 
     case "equip":
       return moveBetween(game, "pack", "gear", move.index);
@@ -335,6 +377,47 @@ function rest(game: Game): Game {
     hurt
       ? "You sleep on the temple's hard benches and wake whole."
       : "Elden Bishop looks you over, finds nothing wrong, and offers you tea.",
+  ];
+  return game;
+}
+
+/** Paying to join. The trait is what the guild checks, and what the save carries. */
+function joinGuild(game: Game): Game {
+  const character = game.character;
+  if (character === null || !canJoin(character.traits.has("Guild"), character.marks)) {
+    return game;
+  }
+  character.marks -= JOINING_FEE;
+  character.traits.add("Guild");
+  game.notices = ["You are signed into the book, and nobody looks up."];
+  return game;
+}
+
+/**
+ * Buying a rank.
+ *
+ * A rank is permanent and immediately real: `asFighter` reads the ranks straight into Attack,
+ * Defence and Skill, so the number on the character screen moves the moment you pay.
+ */
+function train(game: Game, track: TrackKey): Game {
+  const character = game.character;
+  if (character === null) {
+    return game;
+  }
+  const member = character.traits.has("Guild");
+  if (!canTrain(character.ranks, character.level, member, character.marks)) {
+    const why = refusal(character.ranks, character.level, member, character.marks);
+    game.notices = [why ?? "Not today."];
+    return game;
+  }
+  const cost = rankCost(character.ranks);
+  character.marks -= cost;
+  character.ranks[track] += 1;
+  const name = TRACKS.find((t) => t.key === track)?.name ?? track;
+  game.notices = [
+    cost === 0
+      ? `They take you on as a novice of ${name}, and waive the fee.`
+      : `${String(cost)} Marks, and a rank of ${name}.`,
   ];
   return game;
 }
@@ -488,7 +571,7 @@ function useCarriedItem(game: Game, index: number): Game {
   if (fleesBeforeFighting(quest.monster)) {
     quest.ending = "mobFled";
     quest.log.push(`${quest.monster.name} turns and runs.`);
-    finishQuest(game, character, quest, "mobFled");
+    finishQuest(game, character, quest, "mobFled", "");
     return game;
   }
   const outcome = oneSidedRound(quest.monster, quest.hero, game.rng);
@@ -500,7 +583,8 @@ function useCarriedItem(game: Game, index: number): Game {
   const ending = endingOf(quest.hero, quest.monster);
   if (ending !== null) {
     quest.ending = ending;
-    finishQuest(game, character, quest, ending);
+    // Reaching for something is not a way of winning, so it teaches nothing.
+    finishQuest(game, character, quest, ending, "");
     return game;
   }
   advanceStance(quest.monster);
@@ -562,7 +646,7 @@ function fightRound(game: Game, action: string): Game {
   if (fleesBeforeFighting(monster)) {
     quest.ending = "mobFled";
     quest.log.push(`${monster.name} breaks and runs.`);
-    finishQuest(game, character, quest, "mobFled");
+    finishQuest(game, character, quest, "mobFled", action);
     return game;
   }
 
@@ -578,21 +662,89 @@ function fightRound(game: Game, action: string): Game {
   const ending = endingOf(hero, monster);
   if (ending !== null) {
     quest.ending = ending;
-    finishQuest(game, character, quest, ending);
+    finishQuest(game, character, quest, ending, action);
     return game;
   }
   advanceStance(monster);
   return game;
 }
 
-function finishQuest(game: Game, character: Character, quest: QuestState, ending: Ending): void {
+/**
+ * Everything a monster was carrying, handed over without a fight.
+ *
+ * `arQuest.heroControls` merges the monster's pack into yours, which is the same pack
+ * `heroWins` merges — so talking something down is worth exactly what killing it is worth, in
+ * goods. What differs is everything else: it costs you no health, it pays less experience, and it
+ * grows the stat that did the talking rather than your Guts.
+ */
+function takeEverything(game: Game, character: Character, quest: QuestState): string[] {
+  const lines: string[] = [];
+  const loot = rollLoot(quest.definition.entity, game.content, game.rng);
+  if (loot.marks > 0) {
+    character.marks += loot.marks;
+    lines.push(`It hands over ${String(loot.marks)} Marks.`);
+  }
+  for (const item of loot.items) {
+    addToPack(character, item);
+    lines.push(`You are given: ${item.name}.`);
+  }
+  return lines;
+}
+
+/** Experience in, levels out, carrying any surplus into the level after. */
+function award(character: Character, quest: QuestState, exp: number): void {
+  character.exp += exp;
+  character.fame += quest.monster.fame;
+  let levelled = tryToLevel(character.level, character.exp);
+  while (levelled.levelled) {
+    character.level = levelled.level;
+    character.exp = levelled.exp;
+    character.guts += levelled.statGain;
+    character.wits += levelled.statGain;
+    character.charm += levelled.statGain;
+    character.fame += levelled.fameGain;
+    quest.log.push(`You reach level ${String(character.level)}.`);
+    levelled = tryToLevel(character.level, character.exp);
+  }
+}
+
+/**
+ * A win teaches you the thing that won it.
+ *
+ * The weight carries the region's depth, so the same victory teaches more the further out you got
+ * it. See `rules/growth.ts` for why the chance falls away as a stat rises.
+ */
+function teach(game: Game, character: Character, quest: QuestState, action: string): void {
+  const weight = quest.weight;
+  const learn = (stat: "guts" | "wits" | "charm", strength: number, said: string): void => {
+    if (grows(character[stat], weight * strength, game.rng)) {
+      character[stat] += 1;
+      quest.log.push(said);
+    }
+  };
+
+  if (isAction(action, Action.BERZERK)) {
+    learn("guts", GROWTH.BERZERK_GUTS, "Something in you hardens. +1 Guts.");
+  } else if (isAction(action, Action.BACKSTAB)) {
+    learn("charm", GROWTH.BACKSTAB_CHARM, "You are getting good at this. +1 Charm.");
+    learn("guts", GROWTH.BACKSTAB_GUTS, "Something in you hardens. +1 Guts.");
+  } else {
+    learn("guts", GROWTH.ATTACK_GUTS, "Something in you hardens. +1 Guts.");
+  }
+}
+
+function finishQuest(
+  game: Game,
+  character: Character,
+  quest: QuestState,
+  ending: Ending,
+  action: string,
+): void {
+  const mob = quest.monster;
   switch (ending) {
     case "heroWon": {
-      character.exp += quest.monster.experience;
-      character.fame += quest.monster.fame;
-      quest.log.push(
-        `You defeat ${quest.monster.name}, gaining ${String(quest.monster.experience)} experience.`,
-      );
+      const exp = killExperience(mob, quest.weight);
+      quest.log.push(`You defeat ${mob.name}, gaining ${String(exp)} experience.`);
       const loot = rollLoot(quest.definition.entity, game.content, game.rng);
       if (loot.marks > 0) {
         character.marks += loot.marks;
@@ -602,39 +754,80 @@ function finishQuest(game: Game, character: Character, quest: QuestState, ending
         addToPack(character, item);
         quest.log.push(`You find: ${item.name}.`);
       }
-      // A big win can carry a surplus into the next level, and then into the one after it.
-      let levelled = tryToLevel(character.level, character.exp);
-      while (levelled.levelled) {
-        character.level = levelled.level;
-        character.exp = levelled.exp;
-        character.guts += levelled.statGain;
-        character.wits += levelled.statGain;
-        character.charm += levelled.statGain;
-        character.fame += levelled.fameGain;
-        quest.log.push(`You reach level ${String(character.level)}.`);
-        levelled = tryToLevel(character.level, character.exp);
+      award(character, quest, exp);
+      teach(game, character, quest, action);
+      break;
+    }
+
+    case "wonByHypnosis": {
+      const exp = hypnosisExperience(mob);
+      quest.log.push(`${mob.name} meets your eye and forgets what it was doing.`);
+      quest.log.push(...takeEverything(game, character, quest));
+      award(character, quest, exp);
+      if (grows(character.wits, quest.weight * GROWTH.HYPNOSIS_WITS, game.rng)) {
+        character.wits += 1;
+        quest.log.push("You are sharper for it. +1 Wits.");
       }
       break;
     }
+
+    case "wonBySwindle": {
+      const exp = swindleExperience(mob);
+      quest.log.push(`You lay out a deal ${mob.name} cannot follow, and it thanks you for it.`);
+      quest.log.push(...takeEverything(game, character, quest));
+      award(character, quest, exp);
+      if (grows(character.charm, quest.weight * GROWTH.SWINDLE_CHARM, game.rng)) {
+        character.charm += 1;
+        quest.log.push("You are getting good at this. +1 Charm.");
+      }
+      break;
+    }
+
     case "heroDied":
-      quest.log.push(`${quest.monster.name} strikes you down.`);
+      quest.log.push(`${mob.name} strikes you down.`);
       game.place = { kind: "fallen" };
       break;
-    case "heroControlled":
-      quest.log.push(`${quest.monster.name} catches your eye, and you wander away.`);
+
+    case "lostToHypnosis":
+      // An aggressive creature does not simply let you wander off.
+      if (mob.stance >= Stance.AGGRESSIVE) {
+        quest.log.push(
+          `${mob.name} catches your eye and, out of sheer malice, walks you off a cliff.`,
+        );
+        quest.hero.state = FighterState.DEAD;
+        game.place = { kind: "fallen" };
+      } else {
+        quest.log.push(`${mob.name} catches your eye, and you wander away with nothing.`);
+      }
       break;
-    case "heroSwindled":
-      quest.log.push(`${quest.monster.name} talks you out of the whole errand.`);
+
+    case "lostToSwindle": {
+      // Thief Insurance exists for exactly this and nothing else, which is why it survived the cull
+      // of the multiplayer-only items: it is the one thing that stops the sales pitch working.
+      const insured = character.pack.findIndex((c) => c.name === "Thief Insurance");
+      if (insured >= 0) {
+        spendOne(character, insured);
+        quest.log.push(
+          `${mob.name} starts an irresistible sales pitch, spots your Thief Insurance, and gives up.`,
+        );
+        break;
+      }
+      // The original empties your whole pack for this. A half-share of the purse is the same idea
+      // scaled to a game that no longer punishes you for losing -- see docs/porting-notes.md.
+      const taken = Math.trunc(character.marks / 2);
+      character.marks -= taken;
+      quest.log.push(
+        taken > 0
+          ? `${mob.name} makes an irresistible sales pitch. It costs you ${String(taken)} Marks.`
+          : `${mob.name} tries to sell you something, finds your purse empty, and wanders off.`,
+      );
       break;
-    case "mobControlled":
-      quest.log.push(`${quest.monster.name} is mesmerised and wanders off.`);
-      break;
-    case "mobSwindled":
-      quest.log.push(`You talk ${quest.monster.name} out of everything it was carrying.`);
-      break;
+    }
+
     case "mobFled":
-      quest.log.push(`${quest.monster.name} is gone.`);
+      quest.log.push(`${mob.name} is gone.`);
       break;
+
     case "roundCap":
       quest.log.push("Neither of you can land a decisive blow.");
       break;
@@ -645,20 +838,39 @@ function finishQuest(game: Game, character: Character, quest: QuestState, ending
   character.disease = quest.hero.disease;
 }
 
+/** A tenth of your purse, which is what losing costs. */
+export const LOSS_SHARE = 10;
+
+export function lossOnFalling(marks: number): number {
+  return Math.trunc(marks / LOSS_SHARE);
+}
+
 /**
  * Getting up again.
  *
- * Losing costs you nothing but the fight you lost. There is no corpse run, no lost gear, no lost
- * money and no lost level — see the note at the top of this file about what this game is no longer.
+ * Losing costs a **tenth of your Marks** and nothing else: no lost gear, no lost level, no lost
+ * loot, no corpse run. That is deliberately proportional rather than flat. A flat fee is either
+ * nothing to a rich hero or ruinous to a new one, whereas a tenth is always the same *decision* —
+ * enough to make retreating worth considering, never enough to undo an afternoon.
+ *
+ * The original took far more than this. See `docs/porting-notes.md` for what else it took.
  */
 export function recover(game: Game): Game {
   const character = game.character;
-  if (character !== null) {
-    character.wounds = 0;
-    character.disease = 0;
+  if (character === null) {
+    game.place = { kind: "town" };
+    return game;
   }
+  const lost = lossOnFalling(character.marks);
+  character.marks -= lost;
+  character.wounds = 0;
+  character.disease = 0;
   game.quest = null;
   game.place = { kind: "town" };
-  game.notices = ["Someone finds you in the long grass and walks you home."];
+  game.notices = [
+    lost > 0
+      ? `Someone walks you home, and helps themselves to ${String(lost)} Marks on the way.`
+      : "Someone finds you in the long grass and walks you home. You had nothing worth taking.",
+  ];
   return game;
 }

@@ -22,7 +22,7 @@ There is no server, and nobody is coming back tomorrow. So the rewrite takes all
 |---|---|---|
 | The daily quest ration | `27 + 3 * level` quests a day, spent by fatigue | A wall between the player and the game, with nothing on the other side of it |
 | Gear decay | Every swing risked damaging what you held | A tax on playing, paid in trips to a shop. Its only function was to keep money mattering, and the money economy stands up without it |
-| The death penalty | You lost progress when you died | Losing a fight is the punishment. Anything on top of it just makes losing tedious |
+| The death penalty | You lost progress when you died | Losing a fight is most of the punishment. It now costs a tenth of your Marks and nothing else — proportional, so it is the same decision whether you are rich or new |
 | Fatigue | Counted every action against the day | Nothing reads it any more |
 
 What replaces the pressure is the fight itself, which is the one place this game was always tense.
@@ -37,6 +37,24 @@ simply walk into the fields and lose, and be returned to town in the same state.
 can decline by losing on purpose is not a cost, it is a chore.
 
 The Java build keeps all four. `-Ddragoncourt.dailyQuestLimit=true` still restores the ration there.
+
+### What else was only ever there for other players
+
+Dropped from the rewrite rather than carried as inert data, so nobody has to wonder whether they are
+unfinished or dead:
+
+- **The clan-hall post** — Letter, Postcard, Petition, Denial, Grant. Notes addressed to players who
+  cannot exist. They no longer drop.
+- **Fame** — feeds nothing but the ranking screen, which is a leaderboard. It is still tracked and
+  still shown, and the character sheet now says plainly that it is a record rather than a lever.
+- **Age** — gated one thing, buying experience from the healer, on `level + 14 <= age`. Age advanced
+  once per real day, so single-player it never moves. Carried through saves untouched; nothing reads
+  it.
+- **The bank** — protected money from other players' thieves. Never ported, and now never will be.
+
+Two that look like they belong on that list and do not: **Thief Insurance**, which stops a monster
+swindling you and is a live rule again, and **Bottled Faery**, which comes out of a single-player
+encounter in `arQuest`.
 
 ## Rules that changed
 
@@ -208,6 +226,29 @@ appended to the button, so it never becomes part of the button's accessible name
 The binding is cleared on every render and re-attached only by the screens that want it — a fight
 binding that outlived its screen would have you swinging at something that is no longer there.
 
+### Growing by what you do, not just by levelling
+
+**Restored, not invented.** The original grows a stat according to *how you won*: Berzerk teaches
+Guts hard, Backstab teaches Charm and a little Guts, an ordinary win teaches Guts slowly,
+hypnotising teaches Wits and swindling teaches Charm — each at `roll(currentStat) < weight`, so the
+chance falls away as the stat rises and the region's depth raises it. `itHero.gainGuts` and its two
+siblings, called from `arQuest`.
+
+The port implemented only the flat part of progression: +2 to every stat, every level, however you
+played. That is why levelling felt like the only thing that mattered — in the port, it was.
+Measured over 400 quests in the Fields, restoring this and the experience fix below took a
+character from level 6 to level 11 and halved the deaths.
+
+### The guild, in town rather than the forest
+
+Guild ranks feed `calcCombat` directly — Fighting into Attack, Thieving into Defence, Magic into
+Skill — and nothing in the rewrite granted any, so a third of the character sheet was inert. The
+guild is now in the game, with `arGuild`'s numbers: 4,000 Marks to join, then `rank × 1000` each,
+the first free, and never more total ranks than your level.
+
+**Moved to town**, where the Java puts it in the Forest. The rewrite's town is the one hub, and a
+4,000-Mark fee already gates it far more effectively than geography does.
+
 ### Autosaving, and a copy you can keep
 
 The rewrite could read a `.hero` save and write one back from the day it was written, and never
@@ -248,6 +289,34 @@ since they are all `FTextList`.
 See [saves.md](saves.md). Heroes used to be bare files in the working directory.
 
 ## Bugs fixed
+
+### Four of the eight fight endings were backwards
+
+**In `app/` only.** A fighter carries the Control or Swindle state when it **succeeds** at one. So a
+hero holding the Control flag has just hypnotised the monster and, in `arQuest.heroControls`, takes
+its entire pack, earns experience and may gain a point of Wits.
+
+The harness named that ending `heroControlled`, after the flag rather than the outcome. The port
+copied the name and then wrote the player-facing text to match the *name*: winning a hypnosis
+printed "the monster catches your eye, and you wander away" and paid nothing, while losing one
+printed "it is mesmerised and wanders off". Both of the game's non-combat routes were therefore
+strictly worse than swinging, which is the exact opposite of their purpose.
+
+Renamed on both sides to say who won — `wonByHypnosis`, `wonBySwindle`, `lostToHypnosis`,
+`lostToSwindle` — and the rewards implemented. The baseline was regenerated: a pure rename, with no
+recorded percentage moved.
+
+Losing to one costs something again, too. The original empties your whole pack when an aggressive
+creature swindles you; here it takes half your Marks, which is the same idea scaled to a game that
+no longer punishes you for losing. **Thief Insurance** stops it, which is why that item survived the
+cull below.
+
+### Killing things far from home paid no more than killing things nearby
+
+**In `app/` only.** A kill is worth `baseExp + (2·Guts + Wits + Charm) × weight / 4`, where weight is
+how deep you went for it. The port awarded the base and dropped the rest, so a fight in the Goblin
+Mound paid exactly what a fight in the Fields paid and there was no reason to take the risk. Fame
+was short its guild-skill terms in the same way.
 
 ### Every weapon and every piece of armour was free
 

@@ -8,6 +8,9 @@ import { newHeroText, backgroundByKey } from "../src/game/creation.js";
 import { WEAPON_SHOP, buyPrice, sellPrice, stockOf } from "../src/game/shop.js";
 import { REGIONS } from "../src/game/world.js";
 import { GameRandom } from "../src/rules/random.js";
+import { killExperience } from "../src/game/monster.js";
+import { grows } from "../src/rules/growth.js";
+import { JOINING_FEE } from "../src/game/guild.js";
 
 /**
  * Is the game any good?
@@ -117,8 +120,9 @@ describe("a campaign, played end to end", () => {
     expect(session.fights).toBeGreaterThan(150);
     expect(session.level).toBeGreaterThan(4);
     expect(session.wins).toBeGreaterThan(50);
-    // Measured at the time of writing: 185 fights, 122 wins, 47 deaths, level 6, 648 Marks. Enough
-    // to afford a Battle Axe and move on to the Forest, which is the shape the progression wants.
+    // Measured after the experience and growth fixes: 221 wins, 45 deaths, level 11, ~900 Marks
+    // over 400 quests. Before them it was 122 wins, 47 deaths and level 6 -- the port awarded only
+    // a monster's base experience and none of the weight-scaled bonus, and never grew a stat by use.
     expect(session.marks).toBeGreaterThan(500);
   });
 
@@ -148,6 +152,41 @@ describe("a campaign, played end to end", () => {
     armUp(armed);
     const bare = freshGame(9);
     expect(play(armed, "fields", 80).wins).toBeGreaterThan(play(bare, "fields", 80).wins);
+  });
+});
+
+describe("why you would ever leave the Fields", () => {
+  it("pays far better the deeper you go", () => {
+    // The reason the regions exist. The port used to award a monster's base experience and nothing
+    // else, so a fight in the Mound was worth exactly a fight in the Fields and there was no
+    // reason to take the risk.
+    const g = freshGame(2);
+    apply(g, { kind: "startQuest", monsterKey: "Fields:Goblin", weight: 2 });
+    const mob = g.quest!.monster;
+    const shallow = killExperience(mob, 2);
+    const deep = killExperience(mob, 5);
+    expect(deep).toBeGreaterThan(shallow * 1.5);
+  });
+
+  it("teaches you faster the deeper you go, too", () => {
+    // `grows` takes the region's weight, so the same win is worth more the further out it was.
+    const rate = (weight: number): number => {
+      const rng = new GameRandom(8);
+      let hits = 0;
+      for (let i = 0; i < 3000; i++) {
+        if (grows(40, weight, rng)) hits++;
+      }
+      return hits;
+    };
+    expect(rate(5)).toBeGreaterThan(rate(2));
+  });
+
+  it("makes the guild something you have to travel for", () => {
+    // 4,000 Marks is well beyond a long run in the Fields, which is the point: it is the first
+    // thing in the game that asks you to go somewhere more dangerous.
+    const g = freshGame(19);
+    armUp(g);
+    expect(play(g, "fields", 250).marks).toBeLessThan(JOINING_FEE);
   });
 });
 

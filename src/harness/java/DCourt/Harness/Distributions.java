@@ -173,25 +173,34 @@ final class Distributions {
     }
   }
 
-  /** The branch arQuest takes when a round ends, in the order it tests them. */
+  /**
+   * The branch arQuest takes when a round ends, in the order it tests them.
+   *
+   * <p>The names say who <em>won</em>, not which flag is set, and that distinction has already cost
+   * one real bug. A fighter carries the Control or Swindle state when it <em>succeeds</em> at one:
+   * {@code h.isControl()} means the hero hypnotised the monster and takes its whole pack ({@code
+   * arQuest.heroControls}), and {@code mob.isControl()} means the hero was hypnotised and gets
+   * nothing. Naming those "heroControlled" and "mobControlled" reads exactly backwards, and the
+   * TypeScript port copied the names and then wrote the player-facing messages to match them.
+   */
   private static String ending(itHero h, itMonster mob) {
     if (h.isDead()) {
       return "heroDied";
     }
     if (h.isControl()) {
-      return "heroControlled";
+      return "wonByHypnosis";
     }
     if (h.isSwindle()) {
-      return "heroSwindled";
+      return "wonBySwindle";
     }
     if (mob.isDead()) {
       return "heroWon";
     }
     if (mob.isControl()) {
-      return "mobControlled";
+      return "lostToHypnosis";
     }
     if (mob.isSwindle()) {
-      return "mobSwindled";
+      return "lostToSwindle";
     }
     return null;
   }

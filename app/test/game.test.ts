@@ -10,6 +10,7 @@ import {
   characterFrom,
   expFraction,
   healthFraction,
+  lossOnFalling,
   recover,
   toHero,
   type Game,
@@ -238,7 +239,7 @@ describe("the loop", () => {
     expect.unreachable("no fight was won in 60 attempts");
   });
 
-  it("costs you nothing but the fight when you lose", () => {
+  it("costs a tenth of your purse when you lose, and nothing else", () => {
     for (let seed = 1; seed < 80; seed++) {
       const game = newGame(seed);
       const before = {
@@ -256,7 +257,8 @@ describe("the loop", () => {
       if (game.quest?.ending === "heroDied") {
         expect(game.place.kind).toBe("fallen");
         recover(game);
-        expect(game.character!.marks).toBe(before.marks);
+        // Proportional, so it is the same decision whether you are rich or new.
+        expect(game.character!.marks).toBe(before.marks - lossOnFalling(before.marks));
         expect(game.character!.level).toBe(before.level);
         expect(game.character!.gear).toHaveLength(before.gear);
         expect(game.character!.pack).toHaveLength(before.pack);

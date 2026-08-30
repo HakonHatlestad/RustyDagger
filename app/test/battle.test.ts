@@ -85,7 +85,8 @@ describe("the special actions", () => {
       if (hero.state === State.CONTROL) {
         controlled++;
         expect(mob.wounds).toBe(0);
-        expect(endingOf(hero, mob)).toBe("heroControlled");
+        // The hero holds the Control flag because the hero *won* -- see the note on Ending.
+        expect(endingOf(hero, mob)).toBe("wonByHypnosis");
       }
     }
     // Overwhelming Wits should win nearly every time.

@@ -95,16 +95,50 @@ if (app.querySelectorAll('[role="progressbar"]').length !== 2) {
   fail("expected a health bar and an experience bar on the status panel");
 }
 
-clickButton("Go hunting");
-const region = [...app.querySelectorAll("button.choice")].find((b) =>
-  b.textContent.startsWith("The Fields"),
-);
-if (!region) {
-  fail("the hunting screen offered no regions");
+// Timid creatures bolt on sight and the encounter ends before a blow is struck, so this hunts until
+// something actually stands and fights. Assuming the first one does is flaky by construction.
+const has = (label) => buttons().some((b) => b.textContent === label);
+
+/** Walks to the region list from wherever the last quest left us. */
+const toRegions = () => {
+  for (let step = 0; step < 6; step++) {
+    if (app.querySelector("button.choice")) {
+      return;
+    }
+    if (has("Wake up in town")) clickButton("Wake up in town");
+    else if (has("Back to the hunt")) clickButton("Back to the hunt");
+    else if (has("Go hunting")) clickButton("Go hunting");
+    else if (has("Back")) clickButton("Back");
+    else break;
+  }
+  fail(
+    `could not reach the region list; buttons: ${buttons()
+      .map((b) => b.textContent)
+      .join(" | ")}`,
+  );
+};
+
+const hunt = () => {
+  toRegions();
+  const region = [...app.querySelectorAll("button.choice")].find((b) =>
+    b.textContent.startsWith("The Fields"),
+  );
+  if (!region) {
+    fail("the hunting screen offered no regions");
+  }
+  region.click();
+  if (!app.querySelector(".log")) {
+    fail("questing did not open a fight");
+  }
+};
+
+let engaged = false;
+for (let attempt = 0; attempt < 60 && !engaged; attempt++) {
+  hunt();
+  engaged = has("Attack");
 }
-region.click();
-if (!app.querySelector(".log")) {
-  fail("questing did not open a fight");
+if (!engaged) {
+  fail("nothing stood and fought in 60 quests");
 }
 
 let rounds = 0;

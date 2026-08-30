@@ -43,6 +43,21 @@ function listNamed(entity: Entity, name: string): Entity | null {
   return null;
 }
 
+/**
+ * Things that only ever meant anything between two players.
+ *
+ * The clan hall let you write to people: a Letter, a Postcard, a Petition to join their guild, a
+ * Denial or a Grant in reply. There is nobody to write to, and a note addressed to a player who
+ * cannot exist is not a collectible, it is a loose end. They are dropped on the floor rather than
+ * into your pack.
+ *
+ * Two items that look like they belong on this list are deliberately *not* on it. **Thief
+ * Insurance** stops a monster swindling you, which is a live rule again now that being swindled
+ * costs something. **Bottled Faery** comes out of a single-player encounter in `arQuest`. Both are
+ * real; only the post is dead.
+ */
+const PLAYER_MAIL = new Set(["Letter", "Postcard", "Petition", "Denial", "Grant"]);
+
 export interface Loot {
   readonly marks: number;
   readonly items: readonly Carried[];
@@ -87,7 +102,7 @@ export function rollLoot(monster: Entity, content: Content, rng: GameRandom): Lo
     }
 
     const rolled = makeCount(entry.type, count, rng);
-    if (rolled < 1) {
+    if (rolled < 1 || PLAYER_MAIL.has(name)) {
       return;
     }
     if (name === "Marks") {

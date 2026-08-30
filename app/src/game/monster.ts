@@ -143,8 +143,40 @@ export function balance(
     },
     options: def.options,
     experience: Math.trunc(((1 + attack + defend) * (100 + skill)) / 100),
-    fame: Math.trunc((guts + wits + charm) / 30) + Math.trunc(weight / 4),
+    fame:
+      Math.trunc((guts + wits + charm) / 30) +
+      Math.trunc(
+        (skillOf(def, "thief") + skillOf(def, "magic") + skillOf(def, "fight") + weight) / 4,
+      ),
   };
+}
+
+function skillOf(def: MonsterDefinition, name: string): number {
+  return def.skills.get(name) ?? 0;
+}
+
+/**
+ * What killing this thing is actually worth: `arQuest.heroWins`.
+ *
+ * Its base experience is only part of it. The rest scales with the creature's own bulk *and* with
+ * how deep you went for it, which is the whole reason to leave the Fields — a monster in the Mound
+ * is worth several times the same fight nearer home. The port awarded the base and nothing else, so
+ * there was no experience reason to go anywhere.
+ */
+export function killExperience(monster: Monster, weight: number): number {
+  return (
+    monster.experience +
+    Math.trunc(((2 * monster.guts + monster.wits + monster.charm) * weight) / 4)
+  );
+}
+
+/** What talking it down is worth: less than killing it, plus the stat that did the talking. */
+export function hypnosisExperience(monster: Monster): number {
+  return monster.experience + monster.wits;
+}
+
+export function swindleExperience(monster: Monster): number {
+  return monster.experience + monster.charm;
 }
 
 /** A fight escalates: hostile and defensive monsters get angrier each round. */

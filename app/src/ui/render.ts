@@ -27,6 +27,15 @@ import { SHOPS, sellPrice, shopByKey, stockOf } from "../game/shop.js";
 import { REGIONS } from "../game/world.js";
 import { BACKGROUNDS } from "../game/creation.js";
 import { describeUse, effectOf, isUsable, isUsableHere } from "../game/items.js";
+import {
+  JOINING_FEE,
+  TRACKS,
+  canJoin,
+  canTrain,
+  rankCost,
+  refusal,
+  totalRank,
+} from "../game/guild.js";
 import type { Carried } from "../game/hero.js";
 import { compareToWorn, deltaClass, deltaLabel, describeItem, type ItemView } from "./describe.js";
 
@@ -153,20 +162,30 @@ function statusPanel(character: Character): HTMLElement {
   const left = el("div");
   left.append(el("div", "status__name", `${character.name}, level ${String(character.level)}`));
   const stats = el("div", "status__stats");
-  const pairs: [string, string][] = [
-    ["Guts", String(character.guts)],
-    ["Wits", String(character.wits)],
-    ["Charm", String(character.charm)],
-    ["Attack", String(fighter.attack)],
-    ["Defence", String(fighter.defend)],
-    ["Skill", String(fighter.skill)],
-    ["Marks", String(character.marks)],
-    ["Fame", String(character.fame)],
+  // Six numbers with no explanation anywhere, three of them derived from the other three. The
+  // original never says what any of them do; hovering one here does.
+  const pairs: [string, string, string][] = [
+    ["Guts", String(character.guts), "Your health, and how hard you hit. Grown by fighting."],
+    ["Wits", String(character.wits), "Two thirds of your Skill. Grown by hypnotising things."],
+    ["Charm", String(character.charm), "One third of your Skill, and what you sell things for."],
+    ["Attack", String(fighter.attack), "Damage. Comes almost entirely from what you are holding."],
+    ["Defence", String(fighter.defend), "Damage taken. Comes from armour and thieving ranks."],
+    ["Skill", String(fighter.skill), "Whether a blow lands at all. Mostly Wits and Charm."],
+    ["Marks", String(character.marks), "Money."],
+    ["Fame", String(character.fame), "How well known you are. Currently a record, not a lever."],
   ];
-  for (const [label, value] of pairs) {
+  for (const [label, value, meaning] of pairs) {
     const stat = el("span", "stat");
+    stat.title = meaning;
     stat.append(el("span", "stat__label", label), el("span", "stat__value", value));
     stats.append(stat);
+  }
+  const ranks = totalRank(character.ranks);
+  if (ranks > 0) {
+    const parts = TRACKS.filter((t) => character.ranks[t.key] > 0).map(
+      (t) => `${t.name} ${String(character.ranks[t.key])}`,
+    );
+    left.append(el("div", "ranks", `Guild: ${parts.join(", ")}`));
   }
   left.append(stats);
   if (character.disease > 0) {
@@ -503,6 +522,7 @@ function townScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTMLE
     go({ kind: "shop", shop: shop.key }, shop.name.replace(/'s .*/, "'s"));
   }
   go({ kind: "temple" }, "Temple");
+  go({ kind: "guild" }, "Guild");
   go({ kind: "status" }, "Character");
   panel.append(actions);
   return panel;
@@ -809,6 +829,93 @@ function templeScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTM
 }
 
 /**
+ * The guild.
+ *
+ * The one place in the game where you choose *what kind* of stronger you get. Levelling grants the
+ * same +2 to everything however you play; a rank is bought, one at a time, in one of three
+ * directions, and every one of them is immediately visible in the numbers at the top of the screen.
+ */
+function guildScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTMLElement {
+  const panel = el("section", "panel");
+  const character = game.character;
+  panel.append(el("h1", undefined, "The Adventurer's Guild"));
+  if (character === null) {
+    return panel;
+  }
+  const member = character.traits.has("Guild");
+  panel.append(
+    el(
+      "p",
+      undefined,
+      member
+        ? "A hall of people who have survived things, and will tell you how for money."
+        : `A hall of people who have survived things. Membership is ${String(JOINING_FEE)} Marks, and they do not haggle.`,
+    ),
+  );
+  const box = notices(game);
+  if (box !== null) {
+    panel.append(box);
+  }
+
+  if (!member) {
+    const actions = el("div", "actions");
+    actions.append(
+      button(
+        `Join — ${String(JOINING_FEE)} Marks`,
+        () => {
+          dispatch({ kind: "joinGuild" });
+          rerender();
+        },
+        { primary: true, disabled: !canJoin(member, character.marks) },
+      ),
+    );
+    panel.append(actions);
+    const why = refusal(character.ranks, character.level, member, character.marks);
+    if (why !== null) {
+      panel.append(el("p", "aside", why));
+    }
+    panel.append(backTo({ kind: "town" }, dispatch, rerender));
+    return panel;
+  }
+
+  const cost = rankCost(character.ranks);
+  const trainable = canTrain(character.ranks, character.level, member, character.marks);
+  panel.append(
+    el(
+      "p",
+      undefined,
+      `You hold ${String(totalRank(character.ranks))} ranks and are level ${String(character.level)}. ` +
+        `The next rank costs ${cost === 0 ? "nothing" : `${String(cost)} Marks`}.`,
+    ),
+  );
+
+  const choices = el("div", "choices");
+  for (const track of TRACKS) {
+    const card = el("button", "choice");
+    card.type = "button";
+    card.disabled = !trainable;
+    card.append(
+      el("span", "choice__name", `${track.name} — rank ${String(character.ranks[track.key])}`),
+    );
+    card.append(el("span", "choice__blurb", track.blurb));
+    card.append(el("span", "choice__effect", track.effect));
+    card.addEventListener("click", () => {
+      dispatch({ kind: "train", track: track.key });
+      rerender();
+    });
+    choices.append(card);
+  }
+  panel.append(choices);
+
+  const why = refusal(character.ranks, character.level, member, character.marks);
+  if (why !== null) {
+    panel.append(el("p", "aside", why));
+  }
+  panel.append(backTo({ kind: "town" }, dispatch, rerender));
+  return panel;
+}
+
+/**
  * Losing.
  *
  * You keep your level, your money, your loot and everything you were wearing. What losing costs is
@@ -822,7 +929,8 @@ function fallenScreen(game: Game, rerender: () => void): HTMLElement {
       "p",
       undefined,
       `${game.character?.name ?? "Your hero"} loses the fight, and the grass closes over. ` +
-        "You lose nothing but the fight itself.",
+        "It costs you a tenth of your Marks. You keep your level, your gear and everything " +
+        "you were carrying.",
     ),
   );
   const actions = el("div", "actions");
@@ -1003,6 +1111,9 @@ export function render(root: HTMLElement, game: Game, ui: UiState, onChange?: ()
       break;
     case "temple":
       root.append(templeScreen(game, dispatch, rerender));
+      break;
+    case "guild":
+      root.append(guildScreen(game, dispatch, rerender));
       break;
     case "fallen":
       root.append(fallenScreen(game, rerender));

@@ -73,6 +73,33 @@ Tools.setToday("2026-08-30");
 
 `Tools.getPlayer()` is null until `arLoading` runs, so construct `new Player()` directly.
 
+## The parity baseline
+
+```
+./gradlew baseline           # records baseline/baseline.txt
+```
+
+`src/harness/java` is a separate source set — it never ships in the game jar — holding a
+characterisation harness that records how the game *actually* behaves: the RNG primitives, the
+levelling curve, every monster fought by four hero builds at five seeds, and gear decay for every
+item in `ArmsTable`. The output is committed. See [roadmap.md](roadmap.md) for why it exists: the
+TypeScript port is checked against this file, so parity is a diff rather than an opinion.
+
+Three facts make it work, and they are worth knowing before changing it:
+
+- **The game is deterministic under `Tools.setSeed`.** Seed it, drive a battle through the real
+  `arQuest` and `arBattle` constructors, and the output is byte-identical every run. Two
+  consecutive runs of `./gradlew baseline` produce the same file.
+- **None of it needs a display.** The content tables and the whole combat path run under
+  `java.awt.headless=true`, which is why the harness needed no changes to game code. Loader stages
+  0 and 1 are skipped — they are the splash screen and the status bar, pure display.
+- **Go through the real constructors.** Bypassing `arBattle`'s constructor and calling `battle()`
+  directly gives a *different* result from the same seed, because the constructor consumes the
+  generator on its way past. A shortcut into the maths records something the game never does.
+
+Regenerating the file and finding a diff means behaviour changed. That is either the bug you meant
+to fix, or one you did not.
+
 ## Testing the browser build
 
 CheerpJ needs a real HTTP origin; `file://` will not work.

@@ -46,6 +46,30 @@ sourceSets {
     }
 }
 
+// The characterisation harness: records how the Java build actually behaves, so the
+// TypeScript port can be diffed against it. Its own source set, so nothing here ships
+// in the game jar. See docs/development.md.
+sourceSets {
+    harness {
+        java {
+            srcDir 'src/harness/java'
+        }
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.resources.sourceDirectories
+    }
+}
+
+tasks.register('baseline', JavaExec) {
+    group = 'verification'
+    description = 'Records the parity baseline into baseline/baseline.txt'
+    mainClass = 'DCourt.Harness.Baseline'
+    classpath = sourceSets.harness.runtimeClasspath
+    systemProperty 'java.awt.headless', 'true'
+    if (project.hasProperty('out')) {
+        args project.property('out')
+    }
+}
+
 jar {
     manifest {
         attributes('Main-Class': application.mainClass)

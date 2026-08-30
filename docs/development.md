@@ -76,29 +76,50 @@ Tools.setToday("2026-08-30");
 ## The parity baseline
 
 ```
-./gradlew baseline           # records baseline/baseline.txt
+./gradlew baseline           # records baseline/rules.txt and baseline/distributions.txt
 ```
 
 `src/harness/java` is a separate source set — it never ships in the game jar — holding a
-characterisation harness that records how the game *actually* behaves: the RNG primitives, the
-levelling curve, every monster fought by four hero builds at five seeds, and gear decay for every
-item in `ArmsTable`. The output is committed. See [roadmap.md](roadmap.md) for why it exists: the
-TypeScript port is checked against this file, so parity is a diff rather than an opinion.
+characterisation harness that records how the game actually behaves, so the TypeScript port can be
+checked against it. See [roadmap.md](roadmap.md) for why.
 
-Three facts make it work, and they are worth knowing before changing it:
+**Parity is defined in two halves, and the split is the important part.**
 
-- **The game is deterministic under `Tools.setSeed`.** Seed it, drive a battle through the real
-  `arQuest` and `arBattle` constructors, and the output is byte-identical every run. Two
-  consecutive runs of `./gradlew baseline` produce the same file.
-- **None of it needs a display.** The content tables and the whole combat path run under
-  `java.awt.headless=true`, which is why the harness needed no changes to game code. Loader stages
-  0 and 1 are skipped — they are the splash screen and the status bar, pure display.
-- **Go through the real constructors.** Bypassing `arBattle`'s constructor and calling `battle()`
-  directly gives a *different* result from the same seed, because the constructor consumes the
-  generator on its way past. A shortcut into the maths records something the game never does.
+- `baseline/rules.txt` — the arithmetic, as functions with every input stated and every output a
+  number: attack resolution across the stat ranges the game reaches, gear and traits into derived
+  combat stats, the special actions, decay, the levelling curve and what crossing a level gives you,
+  a save round-trip, and what every monster drops. **Checked exactly.** A diff is a port defect.
+- `baseline/distributions.txt` — how the game plays over large samples: hit rate for every Skill
+  matchup, and complete fights per monster and hero build classified by how they ended. **Checked by
+  shape.** A port may consume randomness in a different order; it may not play differently.
 
-Regenerating the file and finding a diff means behaviour changed. That is either the bug you meant
-to fix, or one you did not.
+The obvious single definition is wrong in both directions, which is worth understanding before
+changing any of this. Recording battle prose would freeze the port's wording to the 1997 text, when
+the point of the rewrite is a freer presentation. And demanding byte-identical replay would force
+the port to mirror the old code's call order — `arBattle`'s constructor consumes randomness before
+the fight starts — so a correct rewrite would fail for reasons unrelated to the rules.
+
+Things that cost time to find, and will cost it again:
+
+- **The game is deterministic under `Tools.setSeed`**, and none of it needs a display. That is why
+  the harness needed no changes to game code. Loader stages 0 and 1 are skipped: splash and status
+  bar, pure display.
+- **A chosen action is the actions list's *name*, not an entry in it.** `isMatch` on a list compares
+  the list's own name, and `chooseActions` sets it with `setName`. Adding an entry selects nothing,
+  silently.
+- **`Constants.BERZERK` is spelt `"Berzek"`** in the original. The obvious spelling matches nothing.
+- **Gear does not reach `getAttack()` on its own.** That is a stored value; `calcCombat()` is what
+  folds in gear, guild ranks and the Agile/Strong/Sturdy traits. Equip without it and the sword does
+  nothing.
+- **Action multipliers live in `battle()`, not `agentAct()`.** Backstab doubles Guts and Speed
+  before either side acts, so characterising a single attack misses them entirely.
+- **`Options.nextRound` is not presentation** — it calls `incStance` on hostile and defensive
+  monsters, so a fight driver that skips it records a different game.
+- The harness redirects `dragoncourt.saveDir` to a temp directory, because levelling triggers the
+  game's autosave and would otherwise drop characters into `saves/`.
+
+Regenerating and finding a diff means behaviour changed. That is either the bug you meant to fix, or
+one you did not.
 
 ## Testing the browser build
 

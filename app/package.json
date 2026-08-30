@@ -2,6 +2,7 @@
   "name": "rustydagger",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.21.0",
   "description": "Dragon Court, rebuilt as a local web app. See ../docs/roadmap.md.",
   "scripts": {
     "dev": "pnpm sync-content && vite",

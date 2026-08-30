@@ -51,6 +51,12 @@ public final class Harness {
     System.setProperty(SaveStore.DIR_PROPERTY, scratch.toString());
     new Tools(new DCourtPanel());
     Tools.setToday("2026-08-30");
+    // Seeded here, before the tables load, because loading them *builds* the monsters -- and
+    // building a monster resolves the slots in its flavour text by rolling
+    // ({~|$smile$|smiling|grinning|winking}). Without this the content export differs on every
+    // run, so `git diff --exit-code content/` in CI fails whether or not anything changed. Every
+    // measurement below reseeds before it starts, so this fixes the tables without touching them.
+    Tools.setSeed(20260830);
     for (int stage = 2; stage <= 6; stage++) {
       Tools.isLoading(stage);
     }

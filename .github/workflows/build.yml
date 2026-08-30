@@ -36,15 +36,20 @@ jobs:
         working-directory: app
     steps:
       - uses: actions/checkout@v5
+      # Without this the action cannot tell which pnpm to install and the whole job fails
+      # before it runs a single test. There is no package.json at the repository root.
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: app/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: pnpm
           cache-dependency-path: app/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
-      - run: pnpm build
+      # `verify`, not `check`: it also builds the bundle and plays a game through the built
+      # artefact. A broken content path or a bundling mistake passes every unit test.
+      - run: pnpm verify
 
   # The exported content is generated from the Java build, so it can go stale silently.
   # Regenerating it in CI and diffing catches that.

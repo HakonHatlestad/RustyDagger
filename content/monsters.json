@@ -7,14 +7,14 @@
       "guts": 60,
       "wits": 60,
       "charm": 60,
-      "source": "{itMonster|Fighter|60|60|60|40|40|100\n\t|{=|pic|Brasil/Fighter.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{#|Marks|4000}|{%|Platinum Ring|30}|\n\t\t{@|Healing Salve|6}|{@|Seltzer Water|2}|{%|Rutter for Hie Brasil|30}|\n\t\t{%|Silver Gladius|1}}|\n\t{~|temp|{@|fight|4}|{#|Actions|2}}|\n\t{~|gear|{%|Gladius|30}|{%|Great Targe|30}}|\n\t{~|opts|bribe|swindle|control}|\n\t{itText|text|You ask directions from the waving locals. They point you up a street, around a corner. Next thing you know, you are in an arena facing an armed Gladiator. A man in purple robes waves for the games to begin.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Fighter|60|60|60|40|40|100\n\t|{=|pic|Brasil/Fighter.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{#|Marks|4000}|{%|Platinum Ring|30}|\n\t\t{@|Healing Salve|6}|{@|Seltzer Water|2}|{%|Rutter for Hie Brasil|30}|\n\t\t{%|Silver Gladius|1}}|\n\t{~|temp|{@|fight|4}|{#|Actions|2}}|\n\t{~|gear|{%|Gladius|30}|{%|Great Targe|30}}|\n\t{~|opts|bribe|swindle|control}|\n\t{itText|text|You ask directions from the laughing locals. They point you up a street, around a corner. Next thing you know, you are in an arena facing an armed Gladiator. A man in purple robes waves for the games to begin.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Brasil:Golem",
       "guts": 90,
       "wits": 30,
       "charm": 30,
-      "source": "{itMonster|Golem|90|30|30|50|50|40\n\t|{=|pic|Brasil/Golem.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Quartz|8}|{@|Opal|6}|\n\t\t{@|Garnet|5}|{@|Emerald|4}|{@|Ruby|3}|\n\t\t{@|Turquoise|2}}|\n\t{~|gear|{%|Rock Fists|0}|{%|Rock Skin|0}}|\n\t{~|opts|backstab|control}|\n\t{itText|text|You are stalking carefully through a recently destroyed castle, carefully watching for the cause. You pass a smoking corpse and come face to face with a twenty foot tall monstrosity made entirely of rock.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Golem|90|30|30|50|50|40\n\t|{=|pic|Brasil/Golem.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Quartz|8}|{@|Opal|6}|\n\t\t{@|Garnet|5}|{@|Emerald|4}|{@|Ruby|3}|\n\t\t{@|Turquoise|2}}|\n\t{~|gear|{%|Rock Fists|0}|{%|Rock Skin|0}}|\n\t{~|opts|backstab|control}|\n\t{itText|text|You are stalking carefully through a recently destroyed village, carefully watching for the cause. You pass a corner and come face to face with a twenty foot tall monstrosity made entirely of rock.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Brasil:Harpy",
@@ -28,154 +28,154 @@
       "guts": 120,
       "wits": 50,
       "charm": 50,
-      "source": "{itMonster|Hero|120|50|50|40|40|160\n\t|{=|pic|Brasil/Hero.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{#|Gold Apple|7}|{#|Marks|10000}|\n\t\t{@|Bless Scroll|3}|{#|Platinum Ring|5}|{%|Rutter for Shangala|20}|\n\t\t{%|Cookie|1}}|\n\t{~|gear|{%|Mighty Fists|0}|{%|Godly Aura|0}}|\n\t{~|opts|riddle|backstab|swindle|control}|\n\t{itText|text|A mighty champion bars your path. \"Bow before the might of Joxur, mightiest hero of Hie Brasil.\" He flexes his bulging chest, \"Meet my challenge in a contest of wits.\", he grins.  ... shouldn't be too hard...}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Hero|120|50|50|40|40|160\n\t|{=|pic|Brasil/Hero.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{#|Gold Apple|7}|{#|Marks|10000}|\n\t\t{@|Bless Scroll|3}|{#|Platinum Ring|5}|{%|Rutter for Shangala|20}|\n\t\t{%|Cookie|1}}|\n\t{~|gear|{%|Mighty Fists|0}|{%|Godly Aura|0}}|\n\t{~|opts|riddle|backstab|swindle|control}|\n\t{itText|text|A mighty hero bars your path. \"Bow before the might of Damocles, mightiest hero of Hie Brasil.\" He flexes his bulging chest, \"Meet my challenge in a contest of wits.\", he grins.  ... shouldn't be too hard...}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Brasil:Medusa",
       "guts": 50,
       "wits": 70,
       "charm": 70,
-      "source": "{itMonster|Medusa|50|70|70|20|20|100\n\t|{=|pic|Brasil/Medusa.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Gold Nugget|40}|{@|Panic Dust|5}|\n\t\t{@|Blinding Dust|2}|{@|Identify Scroll|5}|{@|Enchant Scroll|5}|\n\t\t{%|Youth Elixir|2}|{%|Aging Elixir|1}|{%|Snake Scale Suit|15}|\n\t\t{%|Bottled Faery|7}}|\n\t{~|temp|{#|Actions|2}|{%|thief|25}|\n\t\t{%|magic|25}|{%|fight|25}}|\n\t{~|gear|{%|Fierce Gaze|0}|{%|Torso Scales|0}|panic|\n\t\tblind}|\n\t{~|opts|seduce|backstab|swindle}|\n\t{itText|text|You are stoking the fire, late one night, whan an ominous hissing emerges from the dark. Against the pale moonlight, you see the outline of a woman with a snakes sprouting from her skull. \"Come\", she hisses, \"Ssseduce me...\"}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Medusa|50|70|70|20|20|100\n\t|{=|pic|Brasil/Medusa.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Gold Nugget|40}|{@|Panic Dust|5}|\n\t\t{@|Blinding Dust|2}|{@|Identify Scroll|5}|{@|Enchant Scroll|5}|\n\t\t{%|Youth Elixir|2}|{%|Aging Elixir|1}|{%|Snake Scale Suit|15}|\n\t\t{%|Bottled Faery|7}}|\n\t{~|temp|{#|Actions|2}|{%|thief|25}|\n\t\t{%|magic|25}|{%|fight|25}}|\n\t{~|gear|{%|Fierce Gaze|0}|{%|Torso Scales|0}|panic|\n\t\tblind}|\n\t{~|opts|seduce|backstab|swindle}|\n\t{itText|text|You are staring at stars, late one night, whan an ominous hissing emerges from the dark. Against the pale moonlight, you see the outline of a woman with a snakes sprouting from her skull. \"Come\", she hisses, \"Hold my handss.\"}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Castle:Guard",
       "guts": 100,
       "wits": 100,
       "charm": 100,
-      "source": "{itMonster|Guard|100|100|100|40|40|80\n\t|{=|pic|Other/Guard.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Gold Apple|5}|{@|Marks|1000}}|\n\t{~|temp|{#|Actions|3}|{#|fight|8}}|\n\t{~|gear|{%|Bill Hook|20}|{%|Full Plate|20}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|The palace is guarded by a strong Pikeman who refuse you passage.  \"Only nobility may pass these borders\", he declaims.  You see his hand surreptitiously making the universal signal for 'bribe me'.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Guard|100|100|100|40|40|80\n\t|{=|pic|Other/Guard.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Gold Apple|5}|{@|Marks|1000}}|\n\t{~|temp|{#|Actions|3}|{#|fight|8}}|\n\t{~|gear|{%|Bill Hook|20}|{%|Full Plate|20}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|The palace is guarded by a sturdy Knight who refuse you passage.  \"Only nobility may pass these borders\", he declaims.  You see his hand surreptitiously making the universal signal for 'bribe me'.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Dunjeon:Gang",
       "guts": 50,
       "wits": 25,
       "charm": 25,
-      "source": "{itMonster|Gang|50|25|25|5|10|50\n\t|{=|pic|Mound/Gang.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{@|Marks|100}|{@|Gold Nugget|3}|\n\t\t{@|Blast Powder|4}|{%|Turquoise|50}|{%|Ruby|50}|\n\t\t{%|Emerald|50}|{#|Quartz|2}|{%|Miners Cap|20}}|\n\t{~|gear|{%|Blast Powder|0}|{%|Miner Caps|0}|Blast}|\n\t{~|opts|trade|swindle|control}|\n\t{itText|text|A Band of Goblins are noisily setting charges in a remote corridor.  Gems gleam from their pockets. They are laughing and goosing each other.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Gang|50|25|25|5|10|50\n\t|{=|pic|Mound/Gang.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{@|Marks|100}|{@|Gold Nugget|3}|\n\t\t{@|Blast Powder|4}|{%|Turquoise|50}|{%|Ruby|50}|\n\t\t{%|Emerald|50}|{#|Quartz|2}|{%|Miners Cap|20}}|\n\t{~|gear|{%|Blast Powder|0}|{%|Miner Caps|0}|Blast}|\n\t{~|opts|trade|swindle|control}|\n\t{itText|text|A Party of Goblins are noisily setting charges in a remote corridor.  Gems gleam from their pockets. They are laughing and slap fighting.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Dunjeon:Mage",
       "guts": 30,
       "wits": 50,
       "charm": 30,
-      "source": "{itMonster|Mage|30|50|30|10|30|80\n\t|{=|pic|Fields/Oldman.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Marks|1000}|{@|Quartz|3}|\n\t\t{@|Opal|2}|{@|Garnet|1}|{@|Gold Apple|6}|\n\t\t{%|Identify Scroll|50}|{%|Rutter for Hie Brasil|10}|{%|Silver Staff|1}|\n\t\t{%|Bottled Faery|5}}|\n\t{~|temp|{#|Actions|2}|{#|magic|3}|\n\t\t{%|thief|50}}|\n\t{~|gear|{%|Mystic Staff|20}|{%|Mystic Robes|20}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|Deep within the catacombs, you find an old man resting within an alchemical laboratory.  The Warlock stands slowly, stretching his rusty limbs, then smiles at you.  \"Ah good, exactly what I need to complete my experiment ...\"}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Mage|30|50|30|10|30|80\n\t|{=|pic|Fields/Oldman.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Marks|1000}|{@|Quartz|3}|\n\t\t{@|Opal|2}|{@|Garnet|1}|{@|Gold Apple|6}|\n\t\t{%|Identify Scroll|50}|{%|Rutter for Hie Brasil|10}|{%|Silver Staff|1}|\n\t\t{%|Bottled Faery|5}}|\n\t{~|temp|{#|Actions|2}|{#|magic|3}|\n\t\t{%|thief|50}}|\n\t{~|gear|{%|Mystic Staff|20}|{%|Mystic Robes|20}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|Deep within the catacombs, you find an old man resting within an alchemical laboratory.  The Sorcerer stands slowly, stretching his rusty limbs, then smiles at you.  \"Ah good, exactly what I need to complete my experiment ...\"}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Dunjeon:Rager",
       "guts": 40,
       "wits": 25,
       "charm": 25,
-      "source": "{itMonster|Berzerker|40|25|25|15|15|70\n\t|{=|pic|Mound/Rager.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Teeth|20}|{@|Gold Nugget|8}|\n\t\t{%|Silver Weird Knife|1}}|\n\t{~|temp|{#|fight|5}}|\n\t{~|gear|{%|Weird Knife|15}|{%|Goblin Shield|15}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|A $mood$ Goblin Suicide charges you from the darkness.  It is foul, noisy, drooling, frothing and smelly.  From the looks of things, it has been locked down here for a very long time.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Berzerker|40|25|25|15|15|70\n\t|{=|pic|Mound/Rager.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Teeth|20}|{@|Gold Nugget|8}|\n\t\t{%|Silver Weird Knife|1}}|\n\t{~|temp|{#|fight|5}}|\n\t{~|gear|{%|Weird Knife|15}|{%|Goblin Shield|15}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|A $mood$ Goblin Maniac charges you from the darkness.  It is foul, noisy, drooling, frothing and smelly.  From the looks of things, it has been locked down here for a very long time.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Dunjeon:Rodent",
       "guts": 40,
       "wits": 20,
       "charm": 20,
-      "source": "{itMonster|Rodent|40|20|20|30|10|40\n\t|{=|pic|Fields/Rodent.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Teeth|30}|{@|Garnet|2}|\n\t\t{@|Opal|1}|{@|Food|5}|{%|Silver Tail Whip|1}|\n\t\t{%|Rat Tail Whip|20}}|\n\t{~|gear|{%|Yellow Teeth|0}|{%|Mangy Fur|0}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|Down a dark and dingy corridor you hear an ominous squeaking.  Upon closer investigation you find an enormous Mole chewing on some old bones.  It immediately charges you.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Rodent|40|20|20|30|10|40\n\t|{=|pic|Fields/Rodent.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Teeth|30}|{@|Garnet|2}|\n\t\t{@|Opal|1}|{@|Food|5}|{%|Silver Tail Whip|1}|\n\t\t{%|Rat Tail Whip|20}}|\n\t{~|gear|{%|Yellow Teeth|0}|{%|Mangy Fur|0}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|Down a dark and dingy corridor you hear an ominous squeaking.  Upon closer investigation you find a huge Rabbit chewing on some corpse.  It immediately charges you.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Dunjeon:Snot",
       "guts": 70,
       "wits": 30,
       "charm": 30,
-      "source": "{itMonster|Snot|70|30|30|16|16|20\n\t|{=|pic|Forest/Snot.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|300}|{%|Seltzer Water|80}|\n\t\t{%|Turquoise|40}|{%|Dragon Shield|15}|{%|Great Pike|15}}|\n\t{~|gear|{%|Snot Lobber|0}|{%|Mucous Layer|0}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|Its a Snot.  A big ugly pile of goo.  It slithers through the corridors like a force of nature, muttering, \" Need Food ... Need Food \"  It smells like dung.  From the looks of things, it considers you to be dinner.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Snot|70|30|30|16|16|20\n\t|{=|pic|Forest/Snot.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|300}|{%|Seltzer Water|80}|\n\t\t{%|Turquoise|40}|{%|Dragon Shield|15}|{%|Great Pike|15}}|\n\t{~|gear|{%|Snot Lobber|0}|{%|Mucous Layer|0}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|Its a Snot.  A big ugly pile of goo.  It slithers through the corridors like a force of nature, muttering, \" Feed Me ... Feed Me \"  It smells like dung.  From the looks of things, it considers you to be lunch.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Dunjeon:Troll",
       "guts": 50,
       "wits": 50,
       "charm": 30,
-      "source": "{itMonster|Troll|50|50|30|20|20|40\n\t|{=|pic|Hills/Troll.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Gold Nugget|10}|{@|Ruby|2}|\n\t\t{@|Turquoise|2}|{@|Torch|10}|{%|Panic Dust|20}|\n\t\t{%|Blinding Dust|20}|{%|Mandrake Root|20}|{@|Troll Wart|6}}|\n\t{~|temp|{@|thief|2}|{@|fight|2}}|\n\t{~|gear|{%|Huge Claws|0}|{%|Knotted Muscles|0}|blind}|\n\t{~|opts|help|swindle|control}|\n\t{itText|text|You see a scarred Troll trying to break his way through a wall.  With it's blunt claws and it's inexplicable decision to use a teddy bear as a prybar, it is likely to be here quite some time.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Troll|50|50|30|20|20|40\n\t|{=|pic|Hills/Troll.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Gold Nugget|10}|{@|Ruby|2}|\n\t\t{@|Turquoise|2}|{@|Torch|10}|{%|Panic Dust|20}|\n\t\t{%|Blinding Dust|20}|{%|Mandrake Root|20}|{@|Troll Wart|6}}|\n\t{~|temp|{@|thief|2}|{@|fight|2}}|\n\t{~|gear|{%|Huge Claws|0}|{%|Knotted Muscles|0}|blind}|\n\t{~|opts|help|swindle|control}|\n\t{itText|text|You see a warty Troll trying to break his way through a wall.  With it's twisted claws and it's inexplicable decision to use a toad as a prybar, it is likely to be here quite some time.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Faery",
       "guts": 1,
       "wits": 16,
       "charm": 9,
-      "source": "{itMonster|Faery|1|16|9|0|0|500\n\t|{=|pic|Other/Faery.jpg}|\n\t{~|values|{=|passion|timid}|adjust}|\n\t{~|pack|{@|Panic Dust|3}|{@|Blinding Dust|3}}|\n\t{~|temp|{#|Actions|3}|{#|magic|2}}|\n\t{~|gear|{%|Faery Fists|0}|{%|Sparkly Wings|0}}|\n\t{~|opts|capture|swindle|control}|\n\t{itText|text|You are making your way towards smoke in the distance when a chuckling sound catches your attention.  Pushing your way past some branches, you find a small pond with a glowing Faery floating above it.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Faery|1|16|9|0|0|500\n\t|{=|pic|Other/Faery.jpg}|\n\t{~|values|{=|passion|timid}|adjust}|\n\t{~|pack|{@|Panic Dust|3}|{@|Blinding Dust|3}}|\n\t{~|temp|{#|Actions|3}|{#|magic|2}}|\n\t{~|gear|{%|Faery Fists|0}|{%|Sparkly Wings|0}}|\n\t{~|opts|capture|swindle|control}|\n\t{itText|text|You are making your way towards smoke in the distance when a chuckling sound catches your attention.  Pushing your way past some shrubs, you find a small puddle with a glistening Faery floating above it.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Fields:Centaur",
       "guts": 12,
       "wits": 8,
       "charm": 12,
-      "source": "{itMonster|Centaur|12|8|12|10|6|2\n\t|{=|pic|Fields/Centaur.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{@|Marks|25}|{%|Quartz|100}}|\n\t{~|gear|{%|Long Bow|15}|{%|Horse Barding|0}}|\n\t{~|opts|trade|swindle|control}|\n\t{itText|text|While striding towards a distant stand of trees, you mount a rise to discover a young Horse Man watching you sadly.  It's bow is not pointed at you, but that could change in an instant.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Centaur|12|8|12|10|6|2\n\t|{=|pic|Fields/Centaur.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{@|Marks|25}|{%|Quartz|100}}|\n\t{~|gear|{%|Long Bow|15}|{%|Horse Barding|0}}|\n\t{~|opts|trade|swindle|control}|\n\t{itText|text|While striding towards a distant stand of trees, you mount a rise to discover an aged Centaur Sage watching you calmly.  It's bow is not pointed at you, but that could change in an instant.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Fields:Goblin",
       "guts": 6,
       "wits": 6,
       "charm": 6,
-      "source": "{itMonster|Goblin|6|6|6|3|2|-3\n\t|{=|pic|Fields/Goblin.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Food|1}|{@|Marks|12}}|\n\t{~|gear|{%|Rusty Dagger|40}|{%|Rotting Leathers|0}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|You are wandering past a rock when suddenly a frightened Goblin leaps out and accosts you. It grunts out a message in some foreign language, but you think the Goblin wants money.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Goblin|6|6|6|3|2|-3\n\t|{=|pic|Fields/Goblin.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Food|1}|{@|Marks|12}}|\n\t{~|gear|{%|Rusty Dagger|40}|{%|Rotting Leathers|0}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|You are wandering past a barrow when suddenly a frightened Dwarf leaps out and accosts you. It grunts out a message in some strange language, but you think the Dwarf wants money.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Fields:Gypsy",
       "guts": 9,
       "wits": 8,
       "charm": 15,
-      "source": "{itMonster|Gypsy|9|8|15|6|2|2\n\t|{=|pic|Fields/Gypsy.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|8}|{@|Torch|1}|\n\t\t{@|Rope|1}|{%|Silver Throwing Knife|1}}|\n\t{~|gear|{%|Throwing Knife|50}|{%|Leather Jacket|25}}|\n\t{~|opts|trade|backstab|swindle|control}|\n\t{itText|text|You stroll over a small hillock in the landscape and discover the camp of a dusty Traveller.  He grins wickedly, then rapidly corners you.  The Traveller plays with his knife while suggesting that you 'trade'.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Gypsy|9|8|15|6|2|2\n\t|{=|pic|Fields/Gypsy.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|8}|{@|Torch|1}|\n\t\t{@|Rope|1}|{%|Silver Throwing Knife|1}}|\n\t{~|gear|{%|Throwing Knife|50}|{%|Leather Jacket|25}}|\n\t{~|opts|trade|backstab|swindle|control}|\n\t{itText|text|You stroll over a small mound in the landscape and discover the camp of a sneaky Gypsy.  He grins wickedly, then rapidly corners you.  The Gypsy plays with his knife while suggesting that you 'trade'.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Fields:Merchant",
       "guts": 3,
       "wits": 8,
       "charm": 5,
-      "source": "{itMonster|Merchant|3|8|5|2|1|1\n\t|{=|pic|Fields/Oldman.jpg}|\n\t{~|values|{=|passion|passive}}|\n\t{~|pack|{@|Marks|50}|{@|Torch|1}|\n\t\t{@|Rope|1}|{@|Food|1}}|\n\t{~|gear|{%|Staff|20}|{%|Clothes|20}}|\n\t{~|opts|help|backstab|swindle|control}|\n\t{itText|text|You come upon a sad gent sitting beside a broken wind mill.  He looks tired and distraught.  The guy asks if you could kindly help to fix his wind mill.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Merchant|3|8|5|2|1|1\n\t|{=|pic|Fields/Oldman.jpg}|\n\t{~|values|{=|passion|passive}}|\n\t{~|pack|{@|Marks|50}|{@|Torch|1}|\n\t\t{@|Rope|1}|{@|Food|1}}|\n\t{~|gear|{%|Staff|20}|{%|Clothes|20}}|\n\t{~|opts|help|backstab|swindle|control}|\n\t{itText|text|You come upon an ugly fellow sitting beside a broken backpack.  He looks tired and distraught.  The guy asks if you could kindly help to fix his backpack.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Fields:Rodent",
       "guts": 4,
       "wits": 8,
       "charm": 6,
-      "source": "{itMonster|Rodent|4|8|6|1|0|0\n\t|{=|pic|Fields/Rodent.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Teeth|8}}|\n\t{~|gear|{%|Yellow Teeth|0}|{%|Mangy Fur|0}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|Searching through the fields you come upon a black Vole rooting listlessly through a bush. The Vole spies you and spins around, snarling viciously.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Rodent|4|8|6|1|0|0\n\t|{=|pic|Fields/Rodent.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Teeth|8}}|\n\t{~|gear|{%|Yellow Teeth|0}|{%|Mangy Fur|0}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|Searching through the fields you come upon a deadly Ferret rooting savagely through a shrub. The Ferret spies you and spins around, snarling viciously.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Fields:Soldier",
       "guts": 13,
       "wits": 13,
       "charm": 13,
-      "source": "{itMonster|Soldier|13|13|13|8|8|8\n\t|{=|pic|Fields/Soldier.jpg}|\n\t{~|values|{=|passion|hostile}|adjust}|\n\t{~|pack|{@|Marks|60}|{%|Healing Salve|50}|\n\t\t{%|Silver Pike|1}}|\n\t{~|gear|{%|Pike|25}|{%|Half Plate|25}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|You are following a road towards the village of Forstead when you encounter a brutal Knight blocking the road. He savagely announces that you are required to pay a 'toll' if you wish to pass.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Soldier|13|13|13|8|8|8\n\t|{=|pic|Fields/Soldier.jpg}|\n\t{~|values|{=|passion|hostile}|adjust}|\n\t{~|pack|{@|Marks|60}|{%|Healing Salve|50}|\n\t\t{%|Silver Pike|1}}|\n\t{~|gear|{%|Pike|25}|{%|Half Plate|25}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|You are following a road towards the village of Forstead when you encounter a lazy Knight blocking the road. He vigorously announces that you are required to pay a 'toll' if you wish to pass.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Fields:Wizard",
       "guts": 1,
       "wits": 3,
       "charm": 2,
-      "source": "{itMonster|Wizard|1|3|2|6|12|10\n\t|{=|pic|Fields/Oldman.jpg}|\n\t{~|values|{=|passion|defensive}|adjust}|\n\t{~|pack|{@|Marks|20}|{%|Opal|60}|\n\t\t{%|Healing Salve|20}|{%|Bottled Faery|1}}|\n\t{~|temp|{#|magic|1}}|\n\t{~|gear|{%|Staff|20}|{%|Clothes|0}}|\n\t{~|opts|help|backstab|swindle|control}|\n\t{itText|text|You come upon an old man sitting beside a broken water pump.  He looks tired and distraught.  The gent asks if you could kindly help to fix his water pump.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Wizard|1|3|2|6|12|10\n\t|{=|pic|Fields/Oldman.jpg}|\n\t{~|values|{=|passion|defensive}|adjust}|\n\t{~|pack|{@|Marks|20}|{%|Opal|60}|\n\t\t{%|Healing Salve|20}|{%|Bottled Faery|1}}|\n\t{~|temp|{#|magic|1}}|\n\t{~|gear|{%|Staff|20}|{%|Clothes|0}}|\n\t{~|opts|help|backstab|swindle|control}|\n\t{itText|text|You come upon a sad guy sitting beside a broken wagon.  He looks tired and distraught.  The gent asks if you could kindly help to fix his wagon.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Forest:Boar",
       "guts": 16,
       "wits": 12,
       "charm": 12,
-      "source": "{itMonster|Boar|16|12|12|8|8|10\n\t|{=|pic|Forest/Boar.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{%|Tusk|160}|{@|Food|10}|\n\t\t{%|War Tusk|20}}|\n\t{~|gear|{%|Pointy Tusks|0}|{%|Furry Hide|0}}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|A huge Swine comes barreling out of the under brush and immediately charges you, squealing with confusion. You dodge the first rush, then spin about and taunt it by crying, \"Come and get it piggy!\"}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Boar|16|12|12|8|8|10\n\t|{=|pic|Forest/Boar.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{%|Tusk|160}|{@|Food|10}|\n\t\t{%|War Tusk|20}}|\n\t{~|gear|{%|Pointy Tusks|0}|{%|Furry Hide|0}}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|A black Tusker comes barreling out of the under brush and immediately charges you, squealing with hunger. You dodge the first rush, then spin about and taunt it by crying, \"Care to dance?\"}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Forest:Elf",
       "guts": 25,
       "wits": 18,
       "charm": 30,
-      "source": "{itMonster|Elf|25|18|30|15|10|12\n\t|{=|pic|Forest/Elf.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{@|Marks|40}|{@|Garnet|1}|\n\t\t{%|Healing Salve|50}|{%|Silver Elf Bow|1}}|\n\t{~|gear|{%|Elf Bow|20}|{%|Mithril Mail|20}}|\n\t{~|opts|trade|backstab|swindle|control}|\n\t{itText|text|You are following the tracks of a lion when a sudden whistle catches your attention.  In the branches overhead sits a wary Sidhe with a drawn bow.  You may have just trespassed on holy ground.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Elf|25|18|30|15|10|12\n\t|{=|pic|Forest/Elf.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{@|Marks|40}|{@|Garnet|1}|\n\t\t{%|Healing Salve|50}|{%|Silver Elf Bow|1}}|\n\t{~|gear|{%|Elf Bow|20}|{%|Mithril Mail|20}}|\n\t{~|opts|trade|backstab|swindle|control}|\n\t{itText|text|You are following the tracks of a giant boar when a sudden whistle catches your attention.  In the branches overhead sits an angry Drow with a drawn bow.  You may have just trespassed on the Faery Realm.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Forest:Gryphon",
       "guts": 30,
       "wits": 30,
       "charm": 15,
-      "source": "{itMonster|Gryphon|30|30|15|15|18|12\n\t|{=|pic|Forest/Gryphon.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Opal|1}|{@|Garnet|1}|\n\t\t{@|Emerald|1}|{@|Ruby|1}|{%|Mandrake Root|20}|\n\t\t{%|Identify Scroll|50}|{%|Mercury Sandals|20}}|\n\t{~|gear|{%|Sharp Beak|0}|{%|Sturdy Feathers|0}|\n\t\t{%|Bottled Faery|2}}|\n\t{~|opts|riddle|swindle|control}|\n\t{itText|text|You are exploring a small ridge when a huge figure swoops down upon you.  It is an aloof Gryphon Bard staring at you with supreme arrogance.  \"Answer my riddle slug, and I shall let you pass.\"}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Gryphon|30|30|15|15|18|12\n\t|{=|pic|Forest/Gryphon.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Opal|1}|{@|Garnet|1}|\n\t\t{@|Emerald|1}|{@|Ruby|1}|{%|Mandrake Root|20}|\n\t\t{%|Identify Scroll|50}|{%|Mercury Sandals|20}}|\n\t{~|gear|{%|Sharp Beak|0}|{%|Sturdy Feathers|0}|\n\t\t{%|Bottled Faery|2}}|\n\t{~|opts|riddle|swindle|control}|\n\t{itText|text|You are exploring a dirty valley when a huge figure swoops down upon you.  It is an aloof Gryphlet staring at you with supreme arrogance.  \"Answer my riddle morsel, and I shall let you pass.\"}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Forest:Orc",
       "guts": 20,
       "wits": 12,
       "charm": 18,
-      "source": "{itMonster|Orc|20|12|18|10|10|0\n\t|{=|pic|Forest/Orc.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Marks|60}|{@|Food|6}|\n\t\t{%|Healing Salve|30}|{@|Opal|1}}|\n\t{~|gear|{%|Battle Axe|20}|{%|Mithril Mail|20}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|You take a turn in the forest path, round a trunk and come face to face with a Orc Thrall.  It seems delighted to meet you.  The Orc Thrall waves its axe between you then stares at your purse longingly.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Orc|20|12|18|10|10|0\n\t|{=|pic|Forest/Orc.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Marks|60}|{@|Food|6}|\n\t\t{%|Healing Salve|30}|{@|Opal|1}}|\n\t{~|gear|{%|Battle Axe|20}|{%|Mithril Mail|20}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|You take a turn in the forest path, round a tree and come face to face with a Orc Skald.  It seems delighted to meet you.  The Orc Skald waves its axe between you then stares at your purse longingly.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Forest:Snot",
       "guts": 60,
       "wits": 30,
       "charm": 12,
-      "source": "{itMonster|Snot|60|30|12|8|8|-10\n\t|{=|pic|Forest/Snot.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|300}|{%|Seltzer Water|80}|\n\t\t{%|Ruby|10}|{%|Elf Bow|10}|{%|Mithril Mail|10}|\n\t\t{%|Dwarf Axe|10}}|\n\t{~|gear|{%|Snot Lobber|0}|{%|Mucous Layer|0}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|Its a Snot.  A big ugly pile of goo.  It slides relentlessly through the forest muttering, \" Must Eat ... Must Eat \" over and over.  It smells like fish guts.  From the looks of things, it considers you to be dinner.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Snot|60|30|12|8|8|-10\n\t|{=|pic|Forest/Snot.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|300}|{%|Seltzer Water|80}|\n\t\t{%|Ruby|10}|{%|Elf Bow|10}|{%|Mithril Mail|10}|\n\t\t{%|Dwarf Axe|10}}|\n\t{~|gear|{%|Snot Lobber|0}|{%|Mucous Layer|0}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|Its a Snot.  A big ugly pile of goo.  It slides relentlessly through the forest muttering, \" Feed Me ... Feed Me \" over and over.  It smells like garbage.  From the looks of things, it considers you to be supper.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Forest:Unicorn",
@@ -189,14 +189,14 @@
       "guts": 40,
       "wits": 35,
       "charm": 35,
-      "source": "{itMonster|Basilisk|40|35|35|10|10|16\n\t|{=|pic|Hills/Basilisk.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Quartz|4}|{@|Opal|3}|\n\t\t{@|Garnet|2}|{@|Emerald|1}|{@|Blinding Dust|4}}|\n\t{~|gear|{%|Evil Gaze|0}|{%|Scaly Skin|0}|blind}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|You pull yourself to the top of a steep cliff, only to confront a mad Basilisk.  Its colorful crest rises as it hisses at you.  Then the brute charges and tries to snap a bite out of your precious hide.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Basilisk|40|35|35|10|10|16\n\t|{=|pic|Hills/Basilisk.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Quartz|4}|{@|Opal|3}|\n\t\t{@|Garnet|2}|{@|Emerald|1}|{@|Blinding Dust|4}}|\n\t{~|gear|{%|Evil Gaze|0}|{%|Scaly Skin|0}|blind}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|You pull yourself to the top of a steep cliff, only to confront a livid Basilisk.  Its colorful crest rises as it hisses at you.  Then the lizard charges and tries to snap a bite out of your precious hide.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Hills:Dragon",
       "guts": 250,
       "wits": 250,
       "charm": 250,
-      "source": "{itMonster|Dragon|250|250|250|100|100|200\n\t|{=|pic|Hills/Dragon.jpg}|\n\t{~|values|{=|passion|aggressive}|adjust}|\n\t{~|pack|{@|Gold Apple|16}|{@|Ginseng Root|5}|\n\t\t{@|Seltzer Water|8}|{@|Blinding Dust|8}|{@|Panic Dust|8}|\n\t\t{@|Marks|20000}|{@|Dragon Scales|10}}|\n\t{~|temp|{#|Actions|5}|{@|fight|8}|\n\t\t{#|magic|2}}|\n\t{~|gear|{%|Fire Breath|0}|{%|Magic Scales|0}}|\n\t{~|opts|bribe|backstab}|\n\t{itText|text|The entrance to the cave is guarded by a huge Blue Dragon.  It looks to be asleep, except that it's nose is slowly leaking smoke.  As you approach, a deep rumbling shakes the ground.  It's chuckling!}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Dragon|250|250|250|100|100|200\n\t|{=|pic|Hills/Dragon.jpg}|\n\t{~|values|{=|passion|aggressive}|adjust}|\n\t{~|pack|{@|Gold Apple|16}|{@|Ginseng Root|5}|\n\t\t{@|Seltzer Water|8}|{@|Blinding Dust|8}|{@|Panic Dust|8}|\n\t\t{@|Marks|20000}|{@|Dragon Scales|10}}|\n\t{~|temp|{#|Actions|5}|{@|fight|8}|\n\t\t{#|magic|2}}|\n\t{~|gear|{%|Fire Breath|0}|{%|Magic Scales|0}}|\n\t{~|opts|bribe|backstab}|\n\t{itText|text|The entrance to the cave is guarded by a tremendous Blue Dragon.  It looks to be asleep, except that it's ears are turned towards you.  As you approach, a deep rumbling shakes the ground.  It's laughing!}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Hills:Giant",
@@ -224,7 +224,7 @@
       "guts": 50,
       "wits": 50,
       "charm": 30,
-      "source": "{itMonster|Troll|50|50|30|20|20|20\n\t|{=|pic|Hills/Troll.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Marks|600}|{%|Silver Weird Knife|1}|\n\t\t{@|Ruby|4}|{@|Rope|20}|{%|Panic Dust|20}|\n\t\t{%|Blinding Dust|20}|{%|Mandrake Root|20}|{@|Troll Wart|6}}|\n\t{~|temp|{@|thief|2}|{@|fight|2}}|\n\t{~|gear|{%|Huge Claws|0}|{%|Knotted Muscles|0}|disease}|\n\t{~|opts|help|swindle|control}|\n\t{itText|text|You see a speckled Troll trying to rebuild his broken bridge.  It is tying boards together with a small supply of rope.  The Troll is not making much progress.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Troll|50|50|30|20|20|20\n\t|{=|pic|Hills/Troll.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Marks|600}|{%|Silver Weird Knife|1}|\n\t\t{@|Ruby|4}|{@|Rope|20}|{%|Panic Dust|20}|\n\t\t{%|Blinding Dust|20}|{%|Mandrake Root|20}|{@|Troll Wart|6}}|\n\t{~|temp|{@|thief|2}|{@|fight|2}}|\n\t{~|gear|{%|Huge Claws|0}|{%|Knotted Muscles|0}|disease}|\n\t{~|opts|help|swindle|control}|\n\t{itText|text|You see a scabby Troll trying to mend his broken bridge.  It is tying boards together with a small supply of rope.  The Troll is not making much progress.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Hills:Wyvern",
@@ -238,28 +238,28 @@
       "guts": 50,
       "wits": 40,
       "charm": 40,
-      "source": "{itMonster|Champion|50|40|40|20|26|30\n\t|{=|pic|Mound/Champ.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Marks|600}|{@|Gold Nugget|6}|\n\t\t{@|Seltzer Water|2}|{%|Enchant Scroll|10}|{%|Bless Scroll|10}|\n\t\t{%|Luck Scroll|10}}|\n\t{~|temp|{#|thief|1}|{#|fight|2}}|\n\t{~|gear|{%|Flaming Sword|20}|{%|Goblin Plate|20}}|\n\t{~|opts|backstab|control}|\n\t{itText|text|While investiging what looks like a shrine you encounter a tough Goblin Paladin wielding a flaming blade.  It stands about hip high to you, but charges nonetheless with little regard for its own safety.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Champion|50|40|40|20|26|30\n\t|{=|pic|Mound/Champ.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Marks|600}|{@|Gold Nugget|6}|\n\t\t{@|Seltzer Water|2}|{%|Enchant Scroll|10}|{%|Bless Scroll|10}|\n\t\t{%|Luck Scroll|10}}|\n\t{~|temp|{#|thief|1}|{#|fight|2}}|\n\t{~|gear|{%|Flaming Sword|20}|{%|Goblin Plate|20}}|\n\t{~|opts|backstab|control}|\n\t{itText|text|While investiging what looks like a temple you encounter a mighty Goblin Knight wielding a flaming blade.  It stands about hip high to you, but charges nonetheless with little regard for its own safety.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Mound:Gang",
       "guts": 40,
       "wits": 25,
       "charm": 25,
-      "source": "{itMonster|Gang|40|25|25|5|10|10\n\t|{=|pic|Mound/Gang.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|100}|{@|Gold Nugget|3}|\n\t\t{%|Goblin Pick|20}|{%|Miners Cap|20}}|\n\t{~|gear|{%|Picks+Shovels|0}|{%|Miner Caps|0}}|\n\t{~|opts|help|swindle|control}|\n\t{itText|text|You come accross a Pack of Goblins trying to dig open a collapsed passage.  From their desperate cries, you come to believe that the dirt may conceal some of their comrades.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Gang|40|25|25|5|10|10\n\t|{=|pic|Mound/Gang.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|100}|{@|Gold Nugget|3}|\n\t\t{%|Goblin Pick|20}|{%|Miners Cap|20}}|\n\t{~|gear|{%|Picks+Shovels|0}|{%|Miner Caps|0}}|\n\t{~|opts|help|swindle|control}|\n\t{itText|text|You come accross a Party of Goblins trying to lever open a collapsed passage.  From their desperate cries, you come to believe that the wreckage may conceal some of their comrades.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Mound:Gate",
       "guts": 25,
       "wits": 25,
       "charm": 25,
-      "source": "{itMonster|Gate|25|25|25|12|12|10\n\t|{=|pic|Mound/Gate.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|100}|{@|Gold Nugget|2}|\n\t\t{%|Cross Bow|20}}|\n\t{~|gear|{%|Cross Bows|0}|{%|Thick Doors|0}}|\n\t{~|opts|bribe|swindle|control}|\n\t{itText|text|The strange mound has a hole leading into the earth. Guarding the hole is a wooden gate defended by greedy little Goblin Troops who shout  \"Haltzez or we'll shootz!\" as they fire on you.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Gate|25|25|25|12|12|10\n\t|{=|pic|Mound/Gate.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|100}|{@|Gold Nugget|2}|\n\t\t{%|Cross Bow|20}}|\n\t{~|gear|{%|Cross Bows|0}|{%|Thick Doors|0}}|\n\t{~|opts|bribe|swindle|control}|\n\t{itText|text|The strange mound has a hole leading into the earth. Guarding the hole is a wooden palisade defended by greedy little Goblin Troops who shout  \"Haltzez or we'll shootz!\" as they fire on you.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Mound:Guard",
       "guts": 40,
       "wits": 25,
       "charm": 25,
-      "source": "{itMonster|Guard|40|25|25|18|18|15\n\t|{=|pic|Mound/Guard.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Marks|300}|{@|Gold Nugget|6}|\n\t\t{@|Healing Salve|2}|{%|Identify Scroll|80}}|\n\t{~|temp|{%|thief|30}|{%|fight|30}}|\n\t{~|gear|{%|Goblin Pike|20}|{%|Goblin Mithril|20}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|A patrolling Goblin Guard catches you in the Treasury.  \"Haltzez!\" , it shrieks, \"you not be herez!\"  It points its quaking pike at you, but you can tell that it is eyeing at your purse.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Guard|40|25|25|18|18|15\n\t|{=|pic|Mound/Guard.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Marks|300}|{@|Gold Nugget|6}|\n\t\t{@|Healing Salve|2}|{%|Identify Scroll|80}}|\n\t{~|temp|{%|thief|30}|{%|fight|30}}|\n\t{~|gear|{%|Goblin Pike|20}|{%|Goblin Mithril|20}}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|A patrolling Goblin Guard catches you in the Treasury.  \"Haltzez!\" , it shrieks, \"you not be herez!\"  It points its wavering pike at you, but you can tell that it is watching at your purse.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Mound:Mage",
@@ -273,70 +273,70 @@
       "guts": 40,
       "wits": 50,
       "charm": 50,
-      "source": "{itMonster|Queen|40|50|50|20|20|40\n\t|{=|pic|Mound/Queen.jpg}|\n\t{~|values|{=|passion|aggressive}|adjust}|\n\t{~|pack|{@|Gold Nugget|10}|{@|Gold Apple|3}|\n\t\t{@|Panic Dust|3}|{%|Map to Vortex|15}}|\n\t{~|temp|{#|magic|2}|{#|thief|1}}|\n\t{~|gear|{%|Terror Rod|20}|{%|Crystal Crown|30}|panic}|\n\t{~|opts|seduce|backstab|control}|\n\t{itText|text|Sneaking through a marbled vestibule you come upon a grand sanctum where a Goblin Queen resides surrounded by toadies fawning on her.  Queen Ugtig spots you first, and motions you forward into her lair...}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Queen|40|50|50|20|20|40\n\t|{=|pic|Mound/Queen.jpg}|\n\t{~|values|{=|passion|aggressive}|adjust}|\n\t{~|pack|{@|Gold Nugget|10}|{@|Gold Apple|3}|\n\t\t{@|Panic Dust|3}|{%|Map to Vortex|15}}|\n\t{~|temp|{#|magic|2}|{#|thief|1}}|\n\t{~|gear|{%|Terror Rod|20}|{%|Crystal Crown|30}|panic}|\n\t{~|opts|seduce|backstab|control}|\n\t{itText|text|Sneaking through a marbled corridor you come upon a dining hall where a Goblin Queen resides surrounded by minions fawning on her.  Queen Anzig spots you first, and motions you forward into her lair...}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Mound:Rager",
       "guts": 30,
       "wits": 20,
       "charm": 20,
-      "source": "{itMonster|Berzerker|30|20|20|15|15|25\n\t|{=|pic|Mound/Rager.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Teeth|16}|{@|Gold Nugget|3}|\n\t\t{%|Map to Treasury|15}|{%|Silver Weird Knife|1}}|\n\t{~|temp|{#|fight|3}}|\n\t{~|gear|{%|Weird Knife|15}|{%|Goblin Shield|15}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|A frenzied Goblin Suicide charges you from the darkness. It is foul, noisy, drooling, frothing and smelly.In fact, this wild creature epitomizes everything that goblins admire.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Berzerker|30|20|20|15|15|25\n\t|{=|pic|Mound/Rager.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Teeth|16}|{@|Gold Nugget|3}|\n\t\t{%|Map to Treasury|15}|{%|Silver Weird Knife|1}}|\n\t{~|temp|{#|fight|3}}|\n\t{~|gear|{%|Weird Knife|15}|{%|Goblin Shield|15}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|A foaming Goblin Zealot charges you from the darkness. It is foul, noisy, drooling, frothing and smelly.In fact, this wild creature epitomizes everything that goblins admire.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Mound:Thief",
       "guts": 25,
       "wits": 25,
       "charm": 25,
-      "source": "{itMonster|Thief|25|25|25|10|16|30\n\t|{=|pic|Mound/Thief.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|100}|{@|Gold Nugget|2}|\n\t\t{%|Turnip|50}|{%|Thief Insurance|25}}|\n\t{~|temp|{#|thief|1}}|\n\t{~|gear|{%|Weird Knife|20}|{%|War Boots|20}}|\n\t{~|opts|trade|backstab|swindle|control}|\n\t{itText|text|A shifty goblin motions you into a side tunnel. He holds up a 'magic' turnip he thinks you will buy. The sleazy little Thug grins ferociously as you examine the pale root.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Thief|25|25|25|10|16|30\n\t|{=|pic|Mound/Thief.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Marks|100}|{@|Gold Nugget|2}|\n\t\t{%|Turnip|50}|{%|Thief Insurance|25}}|\n\t{~|temp|{#|thief|1}}|\n\t{~|gear|{%|Weird Knife|20}|{%|War Boots|20}}|\n\t{~|opts|trade|backstab|swindle|control}|\n\t{itText|text|A shifty goblin motions you into a side tunnel. He holds up a 'magic' turnip he thinks you will buy. The tricky little Thug grins ferociously as you examine the pale root.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Mound:Vault",
       "guts": 50,
       "wits": 50,
       "charm": 50,
-      "source": "{itMonster|Vault|50|50|50|18|24|10\n\t|{=|pic|Mound/Vault.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{@|Marks|1000}|{@|Gold Nugget|8}|\n\t\t{@|Ruby|2}|{@|Emerald|3}|{@|Garnet|4}|\n\t\t{%|Map to Throne Room|15}|{%|Bless Scroll|10}|{%|Luck Scroll|10}|\n\t\t{%|Glow Scroll|15}|{%|Enchant Scroll|10}}|\n\t{~|temp|{%|fight|70}}|\n\t{~|gear|{%|XBows & Pikes|0}|{%|Iron Grate|0}}|\n\t{~|opts|bribe|swindle|control}|\n\t{itText|text|Down a side passage you spy an Iron Gate. It is being held by frenzied Goblin Soldiers who shout obscenities at you.  Behind the gate you see piles of gold and gems. You have found a goblin treasure vault.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Vault|50|50|50|18|24|10\n\t|{=|pic|Mound/Vault.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{@|Marks|1000}|{@|Gold Nugget|8}|\n\t\t{@|Ruby|2}|{@|Emerald|3}|{@|Garnet|4}|\n\t\t{%|Map to Throne Room|15}|{%|Bless Scroll|10}|{%|Luck Scroll|10}|\n\t\t{%|Glow Scroll|15}|{%|Enchant Scroll|10}}|\n\t{~|temp|{%|fight|70}}|\n\t{~|gear|{%|XBows & Pikes|0}|{%|Iron Grate|0}}|\n\t{~|opts|bribe|swindle|control}|\n\t{itText|text|Down a side passage you spy an Iron Gate. It is defended by frenetic Goblin Warriors who shout obscenities at you.  Behind the gate you see piles of gold and gems. You have found a goblin treasure vault.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Mound:Worm",
       "guts": 60,
       "wits": 20,
       "charm": 20,
-      "source": "{itMonster|Worm|60|20|20|12|12|10\n\t|{=|pic|Mound/Worm.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{%|Seltzer Water|80}|{@|Gold Nugget|3}|\n\t\t{%|Goblin Pike|10}|{%|Miners Cap|10}|{%|War Boots|10}}|\n\t{~|temp|{#|worm|5}}|\n\t{~|gear|{%|Sucking Mouth|0}|{%|Segmented Rings|0}|disease}|\n\t{~|opts|feed|control}|\n\t{itText|text|A tremendous Earthworm comes humping and wriggling down the tunnel!  The passage is filled from wall to wall, you have no escape from the Earthworm as it plunges towards you trying to $eat your torch.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Worm|60|20|20|12|12|10\n\t|{=|pic|Mound/Worm.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{%|Seltzer Water|80}|{@|Gold Nugget|3}|\n\t\t{%|Goblin Pike|10}|{%|Miners Cap|10}|{%|War Boots|10}}|\n\t{~|temp|{#|worm|5}}|\n\t{~|gear|{%|Sucking Mouth|0}|{%|Segmented Rings|0}|disease}|\n\t{~|opts|feed|control}|\n\t{itText|text|A gigantic Wyrm comes humping and wriggling down the tunnel!  The passage is filled from wall to wall, you have no escape from the Wyrm as it plunges towards you trying to $eat your torch.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Ocean:Mermaid",
       "guts": 40,
       "wits": 60,
       "charm": 50,
-      "source": "{itMonster|Mermaid|40|60|50|10|10|120\n\t|{=|pic|Ocean/Mermaid.jpg}|\n\t{~|values|{=|passion|defensive}|adjust}|\n\t{~|pack|{@|Turquoise|8}|{@|Gold Apple|6}|\n\t\t{@|Fish|8}|{@|Gold Nugget|6}|{@|Panic Dust|4}|\n\t\t{%|Sea Slippers|40}|{%|Serpent Scale|40}|{%|Silver Sea Slippers|1}|\n\t\t{%|Bottled Faery|6}}|\n\t{~|temp|{#|magic|4}|{#|thief|1}}|\n\t{~|gear|{%|Sirens Song|0}|{%|Scaled Torso|0}|panic}|\n\t{~|opts|seduce|backstab|control}|\n\t{itText|text|You are steering the rudder when you hear an alluring song wafting over the ocean waves.  Quickly adjusting course, you soon come to a rock outcropping where lies a beautiful mermaid, beckoning to you.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Mermaid|40|60|50|10|10|120\n\t|{=|pic|Ocean/Mermaid.jpg}|\n\t{~|values|{=|passion|defensive}|adjust}|\n\t{~|pack|{@|Turquoise|8}|{@|Gold Apple|6}|\n\t\t{@|Fish|8}|{@|Gold Nugget|6}|{@|Panic Dust|4}|\n\t\t{%|Sea Slippers|40}|{%|Serpent Scale|40}|{%|Silver Sea Slippers|1}|\n\t\t{%|Bottled Faery|6}}|\n\t{~|temp|{#|magic|4}|{#|thief|1}}|\n\t{~|gear|{%|Sirens Song|0}|{%|Scaled Torso|0}|panic}|\n\t{~|opts|seduce|backstab|control}|\n\t{itText|text|You are trimming the sails when you hear a fascinating song wafting over the ocean waves.  Quickly adjusting course, you soon come to a rock outcropping where lies a beautiful mermaid, beckoning to you.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Ocean:Serpent",
       "guts": 80,
       "wits": 40,
       "charm": 40,
-      "source": "{itMonster|Serpent|80|40|40|20|20|100\n\t|{=|pic|Ocean/Serpent.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Fish|40}|{@|Turquoise|2}|\n\t\t{@|Quartz|2}|{@|Opal|2}|{%|Serpent Scale|240}}|\n\t{~|gear|{%|Gaping Jaws|0}|{%|Scarred Hide|0}}|\n\t{~|opts|fish|control}|\n\t{itText|text|A swelling, serpentine body rolls out of the salty waters.  The Sea Beast lifts it's immense shark toothed head above the waves.  It pursues your ship relentlessly, intent on consuming you and your crew.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Serpent|80|40|40|20|20|100\n\t|{=|pic|Ocean/Serpent.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Fish|40}|{@|Turquoise|2}|\n\t\t{@|Quartz|2}|{@|Opal|2}|{%|Serpent Scale|240}}|\n\t{~|gear|{%|Gaping Jaws|0}|{%|Scarred Hide|0}}|\n\t{~|opts|fish|control}|\n\t{itText|text|A swelling, serpentine body rolls out of the salty waters.  The Dinosaur lifts it's gigantic shark toothed head above the waves.  It pursues your ship relentlessly, intent on consuming you and your crew.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Ocean:Traders",
       "guts": 60,
       "wits": 60,
       "charm": 60,
-      "source": "{itMonster|Traders|60|60|60|30|30|80\n\t|{=|pic|Ocean/Pirates.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{#|Blast Powder|10}|{@|Quartz|12}|\n\t\t{@|Opal|8}|{@|Garnet|4}|{@|Fish|20}|\n\t\t{@|Marks|1000}|{%|Thief Insurance|80}|{%|Dragon Shield|15}|\n\t\t{%|Great Bow|15}}|\n\t{~|temp|{#|thief|4}}|\n\t{~|gear|{%|Cannon|0}|{%|Palisades|0}|blast}|\n\t{~|opts|trade|control|swindle}|\n\t{itText|text|A shipload of Buccaneers overtakes you from behind. As it pulls alongside, the gunports swing open revealing a row of menacing cannons. \"Prepare fer boardin'!\", they cry out, \"show us your cargo!\"}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Traders|60|60|60|30|30|80\n\t|{=|pic|Ocean/Pirates.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{#|Blast Powder|10}|{@|Quartz|12}|\n\t\t{@|Opal|8}|{@|Garnet|4}|{@|Fish|20}|\n\t\t{@|Marks|1000}|{%|Thief Insurance|80}|{%|Dragon Shield|15}|\n\t\t{%|Great Bow|15}}|\n\t{~|temp|{#|thief|4}}|\n\t{~|gear|{%|Cannon|0}|{%|Palisades|0}|blast}|\n\t{~|opts|trade|control|swindle}|\n\t{itText|text|A shipload of Pirates overtakes you from behind. As it pulls alongside, the gunports swing open revealing a row of menacing cannons. \"Heave to!\", they cry out, \"show us your cargo!\"}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Shang:Gunner",
       "guts": 60,
       "wits": 80,
       "charm": 50,
-      "source": "{itMonster|Gunner|60|80|50|30|30|80\n\t|{=|pic|Shang/Gunner.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{#|Blast Powder|6}|{@|Food|20}|\n\t\t{@|Gold Nugget|8}|{@|Healing Salve|6}|{@|Seltzer Water|3}}|\n\t{~|temp|{#|Actions|3}|{#|fight|3}}|\n\t{~|gear|{%|Matchlock Rifle|15}|{%|Kouchou|0}|blast}|\n\t{~|opts|bribe|trade|backstab|swindle|control}|\n\t{itText|text|A Guard armed with a smoking gonne accosts you on the road.  He looks to be a masterless samurai who is down on his luck. Perhaps a few coins would send him on his away.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Gunner|60|80|50|30|30|80\n\t|{=|pic|Shang/Gunner.jpg}|\n\t{~|values|{=|passion|defensive}}|\n\t{~|pack|{#|Blast Powder|6}|{@|Food|20}|\n\t\t{@|Gold Nugget|8}|{@|Healing Salve|6}|{@|Seltzer Water|3}}|\n\t{~|temp|{#|Actions|3}|{#|fight|3}}|\n\t{~|gear|{%|Matchlock Rifle|15}|{%|Kouchou|0}|blast}|\n\t{~|opts|bribe|trade|backstab|swindle|control}|\n\t{itText|text|A Guard armed with a smoking gonne accosts you in a tavern.  He looks to be a masterless samurai who is down on his luck. Perhaps a few coins would send him on his away.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Shang:Ninja",
       "guts": 80,
       "wits": 100,
       "charm": 100,
-      "source": "{itMonster|Ninja|80|100|100|80|80|140\n\t|{=|pic|Shang/Peasant.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Gold Nugget|30}|{@|Blinding Dust|4}|\n\t\t{@|Gold Apple|4}|{%|Thief Insurance|80}|{%|Asaura|20}|\n\t\t{%|Shuriken|20}}|\n\t{~|temp|{#|Actions|3}|{#|thief|4}|\n\t\t{#|magic|1}}|\n\t{~|gear|{%|Nunchaku|0}|{%|Kokui|0}}|\n\t{~|opts|trade|backstab|swindle|control}|\n\t{itText|text|A poorly dressed hick is leading a donkey pulling a wagon loaded with grain.  He eyes you guardedly fingering his only weapon, a simple device used for threshing wheat. Perhaps this man has something you could use.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Ninja|80|100|100|80|80|140\n\t|{=|pic|Shang/Peasant.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Gold Nugget|30}|{@|Blinding Dust|4}|\n\t\t{@|Gold Apple|4}|{%|Thief Insurance|80}|{%|Asaura|20}|\n\t\t{%|Shuriken|20}}|\n\t{~|temp|{#|Actions|3}|{#|thief|4}|\n\t\t{#|magic|1}}|\n\t{~|gear|{%|Nunchaku|0}|{%|Kokui|0}}|\n\t{~|opts|trade|backstab|swindle|control}|\n\t{itText|text|A poorly dressed hick is leading a donkey pulling a wagon loaded with grain.  He eyes you suspiciously fingering his only weapon, a simple device used for threshing wheat. Perhaps this man has something you could use.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Shang:Panda",
@@ -350,14 +350,14 @@
       "guts": 60,
       "wits": 60,
       "charm": 60,
-      "source": "{itMonster|Peasant|60|60|60|20|20|60\n\t|{=|pic|Shang/Peasant.jpg}|\n\t{~|values|{=|passion|passive}}|\n\t{~|pack|{#|Food|6000}|{@|Gold Nugget|4}|\n\t\t{%|Mandrake Root|30}|{@|Ginseng Root|4}|{%|Sleeping Bag|80}|\n\t\t{%|Cooking Gear|80}|{%|Camp Tent|80}|{%|Asaura|20}}|\n\t{~|gear|{%|Nunchaku|0}|{%|Kokui|0}}|\n\t{~|opts|trade|backstab|swindle|control}|\n\t{itText|text|A poorly dressed hick is leading a donkey pulling a wagon loaded with grain.  He eyes you nervously fingering his only weapon, a simple device used for threshing wheat. Perhaps this man has something you could use.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
+      "source": "{itMonster|Peasant|60|60|60|20|20|60\n\t|{=|pic|Shang/Peasant.jpg}|\n\t{~|values|{=|passion|passive}}|\n\t{~|pack|{#|Food|6000}|{@|Gold Nugget|4}|\n\t\t{%|Mandrake Root|30}|{@|Ginseng Root|4}|{%|Sleeping Bag|80}|\n\t\t{%|Cooking Gear|80}|{%|Camp Tent|80}|{%|Asaura|20}}|\n\t{~|gear|{%|Nunchaku|0}|{%|Kokui|0}}|\n\t{~|opts|trade|backstab|swindle|control}|\n\t{itText|text|A poorly dressed man is leading a donkey pulling a wagon loaded with grain.  He eyes you suspiciously fingering his only weapon, a simple device used for threshing wheat. Perhaps this man has something you could use.}|\n\t{~|stat}|\n\t{~|temp}|\n\t{~|rank}}"
     },
     {
       "key": "Shang:Plague",
       "guts": 80,
       "wits": 80,
       "charm": 80,
-      "source": "{itMonster|Plague|80|80|80|30|30|100\n\t|{=|pic|Shang/Plague.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Gold Nugget|40}|{@|Turnip|10}|\n\t\t{%|Rutter for Shangala|40}|{%|Rutter for Hie Brasil|40}}|\n\t{~|temp|{#|Actions|2}|{#|fight|3}}|\n\t{~|gear|{%|Foul Axe|20}|{%|Dripping Flesh|0}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|A $ugly$ man charges at you from over a mound.  He has been driven insane by a terrible plague, and is intent on eating your spleen.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Plague|80|80|80|30|30|100\n\t|{=|pic|Shang/Plague.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Gold Nugget|40}|{@|Turnip|10}|\n\t\t{%|Rutter for Shangala|40}|{%|Rutter for Hie Brasil|40}}|\n\t{~|temp|{#|Actions|2}|{#|fight|3}}|\n\t{~|gear|{%|Foul Axe|20}|{%|Dripping Flesh|0}|disease}|\n\t{~|opts|feed|backstab|control}|\n\t{itText|text|A $ugly$ man charges at you from over a mound.  He has been driven insane by a terrible plague, and is intent on eating your brain.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Shang:Samurai",
@@ -371,14 +371,14 @@
       "guts": 150,
       "wits": 100,
       "charm": 100,
-      "source": "{itMonster|Shogun|150|100|100|50|0|300\n\t|{=|pic|Shang/Shogun.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Panic Dust|4}|{%|Time Crystal|10}|\n\t\t{@|Glow Scroll|2}|{@|Crystal Crown|3}}|\n\t{~|temp|{#|Actions|2}|{#|ieatsu|1}|\n\t\t{#|fight|2}}|\n\t{~|gear|{%|Spirit Katana|20}|{%|Ethereal Form|0}|curse}|\n\t{~|opts|riddle|swindle|control}|\n\t{itText|text|In the dark of the night a howling spirit pursues you through the dark.  You try to evade the shrieking banshee but it overtakes you like a glowing panther.  \"Answer my question, gaijin - or suffer the wrath of Ieyasu.\"}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Shogun|150|100|100|50|0|300\n\t|{=|pic|Shang/Shogun.jpg}|\n\t{~|values|{=|passion|aggressive}}|\n\t{~|pack|{@|Panic Dust|4}|{%|Time Crystal|10}|\n\t\t{@|Glow Scroll|2}|{@|Crystal Crown|3}}|\n\t{~|temp|{#|Actions|2}|{#|ieatsu|1}|\n\t\t{#|fight|2}}|\n\t{~|gear|{%|Spirit Katana|20}|{%|Ethereal Form|0}|curse}|\n\t{~|opts|riddle|swindle|control}|\n\t{itText|text|In the dark of the night a howling spirit pursues you through the dark.  You try to evade the shrieking banshee but it overtakes you like a glowing panther.  \"Answer my question, gaijin - or suffer the wrath of Yoritomo.\"}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Town:Guard",
       "guts": 50,
       "wits": 50,
       "charm": 50,
-      "source": "{itMonster|Guard|50|50|50|20|20|40\n\t|{=|pic|Other/Guard.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Healing Salve|5}|{@|Marks|500}}|\n\t{~|temp|{#|Actions|2}|{#|fight|4}}|\n\t{~|gear|{%|Steel Sword|20}|{%|Half Plate|20}|bless}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|The palace is guarded by a stout Trooper who refuses you passage.  \"Only nobles and merchants with castle permits are allowed to pass me by.\"  He waggles his fingers in the universal signal for 'bribe me'.}|\n\t{~|stat}|\n\t{~|rank}}"
+      "source": "{itMonster|Guard|50|50|50|20|20|40\n\t|{=|pic|Other/Guard.jpg}|\n\t{~|values|{=|passion|hostile}}|\n\t{~|pack|{@|Healing Salve|5}|{@|Marks|500}}|\n\t{~|temp|{#|Actions|2}|{#|fight|4}}|\n\t{~|gear|{%|Steel Sword|20}|{%|Half Plate|20}|bless}|\n\t{~|opts|bribe|backstab|swindle|control}|\n\t{itText|text|The palace is guarded by a stout Soldier who refuses you passage.  \"Only nobles and merchants with castle permits are allowed to pass me by.\"  He waggles his fingers in the universal signal for 'bribe me'.}|\n\t{~|stat}|\n\t{~|rank}}"
     },
     {
       "key": "Vortex:Guard",

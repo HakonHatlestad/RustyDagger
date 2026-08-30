@@ -104,7 +104,7 @@ public class arClanHall extends Indoors implements Constants {
 
   @Override // DCourt.Screens.Template.Indoors
   public String getFace() {
-    return "Faces/Serville.jpg";
+    return "Faces/Servile.jpg";
   }
 
   @Override // DCourt.Screens.Template.Indoors

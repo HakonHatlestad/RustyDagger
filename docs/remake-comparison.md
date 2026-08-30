@@ -37,7 +37,7 @@ reflows" for that reason, and the constraint is the point of the row.
 | Auto-save | V1.19.039 | Already here independently | Reached separately; hangs off `DCourtPanel.setRegion`, the single navigation chokepoint. Toggleable via `dragoncourt.autosave`. |
 | Original Times New Roman font loading | V1.19.039 | Not portable | A defect of the remake's own font pipeline. Does not exist here and will not exist in a web app. |
 | Base quest replenish 40 → 50 | V1.19.039 | Moot | This port removes the daily quest allowance entirely ([porting-notes.md](porting-notes.md)), so there is nothing to replenish. |
-| Sage training subtracting the wrong stats | V1.19.039 | Portable — bug fix | The cost should come off 2 Guts / 0 Wits / 4 Charm; the original subtracts 2 / 2 / 2. This port inherits the original, so it carries the same defect. |
+| Sage training subtracting the wrong stats | V1.19.039 | Not portable | Checked against the code: there is no Sage skill in this game. The guild teaches Fighter, Magery and Trader, each costing 2 points of two stats, and each matches its own flavour text. Remake-only content. |
 | Status screen remembering Name/Stats ordering across logins | V1.19.040 | Portable | Small, and the kind of thing that is invisible until it is missing. |
 | Anti-aliased rendering | V1.19.040 | Free once rendering is not a 400x300 bitmap | Handled by the platform rather than scheduled as work. |
 | Bold and italic font rendering fixes | V1.19.040 | Free once rendering is not a 400x300 bitmap | As above. |
@@ -53,8 +53,8 @@ reflows" for that reason, and the constraint is the point of the row.
 | Silver and Crystal equipment "Bind on Equip" | V1.19.041 | Not portable | Depends on the soulbound system. |
 | Fates Wheel reward scaling | V1.19.041 | Rules — needs a toggle | Balance. Gated if adopted. |
 | Soulbound equipment on the Fates Wheel | V1.19.041 | Not portable | Depends on the soulbound system. |
-| Item identification firing at exactly the required Marks | V1.19.041 | Portable — bug fix | An off-by-one at the boundary. Inherited verbatim here. |
-| Royal Court negative-quest exploit | V1.19.041 | Portable — bug fix | Inherited verbatim here. |
+| Item identification firing at exactly the required Marks | V1.19.041 | Not here | Checked: every threshold on the identify path uses `>=`, including the button-enable check in `Shop`. No off-by-one to inherit. |
+| Royal Court negative-quest exploit | V1.19.041 | Cannot bite by default | This port ignores fatigue unless the daily quest limit is switched on, so quests never go negative. Only reachable with `-Ddragoncourt.dailyQuestLimit=true`. |
 | Glimmerforge Caverns questing zone | V1.20.001 | Not portable | Large new content. |
 | Dorin Stonekeeper, soulbind management and dismantling | V1.20.001 | Not portable | Depends on the soulbound system. |
 | Rux, trading Essences and Marks | V1.20.001 | Not portable | Depends on the essence system. |
@@ -65,7 +65,7 @@ reflows" for that reason, and the constraint is the point of the row.
 | New enemies in Sea / Go Fish | V1.20.001 | Not portable | New content. |
 | End-game equipment via Fate's Wheel | V1.20.001 | Not portable | New content. |
 | New Dragon Guard missions and end-game boss | V1.20.001 | Not portable | New content. |
-| Silver Masamune and Silver Gladius skill values corrected | V1.20.001 | Portable — bug fix | Applies directly: both items ship here, in `ArmsTable`. |
+| Silver Masamune and Silver Gladius skill values corrected | V1.20.001 | Needs their numbers | Both items ship here in `ArmsTable`, but the notes do not say what the values were corrected *to*. This is a comparison to go and make, not a known fix. |
 | Spelling errors in Fred's dialogue | V1.20.001 | Not portable | Remake-specific text. |
 | BoE messages and confirmation prompt | V1.20.001 | Not portable | Depends on Bind on Equip. |
 | Max enchanting stacks increased | V1.20.001 | Rules — needs a toggle | Balance. |

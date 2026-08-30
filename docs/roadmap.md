@@ -43,6 +43,11 @@ currently embedded as string literals in Java source — into JSON that both bui
 is already specified in [../SPEC.md](../SPEC.md), so this is mechanical and checkable, and it is
 worth doing even if the rewrite were abandoned tomorrow.
 
+**The harness and its baseline now exist** — `./gradlew baseline` writes
+`baseline/baseline.txt`, and [development.md](development.md) describes it. It found a crash on its
+first run (the Mound Queen) and settled two long-standing questions about monster scaling and the
+to-hit rule by measurement rather than argument. The content extraction is the half still to do.
+
 This phase is also what switches the freeze on.
 
 *What changes for the player:* nothing. Deliberately.
@@ -68,9 +73,10 @@ phase's own session.
 
 Port the roughly 3,000 lines of behaviour-critical rules and check every outcome against Phase 0's
 baseline: the combat round and damage formula documented in [gameplay.md](gameplay.md), the
-levelling cost curve, gear decay in `itArms.decay()`, quest accounting in `itHero.getQuests()`,
-monster scaling. Nothing here is a judgement call — if an outcome differs from the baseline, the
-port is wrong, and that is the whole point of doing Phase 0 first.
+levelling cost curve, gear decay in `itArms.decay()`, quest accounting in `itHero.getQuests()`.
+Nothing here is a judgement call — if an outcome differs from the baseline, the port is wrong, and
+that is the whole point of doing Phase 0 first. That includes reproducing the bugs: the `adjust`
+flag on eight monsters must go on doing nothing, for the reasons in [gameplay.md](gameplay.md).
 
 Read existing `.hero` saves so current characters survive the move. The new save format stays
 human-readable plain text committed to git, because meaningful diffs between sessions and
@@ -155,7 +161,13 @@ what it changed.
 
 *What changes for the player:* small frictions disappear; nothing about the game's balance moves
 unless they ask for it.
-*Docs touched:* [remake-comparison.md](remake-comparison.md), [porting-notes.md](porting-notes.md).
+Monster scaling belongs here too, and is this port's own item rather than the remake's: eight
+monsters carry a scaling flag that has never worked, and the mechanic behind it cannot work against
+a linear damage rule. Designing one that can is a rules change, so it ships as a toggle like the
+rest. See [gameplay.md](gameplay.md) for the measurements.
+
+*Docs touched:* [remake-comparison.md](remake-comparison.md), [porting-notes.md](porting-notes.md),
+[gameplay.md](gameplay.md).
 
 ### Phase 8 — Retire the Java build
 
@@ -193,10 +205,9 @@ Proof that nothing was dropped — every part of the loop lands somewhere.
 **High value, low effort.** Static content extraction; the `.hero` save importer; the stat-delta
 preview on the inventory screen; Tab and Enter on the entry screen; the end-of-day restart button
 and wealth readout; remembered stat ordering on the status screen; larger bank transfer sizes; the
-experience bar; and the single-player bug fixes the remake already made that this port still
-carries — Sage training subtracting the wrong stats, item identification failing at exactly the
-required Marks, the Royal Court negative-quest exploit, the Silver Gladius and Silver Masamune
-skill values, and the unclickable Guild status bar.
+experience bar. **Not** the remake's single-player bug fixes: those were checked against this
+codebase and mostly are not here — see [remake-comparison.md](remake-comparison.md) for which
+survived the check.
 
 **High value, high effort.** The parity harness; the rules port; the vertical slice; the menu
 cluster; the quest and battle screens.

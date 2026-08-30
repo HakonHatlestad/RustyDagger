@@ -5,14 +5,15 @@ import { loadContent, type Content } from "../../src/game/content.js";
 import { parseHero } from "../../src/game/hero.js";
 import { apply, characterFrom, type Game } from "../../src/game/state.js";
 import { GameRandom } from "../../src/rules/random.js";
-import { render, type UiState } from "../../src/ui/render.js";
+import { initialUi, render, type UiState } from "../../src/ui/render.js";
 
 /**
  * The interface, driven the way a player drives it.
  *
  * jsdom rather than a browser, so this runs in CI and in a second. It checks the things that are
  * easy to break and hard to notice: that the bars move, that the stat comparison appears in the
- * inventory and not only in shops, and that a name out of a save file cannot inject markup.
+ * inventory and not only in shops, that a name out of a save file cannot inject markup, and that
+ * the loop the player actually walks — town, region, fight, town — holds together.
  */
 
 /**
@@ -43,12 +44,12 @@ function newGame(seed = 7, saveText: string = TIMBER): void {
   game = {
     content,
     rng: new GameRandom(seed),
-    place: { kind: "fields" },
+    place: { kind: "town" },
     character: characterFrom(parseHero(saveText)),
     quest: null,
     notices: [],
   };
-  ui = { selected: null };
+  ui = initialUi();
   render(root, game, ui);
 }
 
@@ -60,8 +61,27 @@ function click(text: string): void {
   target.click();
 }
 
+/** The region and background cards carry several lines, so they match on a prefix. */
+function clickCard(name: string): void {
+  const target = [...root.querySelectorAll<HTMLElement>("button.choice")].find((b) =>
+    b.textContent.startsWith(name),
+  );
+  if (target === undefined) {
+    throw new Error(`no card named "${name}"`);
+  }
+  target.click();
+}
+
 function buttons(): string[] {
   return [...root.querySelectorAll("button")].map((b) => b.textContent);
+}
+
+function goHunting(region = "The Fields"): void {
+  if (game.place.kind !== "fields") {
+    apply(game, { kind: "goTo", place: { kind: "fields" } });
+    render(root, game, ui);
+  }
+  clickCard(region);
 }
 
 beforeEach(() => {
@@ -77,6 +97,10 @@ describe("the status bar", () => {
     expect(text).toContain("Guts");
     expect(text).toContain("Attack");
     expect(text).toContain("Marks");
+  });
+
+  it("no longer counts quests, because nothing rations them", () => {
+    expect(root.textContent).not.toContain("Quests");
   });
 
   it("draws a health bar and an experience bar", () => {
@@ -100,16 +124,77 @@ describe("the status bar", () => {
     render(root, game, ui);
     expect((root.querySelector(".bar__fill--health") as HTMLElement).style.width).toBe("0%");
   });
+
+  it("says so when you are diseased, because the number is otherwise invisible", () => {
+    game.character!.disease = 6;
+    render(root, game, ui);
+    expect(root.textContent).toContain("Diseased");
+  });
 });
 
-describe("the fields", () => {
-  it("offers questing", () => {
-    expect(buttons()).toContain("Go questing");
+describe("making a character", () => {
+  beforeEach(() => {
+    game.character = null;
+    game.place = { kind: "creation" };
+    render(root, game, ui);
   });
 
-  it("starts an encounter when you go questing", () => {
-    click("Go questing");
+  it("offers every background", () => {
+    expect(root.querySelectorAll("button.choice").length).toBe(4);
+    expect(root.textContent).toContain("Squire");
+    expect(root.textContent).toContain("Barber-Surgeon");
+  });
+
+  it("says what each background's traits actually do", () => {
+    expect(root.textContent).toContain("a tenth more Attack");
+  });
+
+  it("makes the character you asked for and puts them in town", () => {
+    const input = root.querySelector<HTMLInputElement>("#hero-name")!;
+    input.value = "Ash";
+    input.dispatchEvent(new Event("input"));
+    clickCard("Poacher");
+    click("Begin");
+    expect(game.character?.name).toBe("Ash");
+    expect(game.character?.traits.has("Agile")).toBe(true);
+    expect(game.place.kind).toBe("town");
+  });
+
+  it("falls back to a name rather than accepting an empty one", () => {
+    click("Begin");
+    expect(game.character?.name).toBe("Wanderer");
+  });
+});
+
+describe("the town", () => {
+  it("offers the hunt, the shops and the temple", () => {
+    const labels = buttons().join(" ");
+    expect(labels).toContain("Go hunting");
+    expect(labels).toContain("Bill Smith's");
+    expect(labels).toContain("Aileen Suitor's");
+    expect(labels).toContain("Sally Trader's");
+    expect(labels).toContain("Temple");
+  });
+});
+
+describe("choosing where to hunt", () => {
+  beforeEach(() => {
+    click("Go hunting");
+  });
+
+  it("offers four regions, not one", () => {
+    expect(root.querySelectorAll("button.choice").length).toBe(4);
+    expect(root.textContent).toContain("The Goblin Mound");
+  });
+
+  it("warns a low-level character off the dangerous ones", () => {
+    expect(root.textContent).toContain("Dangerous below level");
+  });
+
+  it("starts an encounter in the region you picked", () => {
+    clickCard("The Fields");
     expect(game.place.kind).toBe("quest");
+    expect(game.quest?.monster.key.startsWith("Fields:")).toBe(true);
     expect(root.querySelector(".log")).not.toBeNull();
   });
 
@@ -117,31 +202,23 @@ describe("the fields", () => {
     // Not every encounter is a battle, and the interface has to cope with one that ends at once.
     let fled = false;
     for (let attempt = 0; attempt < 80 && !fled; attempt++) {
-      if (game.place.kind !== "fields") {
-        apply(game, { kind: "goTo", place: { kind: "fields" } });
-        render(root, game, ui);
-      }
-      click("Go questing");
+      goHunting();
       fled = game.quest?.ending === "mobFled";
     }
     expect(fled).toBe(true);
-    expect(buttons()).toContain("Back to the fields");
+    expect(buttons()).toContain("Back to the hunt");
   });
 });
 
 /**
- * Goes questing until something actually stands and fights.
+ * Goes hunting until something actually stands and fights.
  *
  * Timid creatures bolt the moment they see you and the encounter ends before a blow is struck, so
- * a test that assumes questing always produces a fight is flaky by construction.
+ * a test that assumes a quest always produces a fight is flaky by construction.
  */
-function questUntilEngaged(): void {
+function huntUntilEngaged(): void {
   for (let attempt = 0; attempt < 60; attempt++) {
-    if (game.place.kind !== "fields") {
-      apply(game, { kind: "goTo", place: { kind: "fields" } });
-      render(root, game, ui);
-    }
-    click("Go questing");
+    goHunting();
     if (buttons().includes("Attack")) {
       return;
     }
@@ -151,7 +228,7 @@ function questUntilEngaged(): void {
 
 describe("a fight", () => {
   beforeEach(() => {
-    questUntilEngaged();
+    huntUntilEngaged();
   });
 
   it("offers every action the rules support", () => {
@@ -159,6 +236,13 @@ describe("a fight", () => {
     for (const action of ["Attack", "Backstab", "Berzerk", "Hypnotise", "Swindle", "Run away"]) {
       expect(labels).toContain(action);
     }
+  });
+
+  it("explains what each action does, which the original never did", () => {
+    const backstab = [...root.querySelectorAll("button")].find(
+      (b) => b.textContent === "Backstab",
+    )!;
+    expect(backstab.title.length).toBeGreaterThan(10);
   });
 
   it("shows the enemy's health as a bar of its own", () => {
@@ -171,29 +255,126 @@ describe("a fight", () => {
     expect(root.querySelectorAll(".log p").length).toBeGreaterThan(before);
   });
 
+  it("offers what you are carrying, and warns that using it costs the round", () => {
+    game.character!.pack.push({ kind: "count", name: "Healing Salve", count: 2 });
+    game.character!.wounds = 20;
+    render(root, game, ui);
+    expect(buttons().join(" ")).toContain("Healing Salve");
+    expect(root.textContent).toContain("costs you the round");
+  });
+
+  it("heals you when you use a salve mid-fight", () => {
+    game.character!.pack.push({ kind: "count", name: "Healing Salve", count: 1 });
+    game.character!.wounds = 30;
+    game.quest!.hero.wounds = 30;
+    render(root, game, ui);
+    click("Healing Salve x1");
+    expect(game.character!.wounds).toBeLessThan(30);
+    expect(game.character!.pack.some((c) => c.name === "Healing Salve")).toBe(false);
+  });
+
   it("replaces the actions with a way out once it is over", () => {
     let guard = 0;
     while (game.quest?.ending === null && guard < 200) {
       click("Attack");
       guard++;
     }
-    expect(buttons()).toContain("Back to the fields");
-    expect(buttons()).not.toContain("Backstab");
+    if (game.place.kind === "fallen") {
+      expect(buttons()).toContain("Wake up in town");
+    } else {
+      expect(buttons()).toContain("Back to the hunt");
+      expect(buttons()).not.toContain("Backstab");
+    }
   });
 
-  it("returns you to the fields afterwards", () => {
+  it("returns you to the world afterwards", () => {
     let guard = 0;
     while (game.quest?.ending === null && guard < 200) {
       click("Attack");
       guard++;
     }
-    if (game.place.kind === "dead") {
-      click("Begin again");
+    if (game.place.kind === "fallen") {
+      click("Wake up in town");
+      expect(game.place.kind).toBe("town");
     } else {
-      click("Back to the fields");
+      click("Back to the hunt");
+      expect(game.place.kind).toBe("fields");
     }
-    expect(game.place.kind).toBe("fields");
-    expect(buttons()).toContain("Go questing");
+  });
+});
+
+describe("losing", () => {
+  beforeEach(() => {
+    game.place = { kind: "fallen" };
+    game.character!.wounds = game.character!.guts;
+    game.character!.marks = 500;
+    render(root, game, ui);
+  });
+
+  it("says plainly that it costs you nothing", () => {
+    expect(root.textContent).toContain("lose nothing but the fight");
+  });
+
+  it("takes no money, no level and no gear", () => {
+    const level = game.character!.level;
+    const gear = game.character!.gear.length;
+    click("Wake up in town");
+    expect(game.character!.marks).toBe(500);
+    expect(game.character!.level).toBe(level);
+    expect(game.character!.gear).toHaveLength(gear);
+    expect(game.character!.wounds).toBe(0);
+    expect(game.place.kind).toBe("town");
+  });
+});
+
+describe("the temple", () => {
+  beforeEach(() => {
+    click("Temple");
+  });
+
+  it("heals you for nothing", () => {
+    game.character!.wounds = 20;
+    game.character!.disease = 4;
+    render(root, game, ui);
+    click("Rest");
+    expect(game.character!.wounds).toBe(0);
+    expect(game.character!.disease).toBe(0);
+    expect(game.character!.marks).toBeGreaterThan(0);
+  });
+
+  it("does not offer a rest you do not need", () => {
+    game.character!.wounds = 0;
+    game.character!.disease = 0;
+    render(root, game, ui);
+    const rest = [...root.querySelectorAll("button")].find((b) => b.textContent === "Rest")!;
+    expect(rest.disabled).toBe(true);
+  });
+});
+
+describe("the shops", () => {
+  it("sells armour as well as weapons", () => {
+    apply(game, { kind: "goTo", place: { kind: "shop", shop: "armour" } });
+    render(root, game, ui);
+    expect(root.textContent).toContain("Chain Suit");
+  });
+
+  it("sells supplies you can actually use", () => {
+    apply(game, { kind: "goTo", place: { kind: "shop", shop: "trader" } });
+    render(root, game, ui);
+    expect(root.textContent).toContain("Healing Salve");
+  });
+
+  it("buys a potion into the pack as a stack", () => {
+    apply(game, { kind: "goTo", place: { kind: "shop", shop: "trader" } });
+    game.character!.marks = 10000;
+    render(root, game, ui);
+    const row = [...root.querySelectorAll<HTMLElement>(".itemlist li")].find((li) =>
+      li.textContent.startsWith("Healing Salve"),
+    )!;
+    row.click();
+    row.click();
+    const salve = game.character!.pack.find((c) => c.name === "Healing Salve");
+    expect(salve?.kind === "count" ? salve.count : 0).toBe(2);
   });
 });
 
@@ -208,10 +389,6 @@ describe("the character screen", () => {
     expect(text).toContain("Pack");
   });
 
-  it("lists what is in the pack", () => {
-    expect(root.textContent).toContain("Cookie");
-  });
-
   it("invites you to pick something before it describes anything", () => {
     expect(root.textContent).toContain("Choose an item");
   });
@@ -222,6 +399,16 @@ describe("the character screen", () => {
     expect(root.querySelector(".detail__title")?.textContent).toBe(
       row.querySelector(".item__name")?.textContent,
     );
+  });
+
+  it("says what a potion would do for you", () => {
+    game.character!.pack.push({ kind: "count", name: "Gold Apple", count: 1 });
+    render(root, game, ui);
+    const row = [...root.querySelectorAll<HTMLElement>(".itemlist li")].find((li) =>
+      li.textContent.startsWith("Gold Apple"),
+    )!;
+    row.click();
+    expect(root.textContent).toContain("Heals 30 points");
   });
 
   it("shows a stat comparison in the inventory, not just in shops", () => {
@@ -254,15 +441,27 @@ describe("the character screen", () => {
     expect(game.character!.gear.some((g) => g.name === "Knife")).toBe(true);
   });
 
+  it("uses a potion when you press Enter on it, rather than trying to wear it", () => {
+    game.character!.wounds = 20;
+    game.character!.pack.push({ kind: "count", name: "Healing Salve", count: 1 });
+    render(root, game, ui);
+    const row = [...root.querySelectorAll<HTMLElement>(".itemlist li")].find((r) =>
+      r.textContent.includes("Healing Salve"),
+    )!;
+    row.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    expect(game.character!.wounds).toBe(5);
+    expect(game.character!.gear.some((g) => g.name === "Healing Salve")).toBe(false);
+  });
+
   it("marks the selected row for a screen reader", () => {
     const row = root.querySelector<HTMLElement>(".itemlist li")!;
     row.click();
     expect(root.querySelector('[aria-selected="true"]')).not.toBeNull();
   });
 
-  it("goes back to the fields", () => {
+  it("goes back to town", () => {
     click("Back");
-    expect(game.place.kind).toBe("fields");
+    expect(game.place.kind).toBe("town");
   });
 });
 
@@ -284,20 +483,18 @@ describe("safety", () => {
 });
 
 describe("the whole loop, played through", () => {
-  it("quests repeatedly without breaking", () => {
-    for (let i = 0; i < 12 && game.place.kind !== "dead"; i++) {
-      if (game.place.kind !== "fields") {
-        apply(game, { kind: "goTo", place: { kind: "fields" } });
-        render(root, game, ui);
+  it("hunts repeatedly without breaking, and never runs out of quests", () => {
+    for (let i = 0; i < 15; i++) {
+      if (game.place.kind === "fallen") {
+        click("Wake up in town");
       }
-      click("Go questing");
+      goHunting();
       let guard = 0;
       while (game.quest?.ending === null && guard < 200) {
         click("Attack");
         guard++;
       }
       expect(guard).toBeLessThan(200);
-      void 0;
     }
     expect(root.textContent.length).toBeGreaterThan(0);
   });

@@ -6,7 +6,7 @@
  * how aggressive it starts out. That is `balance`, and it happens once when the quest begins.
  */
 
-import { State, type Fighter } from "../rules/battle.js";
+import { State, noPending, type Fighter } from "../rules/battle.js";
 import { calcCombat } from "../rules/combat.js";
 import type { GameRandom } from "../rules/random.js";
 import type { MonsterDefinition } from "./content.js";
@@ -128,6 +128,12 @@ export function balance(
     traits: new Set<string>(),
     blastCharges: 0,
     disease: 0,
+    blinded: false,
+    panicked: false,
+    bonusSwings: 0,
+    // Written in the content in lower case; the rules compare them capitalised.
+    strikeTraits: new Set(def.gearTraits.map((t) => t.charAt(0).toUpperCase() + t.slice(1))),
+    pending: noPending(),
     stance: stanceFor(def.passion),
     skills: def.skills,
     carrying: def.carrying,

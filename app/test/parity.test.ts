@@ -9,6 +9,7 @@ import {
   battleRound,
   endingOf,
   fleesBeforeFighting,
+  noPending,
   type Ending,
   type Fighter,
 } from "../src/rules/battle.js";
@@ -84,6 +85,11 @@ function heroOf(build: readonly number[]): Fighter {
     traits: new Set<string>(),
     blastCharges: 0,
     disease: 0,
+    blinded: false,
+    panicked: false,
+    bonusSwings: 0,
+    strikeTraits: new Set<string>(),
+    pending: noPending(),
   };
 }
 

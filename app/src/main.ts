@@ -4,24 +4,17 @@
  * The content files are the ones the Java build exports, served as-is. They are copied into
  * `public/` by `pnpm sync-content` so the dev server and the built bundle both see the same data
  * the parity tests read.
+ *
+ * This is also where saving is wired in. Every move goes through one dispatcher in `render`, so
+ * autosaving is a single hook there rather than a call at each of thirty call sites — the same
+ * chokepoint argument that made autosave a four-line change in the Java build.
  */
 
 import { loadContent } from "./game/content.js";
 import { characterFrom, type Game } from "./game/state.js";
-import { parseHero } from "./game/hero.js";
+import { browserStore, clearSave, exportText, loadSaved, saveCharacter } from "./game/save.js";
 import { GameRandom } from "./rules/random.js";
-import { render, type UiState } from "./ui/render.js";
-
-/**
- * A brand-new character.
- *
- * Starts with Marks and nothing else, which is how the original works: character creation hands you
- * money and you go and buy a weapon. That matters more than it sounds -- measured over 200 first
- * fights, a hero with no weapon at all dies more often than not, because Attack comes entirely from
- * what you are holding.
- */
-const NEW_HERO =
-  "{itHero|Wanderer|12|10|8|{~|pack|{#|Marks|250}}|{~|gear}|{~|stat|{#|Age|16}}|{~|temp}|{~|rank|{#|Level|1}}|{~|values|{=|state|Alive}|{=|place|fields}}}";
+import { initialUi, render } from "./ui/render.js";
 
 async function fetchJson(path: string): Promise<never> {
   const response = await fetch(path);
@@ -29,6 +22,16 @@ async function fetchJson(path: string): Promise<never> {
     throw new Error(`could not load ${path}: ${String(response.status)}`);
   }
   return (await response.json()) as never;
+}
+
+/** Offers the character as a `.hero` file, which the Java build can also read. */
+function download(name: string, text: string): void {
+  const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${name.replace(/[^\w-]+/g, "_")}.hero`;
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 async function start(): Promise<void> {
@@ -43,21 +46,56 @@ async function start(): Promise<void> {
     fetchJson("gear.json"),
   ]);
 
-  const saved = localStorage.getItem("rustydagger.hero");
-  const hero = parseHero(saved ?? NEW_HERO);
+  const store = browserStore();
+  const saved = loadSaved(store);
 
   const game: Game = {
     content: loadContent({ arms, monsters, gear }),
     // Seeded from the clock so each session differs, as the original did.
     rng: new GameRandom(Date.now() & 0x7fffffff),
-    place: { kind: "fields" },
-    character: characterFrom(hero),
+    // No save means no character yet, and the first thing to do is make one.
+    place: saved === null ? { kind: "creation" } : { kind: "town" },
+    character: saved === null ? null : characterFrom(saved),
     quest: null,
     notices: [],
   };
 
-  const ui: UiState = { selected: null };
-  render(root, game, ui);
+  const ui = initialUi();
+  const autosave = (): void => {
+    if (game.character !== null) {
+      saveCharacter(store, game.character);
+    }
+  };
+  const draw = (): void => {
+    render(root, game, ui, autosave);
+  };
+
+  wireToolbar(game, store, draw);
+  draw();
+}
+
+/** The bits that sit outside the game itself: keeping a copy, and starting over. */
+function wireToolbar(game: Game, store: ReturnType<typeof browserStore>, draw: () => void): void {
+  const save = document.getElementById("export-save");
+  save?.addEventListener("click", () => {
+    if (game.character !== null) {
+      download(game.character.name, exportText(game.character));
+    }
+  });
+
+  const fresh = document.getElementById("new-game");
+  fresh?.addEventListener("click", () => {
+    // Destructive and irreversible, so it asks — and it offers the old character first.
+    if (game.character !== null && !window.confirm("Abandon this character and start again?")) {
+      return;
+    }
+    game.character = null;
+    game.quest = null;
+    game.notices = [];
+    game.place = { kind: "creation" };
+    clearSave(store);
+    draw();
+  });
 }
 
 start().catch((error: unknown) => {

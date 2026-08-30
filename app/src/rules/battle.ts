@@ -40,7 +40,39 @@ export const BattleTrait = {
   BLIND: "Blind",
   /** +30 Wits against being hypnotised. */
   STUBBORN: "Stubborn",
+  /** Takes only half of any disease inflicted. */
+  HARDY: "Hardy",
 } as const;
+
+/**
+ * Traits carried by what a fighter strikes *with*, which act on the target after a blow lands.
+ *
+ * These are deliberately kept apart from {@link BattleTrait}: those describe the fighter, these
+ * describe the weapon, and the game resolves them at different moments.
+ */
+export const StrikeTrait = {
+  BLIND: "Blind",
+  PANIC: "Panic",
+  DISEASE: "Disease",
+} as const;
+
+/**
+ * Effects queued by a weapon or a thrown dust, resolved once the blow they rode in on has landed.
+ *
+ * The game keeps these in the attacker's action list and settles them in `arBattle.spellEffects`,
+ * which is why a blinding weapon and a handful of blinding dust behave identically: both simply add
+ * to the same queue. Modelling that queue rather than the two cases separately is what keeps them
+ * consistent here too.
+ */
+export interface PendingEffects {
+  blind: number;
+  panic: number;
+  disease: number;
+}
+
+export function noPending(): PendingEffects {
+  return { blind: 0, panic: 0, disease: 0 };
+}
 
 /**
  * Whether a chosen action is the named one.
@@ -76,6 +108,23 @@ export interface Fighter {
   blastCharges: number;
   /** Points of Disease, which drag Skill down. */
   disease: number;
+  /**
+   * Blinded by thrown dust, for the rest of this fight.
+   *
+   * Deliberately separate from the {@link BattleTrait.BLIND} trait even though both halve the same
+   * numbers: a trait is something a fighter permanently is, and this is something that was done to
+   * them a moment ago. Folding the two together would mean a blinding wearing off could strip a
+   * trait the character was born with.
+   */
+  blinded: boolean;
+  /** Panicked by thrown dust: breaks off and runs rather than fighting on. */
+  panicked: boolean;
+  /** Extra swings from haste, spent on the next round and not kept. */
+  bonusSwings: number;
+  /** Traits of what this fighter strikes with, which act on whoever it hits. */
+  readonly strikeTraits: ReadonlySet<string>;
+  /** Queued effects awaiting a landing blow. */
+  pending: PendingEffects;
 }
 
 export const State = {
@@ -105,7 +154,7 @@ interface Prepared {
  * reaches across and cuts the *other* side down to one swing.
  */
 function prepare(f: Fighter, swings: number): { own: Prepared; opponentSwings: number | null } {
-  const own: Prepared = { guts: f.guts, speed: effectiveSkill(f), swings };
+  const own: Prepared = { guts: f.guts, speed: effectiveSkill(f), swings: swings + f.bonusSwings };
   let opponentSwings: number | null = null;
 
   if (isAction(f.action, Action.BACKSTAB)) {
@@ -125,7 +174,7 @@ function prepare(f: Fighter, swings: number): { own: Prepared; opponentSwings: n
   if (f.traits.has(BattleTrait.REFLEX)) {
     own.speed += 30;
   }
-  if (f.traits.has(BattleTrait.BLIND)) {
+  if (f.traits.has(BattleTrait.BLIND) || f.blinded) {
     own.speed = Math.trunc(own.speed / 2);
     own.swings = Math.trunc(own.swings / 2);
   }
@@ -140,6 +189,8 @@ export interface ActOutcome {
   readonly woundsInflicted: number;
   /** Set when the round ends here — a death, a hypnosis, a swindle. */
   readonly ended: boolean;
+  /** What the blow did beyond damage: blinded, panicked, made sick. */
+  readonly notes: readonly string[];
 }
 
 /**
@@ -191,6 +242,7 @@ export function act(
       damage: 0,
       woundsInflicted: 0,
       ended: false,
+      notes: [],
     };
   }
 
@@ -207,7 +259,8 @@ export function act(
 
   // A blast weapon replaces the blow when its fixed damage would beat it, and is spent either way.
   const blast = 25 * attacker.blastCharges;
-  if (blast > result.damage) {
+  const useBlast = blast > result.damage;
+  if (useBlast) {
     result = resolveDamage({
       guts: 0,
       swings: 0,
@@ -219,12 +272,19 @@ export function act(
       defenderWounds: defender.wounds,
     });
   }
+  const notes: string[] = [];
+  if (attacker.blastCharges > 0 && useBlast) {
+    notes.push("blast");
+  }
   attacker.blastCharges = 0;
 
   defender.wounds += result.woundsInflicted;
   if (result.killed) {
     defender.state = State.DEAD;
   }
+
+  queueStrikeEffects(attacker, result.damage, useBlast);
+  notes.push(...resolveEffects(attacker, defender, rng));
 
   return {
     attacker: attacker.name,
@@ -233,7 +293,54 @@ export function act(
     damage: result.damage,
     woundsInflicted: result.woundsInflicted,
     ended: result.killed,
+    notes,
   };
+}
+
+/**
+ * A landing blow queues whatever the weapon carries.
+ *
+ * Disease scales with how hard the blow was and is the one effect a blast suppresses, because the
+ * explosion, not the blade, is what reached the target.
+ */
+function queueStrikeEffects(attacker: Fighter, damage: number, useBlast: boolean): void {
+  if (attacker.strikeTraits.has(StrikeTrait.BLIND)) {
+    attacker.pending.blind += 1;
+  }
+  if (attacker.strikeTraits.has(StrikeTrait.PANIC)) {
+    attacker.pending.panic += 1;
+  }
+  if (!useBlast && attacker.strikeTraits.has(StrikeTrait.DISEASE)) {
+    attacker.pending.disease += Math.trunc((damage + 3) / 5);
+  }
+}
+
+/**
+ * Settles the queued effects against the target.
+ *
+ * Blinding and panic are opposed Wits checks that get *stronger the more you throw*, because the
+ * attacker's Wits is multiplied by the count. Disease needs no check and simply lands, halved
+ * against anyone Hardy. Everything queued is spent whether it worked or not.
+ */
+function resolveEffects(attacker: Fighter, defender: Fighter, rng: GameRandom): string[] {
+  const notes: string[] = [];
+  const { blind, panic, disease } = attacker.pending;
+
+  if (blind > 0 && rng.contest(attacker.wits * blind, defender.wits)) {
+    defender.blinded = true;
+    notes.push("blinded");
+  }
+  if (panic > 0 && rng.contest(attacker.wits * panic, defender.wits)) {
+    defender.panicked = true;
+    notes.push("panicked");
+  }
+  if (disease > 0) {
+    defender.disease += defender.traits.has(BattleTrait.HARDY) ? Math.trunc(disease / 2) : disease;
+    notes.push("sickened");
+  }
+
+  attacker.pending = noPending();
+  return notes;
 }
 
 /** Hypnosis and swindling: an opposed check that takes the loser out of the fight. */
@@ -257,6 +364,7 @@ function contestOfWills(
     damage: 0,
     woundsInflicted: 0,
     ended: won,
+    notes: [],
   };
 }
 
@@ -277,6 +385,9 @@ export function battleRound(hero: Fighter, mob: Fighter, rng: GameRandom): Round
 
   const h = prepare(hero, heroSwings);
   const m = prepare(mob, mobSwings);
+  // Haste is spent the moment it is used, whatever the round then does.
+  hero.bonusSwings = 0;
+  mob.bonusSwings = 0;
   // Backstab reaches across and cuts the other side down to a single swing.
   if (h.opponentSwings !== null) {
     m.own.swings = h.opponentSwings;
@@ -321,6 +432,20 @@ export function battleRound(hero: Fighter, mob: Fighter, rng: GameRandom): Round
   return { heroFirst, outcomes };
 }
 
+/**
+ * A round in which only one side acts.
+ *
+ * The hero spends a round drinking a salve or flinging dust; the monster does not stop swinging
+ * while they do it. Reaching for something is a real choice with a real cost, rather than a free
+ * action that would make any potion strictly better than fighting.
+ */
+export function oneSidedRound(actor: Fighter, target: Fighter, rng: GameRandom): ActOutcome {
+  const a = prepare(actor, rng.twice(3));
+  const t = prepare(target, rng.twice(3));
+  actor.bonusSwings = 0;
+  return act(actor, target, a.own.guts, a.own.swings, a.own.speed, t.own.speed, rng);
+}
+
 /** How a fight finished, in the order the game tests for it. */
 export type Ending =
   | "mobFled"
@@ -354,7 +479,10 @@ export function endingOf(hero: Fighter, mob: Fighter): Ending | null {
  * This is easy to miss and changes the game enormously: `arQuest` returns `mobFlees()` the moment
  * the monster's chosen action is Runaway, before any blow is struck. Without it, timid creatures
  * stand and fight to the death, and the whole early game becomes far deadlier than it is.
+ *
+ * A panicked monster leaves the same way, which is the whole point of throwing Panic Dust: it does
+ * no damage at all and simply ends the fight.
  */
 export function fleesBeforeFighting(mob: Fighter): boolean {
-  return isAction(mob.action, Action.RUNAWAY);
+  return mob.panicked || isAction(mob.action, Action.RUNAWAY);
 }

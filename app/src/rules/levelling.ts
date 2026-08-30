@@ -1,9 +1,12 @@
 /**
  * How a hero advances.
  *
- * Two numbers set the pace of the whole game: what the next level costs, and how many quests a day
- * buys you. Both are ported verbatim from `itHero`, including the integer truncation, because the
- * curve steepens fast enough that rounding differences compound.
+ * One number sets the pace of the whole game: what the next level costs. It is ported verbatim from
+ * `itHero`, integer truncation included, because the curve steepens fast enough that rounding
+ * differences compound over a campaign.
+ *
+ * The other half of `itHero`'s pacing — the daily quest allowance — is deliberately gone. See
+ * `docs/porting-notes.md`.
  */
 
 /** Stats every level grants, from `itHero.tryToLevel`. */
@@ -18,38 +21,6 @@ export const LEVEL_UP_STAT_GAIN = 2;
  */
 export function raiseFor(level: number): number {
   return Math.trunc(50 * Math.pow(1.5, level - 1));
-}
-
-/**
- * The day's quest allowance before anything is spent: `27 + 3 * level`, or four per level with the
- * Quick trait.
- */
-export function baseQuests(level: number, quick = false): number {
-  return quick ? 27 + 4 * level : 27 + 3 * level;
-}
-
-/**
- * How many quests a hero actually has.
- *
- * Overload always costs, because carrying too much slows you down whatever the day's ration.
- * Fatigue only counts when the daily limit is switched on, which this port leaves off — see
- * `docs/porting-notes.md`.
- */
-export function questsAvailable(options: {
-  level: number;
-  quick?: boolean;
-  fatigue?: number;
-  overload?: number;
-  dailyQuestLimit?: boolean;
-}): number {
-  const { level, quick = false, fatigue = 0, overload = 0, dailyQuestLimit = false } = options;
-  const spent = dailyQuestLimit ? fatigue : 0;
-  return baseQuests(level, quick) - spent - overload;
-}
-
-/** How far a pack is over its limit; zero when it is not. */
-export function overloadOf(packCount: number, packMax: number): number {
-  return packCount > packMax ? packCount - packMax : 0;
 }
 
 /** The outcome of trying to level up, and what it cost. */

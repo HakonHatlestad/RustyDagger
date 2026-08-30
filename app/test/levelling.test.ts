@@ -1,14 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import {
-  LEVEL_UP_STAT_GAIN,
-  baseQuests,
-  overloadOf,
-  questsAvailable,
-  raiseFor,
-  tryToLevel,
-} from "../src/rules/levelling.js";
+import { LEVEL_UP_STAT_GAIN, raiseFor, tryToLevel } from "../src/rules/levelling.js";
 
 /** Levelling is pure arithmetic, so all of it is checked exactly against the Java build. */
 
@@ -33,12 +26,6 @@ describe("the experience curve, against the Java build", () => {
   it("matches the cost of every level", () => {
     for (const row of rows) {
       expect(raiseFor(row.level), `level ${row.level}`).toBe(row.raise);
-    }
-  });
-
-  it("matches the quest allowance at every level", () => {
-    for (const row of rows) {
-      expect(questsAvailable({ level: row.level }), `level ${row.level}`).toBe(row.quests);
     }
   });
 
@@ -113,66 +100,5 @@ describe("levelling up, against the Java build", () => {
   it("grants two points of each stat", () => {
     expect(LEVEL_UP_STAT_GAIN).toBe(2);
     expect(tryToLevel(1, 9999).statGain).toBe(2);
-  });
-});
-
-describe("the quest allowance, against the Java build", () => {
-  const rows = [
-    ...rules.matchAll(
-      /^level=(\d+) fatigue=(\d+) packOver=(\d+) -> quests=(-?\d+) overload=(\d+) packMax=(\d+)$/gm,
-    ),
-  ].map((m) => ({
-    level: Number(m[1]),
-    fatigue: Number(m[2]),
-    packOver: Number(m[3]),
-    quests: Number(m[4]),
-    overload: Number(m[5]),
-    packMax: Number(m[6]),
-  }));
-
-  it("has rows to check", () => {
-    expect(rows.length).toBeGreaterThan(20);
-  });
-
-  it("matches every combination of level, fatigue and overload", () => {
-    for (const row of rows) {
-      const got = questsAvailable({
-        level: row.level,
-        fatigue: row.fatigue,
-        overload: row.overload,
-      });
-      expect(got, `level=${row.level} fatigue=${row.fatigue} over=${row.packOver}`).toBe(
-        row.quests,
-      );
-    }
-  });
-
-  it("ignores fatigue while the daily limit is off, which is this port's default", () => {
-    expect(questsAvailable({ level: 10, fatigue: 0 })).toBe(
-      questsAvailable({ level: 10, fatigue: 99 }),
-    );
-  });
-
-  it("counts fatigue when the daily limit is switched back on", () => {
-    expect(questsAvailable({ level: 10, fatigue: 20, dailyQuestLimit: true })).toBe(
-      baseQuests(10) - 20,
-    );
-  });
-
-  it("charges overload whatever the daily limit is set to", () => {
-    expect(questsAvailable({ level: 10, overload: 5 })).toBe(baseQuests(10) - 5);
-    expect(questsAvailable({ level: 10, overload: 5, dailyQuestLimit: true })).toBe(
-      baseQuests(10) - 5,
-    );
-  });
-
-  it("gives the Quick trait an extra quest per level", () => {
-    expect(baseQuests(10, true) - baseQuests(10, false)).toBe(10);
-  });
-
-  it("reports overload only when the pack is actually over", () => {
-    expect(overloadOf(70, 75)).toBe(0);
-    expect(overloadOf(75, 75)).toBe(0);
-    expect(overloadOf(80, 75)).toBe(5);
   });
 });

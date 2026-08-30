@@ -10,7 +10,8 @@ import {
   characterFrom,
   expFraction,
   healthFraction,
-  questsLeft,
+  recover,
+  toHero,
   type Game,
 } from "../src/game/state.js";
 import { GameRandom } from "../src/rules/random.js";
@@ -32,7 +33,7 @@ function newGame(seed = 1): Game {
   return {
     content,
     rng: new GameRandom(seed),
-    place: { kind: "fields" },
+    place: { kind: "town" },
     character: characterFrom(hero),
     quest: null,
     notices: [],
@@ -132,15 +133,50 @@ describe("a character loaded from a save", () => {
     expect(fighter.name).toBe("Timber");
   });
 
-  it("reports quests left, health and progress as fractions for the display", () => {
+  it("reports health and progress as fractions for the display", () => {
     const game = newGame();
     const c = game.character!;
-    expect(questsLeft(c)).toBeGreaterThan(0);
     expect(healthFraction(c)).toBe(1);
     c.wounds = Math.trunc(c.guts / 2);
     expect(healthFraction(c)).toBeCloseTo(0.5, 1);
     expect(expFraction(c)).toBeGreaterThanOrEqual(0);
     expect(expFraction(c)).toBeLessThanOrEqual(1);
+  });
+});
+
+describe("writing a character back to a save", () => {
+  it("round-trips everything the port models", () => {
+    const game = newGame();
+    const c = game.character!;
+    c.marks = 4321;
+    c.exp = 99;
+    c.level = 6;
+    c.wounds = 12;
+    c.disease = 3;
+    const again = characterFrom(toHero(c));
+    expect(again.marks).toBe(4321);
+    expect(again.exp).toBe(99);
+    expect(again.level).toBe(6);
+    expect(again.wounds).toBe(12);
+    expect(again.disease).toBe(3);
+    expect(again.name).toBe(c.name);
+    expect(again.gear.map((g) => g.name)).toEqual(c.gear.map((g) => g.name));
+  });
+
+  it("keeps the parts of a 1997 hero the port does not model", () => {
+    // A character who visits the new app must be able to go back to the Java build unharmed.
+    const game = newGame();
+    const c = game.character!;
+    const hero = toHero(c);
+    expect(hero.rank.get("Social")).toBe(c.origin.rank.get("Social"));
+    expect(hero.values.get("place")).toBe(c.origin.values.get("place"));
+  });
+
+  it("puts money back where it came from, as an item in the pack", () => {
+    const game = newGame();
+    game.character!.marks = 77;
+    const marks = toHero(game.character!).pack.find((c) => c.name === "Marks");
+    expect(marks?.kind === "count" ? marks.count : 0).toBe(77);
   });
 });
 
@@ -158,14 +194,15 @@ describe("the loop", () => {
     expect(game.quest?.monster.name.length).toBeGreaterThan(0);
   });
 
-  it("tracks fatigue without spending your allowance, since the daily limit is off", () => {
-    // This port removes the daily quest ration (docs/porting-notes.md). Fatigue is still counted,
-    // so the original pacing can be switched back on, but it does not gate anything by default.
+  it("never runs out of quests, because the daily ration is gone", () => {
+    // The 1997 game rations quests by day. Nothing here counts them at all -- see the note at the
+    // top of state.ts. Twenty in a row is not special; it is simply what the game now allows.
     const game = newGame();
-    const before = questsLeft(game.character!);
-    apply(game, { kind: "startQuest", monsterKey: "Fields:Rodent", weight: 2 });
-    expect(game.character!.fatigue).toBe(1);
-    expect(questsLeft(game.character!)).toBe(before);
+    for (let i = 0; i < 20; i++) {
+      apply(game, { kind: "startQuest", monsterKey: "Fields:Rodent", weight: 2 });
+      expect(game.place.kind).toBe("quest");
+      apply(game, { kind: "leaveQuest" });
+    }
   });
 
   it("fights to a finish and records how it ended", () => {
@@ -201,9 +238,15 @@ describe("the loop", () => {
     expect.unreachable("no fight was won in 60 attempts");
   });
 
-  it("sends you to the dead screen when you lose", () => {
+  it("costs you nothing but the fight when you lose", () => {
     for (let seed = 1; seed < 80; seed++) {
       const game = newGame(seed);
+      const before = {
+        marks: game.character!.marks,
+        level: game.character!.level,
+        gear: game.character!.gear.length,
+        pack: game.character!.pack.length,
+      };
       apply(game, { kind: "startQuest", monsterKey: "Hills:Dragon", weight: 5 });
       let guard = 0;
       while (game.quest?.ending === null && guard < 200) {
@@ -211,7 +254,14 @@ describe("the loop", () => {
         guard++;
       }
       if (game.quest?.ending === "heroDied") {
-        expect(game.place.kind).toBe("dead");
+        expect(game.place.kind).toBe("fallen");
+        recover(game);
+        expect(game.character!.marks).toBe(before.marks);
+        expect(game.character!.level).toBe(before.level);
+        expect(game.character!.gear).toHaveLength(before.gear);
+        expect(game.character!.pack).toHaveLength(before.pack);
+        expect(game.character!.wounds).toBe(0);
+        expect(game.place.kind).toBe("town");
         return;
       }
     }

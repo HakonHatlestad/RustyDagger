@@ -39,6 +39,14 @@ export interface MonsterDefinition {
   readonly skills: ReadonlyMap<string, number>;
   /** What it is carrying, by name. Dust and potions decide what it tries in a fight. */
   readonly carrying: ReadonlyMap<string, number>;
+  /**
+   * Bare traits sitting in the monster's `gear` list — `panic`, `disease`, `bless`.
+   *
+   * They are not items but properties of what the creature strikes with, which is why a Harpy makes
+   * you sick and a Wyvern sends you running. Written alongside the gear rather than on it, so they
+   * come out of the list as loose strings.
+   */
+  readonly gearTraits: readonly string[];
   /** The flavour text shown when you meet it, with its `$name$`-style slots already chosen. */
   readonly entity: Entity;
 }
@@ -87,6 +95,14 @@ function valueNamed(entity: Entity, name: string): string | null {
     }
   }
   return null;
+}
+
+/** The loose words in a list, as opposed to the entries that carry a value. */
+function bareStringsIn(list: Entity | null): string[] {
+  if (list === null) {
+    return [];
+  }
+  return list.fields.filter((f): f is string => typeof f === "string" && f.trim().length > 0);
 }
 
 /** Named counts in a list, e.g. the skills in `temp`. */
@@ -138,6 +154,7 @@ export function monsterFrom(entry: RawEntry): MonsterDefinition {
     picture: valueNamed(entity, "pic"),
     skills: countsIn(listNamed(entity, "temp")),
     carrying: countsIn(listNamed(entity, "pack")),
+    gearTraits: bareStringsIn(listNamed(entity, "gear")),
     entity,
   };
 }

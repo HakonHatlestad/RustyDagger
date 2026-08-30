@@ -6,6 +6,7 @@ import {
   battleRound,
   effectiveSkill,
   endingOf,
+  noPending,
   type Fighter,
 } from "../src/rules/battle.js";
 import { Severity } from "../src/rules/combat.js";
@@ -26,6 +27,11 @@ function fighter(name: string, over: Partial<Fighter> = {}): Fighter {
     traits: new Set<string>(),
     blastCharges: 0,
     disease: 0,
+    blinded: false,
+    panicked: false,
+    bonusSwings: 0,
+    strikeTraits: new Set<string>(),
+    pending: noPending(),
     ...over,
   };
 }

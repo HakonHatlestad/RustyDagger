@@ -71,11 +71,38 @@ if (textOf().includes("Could not start")) {
 if (buttons().length === 0) {
   fail("nothing rendered");
 }
+
+// A fresh browser has no save, so the first thing the game asks for is a character.
+if (!textOf().includes("Who were you before that")) {
+  fail(`a browser with no save should open on character creation; got: ${textOf().slice(0, 120)}`);
+}
+const background = [...app.querySelectorAll("button.choice")].find((b) =>
+  b.textContent.startsWith("Squire"),
+);
+if (!background) {
+  fail("character creation offered no backgrounds");
+}
+background.click();
+const nameField = app.ownerDocument.getElementById("hero-name");
+nameField.value = "Smoke";
+nameField.dispatchEvent(new dom.window.Event("input"));
+clickButton("Begin");
+
+if (!textOf().includes("Smoke")) {
+  fail("the character that was just made is not on the status panel");
+}
 if (app.querySelectorAll('[role="progressbar"]').length !== 2) {
   fail("expected a health bar and an experience bar on the status panel");
 }
 
-clickButton("Go questing");
+clickButton("Go hunting");
+const region = [...app.querySelectorAll("button.choice")].find((b) =>
+  b.textContent.startsWith("The Fields"),
+);
+if (!region) {
+  fail("the hunting screen offered no regions");
+}
+region.click();
 if (!app.querySelector(".log")) {
   fail("questing did not open a fight");
 }
@@ -93,20 +120,38 @@ if (rounds >= 300) {
 }
 
 const ending = buttons().map((b) => b.textContent);
-if (!ending.includes("Back to the fields") && !ending.includes("Begin again")) {
+if (!ending.includes("Back to the hunt") && !ending.includes("Wake up in town")) {
   fail(`the fight ended with no way out; buttons: ${ending.join(", ")}`);
 }
 
-clickButton(ending.includes("Begin again") ? "Begin again" : "Back to the fields");
-if (!buttons().some((b) => b.textContent === "Go questing")) {
-  fail("could not get back to the fields");
+const lost = ending.includes("Wake up in town");
+clickButton(lost ? "Wake up in town" : "Back to the hunt");
+if (!lost) {
+  // "Back to the hunt" lands on the region list; town is one more step away.
+  clickButton("Back");
+}
+if (!buttons().some((b) => b.textContent === "Go hunting")) {
+  fail(
+    `could not get back to town; buttons: ${buttons()
+      .map((b) => b.textContent)
+      .join(", ")}`,
+  );
 }
 
 clickButton("Character");
 if (!textOf().includes("Pack")) {
   fail("the character screen did not open");
 }
+clickButton("Back");
+
+// Saving is the bug this whole exercise started from: prove the artefact actually writes one.
+clickButton("Temple");
+clickButton("Back");
+const stored = dom.window.localStorage.getItem("rustydagger.hero");
+if (!stored || !stored.startsWith("{itHero")) {
+  fail("nothing was autosaved after a session of play");
+}
 
 console.log(
-  `smoke: booted, fought ${String(rounds)} rounds, returned, opened the character screen`,
+  `smoke: booted, fought ${String(rounds)} rounds, returned, opened the character screen, autosaved`,
 );

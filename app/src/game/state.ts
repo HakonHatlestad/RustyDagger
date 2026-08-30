@@ -15,6 +15,7 @@ import {
   State as FighterState,
   battleRound,
   endingOf,
+  fleesBeforeFighting,
   type ActOutcome,
   type Ending,
   type Fighter,
@@ -24,6 +25,8 @@ import { questsAvailable, raiseFor, tryToLevel } from "../rules/levelling.js";
 import type { GameRandom } from "../rules/random.js";
 import type { Content, MonsterDefinition } from "./content.js";
 import { advanceStance, balance, chooseMonsterAction, type Monster } from "./monster.js";
+import { rollLoot } from "./loot.js";
+import { buyPrice, sellPrice, WEAPON_SHOP } from "./shop.js";
 import { heroExp, heroFame, heroLevel, heroMarks, type Carried, type Hero } from "./hero.js";
 
 /** Where the player is. */
@@ -54,6 +57,8 @@ export interface Character {
 
 export interface QuestState {
   readonly monster: Monster;
+  /** The content entry, kept so loot can be rolled from its pack and gear when the fight ends. */
+  readonly definition: MonsterDefinition;
   /** Everything that has happened in this fight, newest last. */
   readonly log: string[];
   readonly weight: number;
@@ -151,7 +156,9 @@ export type Move =
   | { readonly kind: "fight"; readonly action: string }
   | { readonly kind: "leaveQuest" }
   | { readonly kind: "equip"; readonly index: number }
-  | { readonly kind: "unequip"; readonly index: number };
+  | { readonly kind: "unequip"; readonly index: number }
+  | { readonly kind: "buy"; readonly name: string }
+  | { readonly kind: "sell"; readonly index: number };
 
 /**
  * Applies a move and returns the game.
@@ -185,6 +192,12 @@ export function apply(game: Game, move: Move): Game {
 
     case "unequip":
       return moveBetween(game, "gear", "pack", move.index);
+
+    case "buy":
+      return buy(game, move.name);
+
+    case "sell":
+      return sell(game, move.index);
   }
 }
 
@@ -202,6 +215,52 @@ function moveBetween(game: Game, from: "pack" | "gear", to: "pack" | "gear", ind
   return game;
 }
 
+function buy(game: Game, name: string): Game {
+  const character = game.character;
+  const weapon = game.content.weapons.get(name);
+  if (character === null || weapon === undefined) {
+    return game;
+  }
+  const price = buyPrice(game.content, name);
+  if (price > character.marks) {
+    game.notices = [`You cannot afford the ${name}.`];
+    return game;
+  }
+  character.marks -= price;
+  character.pack.push({
+    kind: "arms",
+    name: weapon.key,
+    attack: weapon.attack,
+    defend: weapon.defend,
+    skill: weapon.skill,
+    traits: weapon.traits,
+  });
+  game.notices = [`You buy the ${name} for ${String(price)} Marks.`];
+  return game;
+}
+
+function sell(game: Game, index: number): Game {
+  const character = game.character;
+  if (character === null) {
+    return game;
+  }
+  const item = character.pack[index];
+  if (item === undefined) {
+    return game;
+  }
+  const price = sellPrice(
+    game.content,
+    WEAPON_SHOP,
+    item.name,
+    character.charm,
+    character.traits.has("Merchant"),
+  );
+  character.pack.splice(index, 1);
+  character.marks += price;
+  game.notices = [`You sell the ${item.name} for ${String(price)} Marks.`];
+  return game;
+}
+
 function startQuest(game: Game, monsterKey: string, weight: number): Game {
   const character = game.character;
   const def: MonsterDefinition | undefined = game.content.monsters.get(monsterKey);
@@ -209,16 +268,23 @@ function startQuest(game: Game, monsterKey: string, weight: number): Game {
     return game;
   }
   const monster = balance(def, character.level, weight, game.rng);
-  monster.action = chooseMonsterAction(monster, game.rng);
+  monster.action = chooseMonsterAction(monster, game.rng, true);
   character.fatigue += 1;
-  game.quest = {
+  const quest: QuestState = {
     monster,
+    definition: def,
     log: [`You meet ${monster.name}.`],
     weight,
     ending: null,
     rounds: 0,
   };
+  game.quest = quest;
   game.place = { kind: "quest" };
+  // A monster that has already decided to run never fights you at all.
+  if (fleesBeforeFighting(monster)) {
+    quest.ending = "mobFled";
+    quest.log.push(`${monster.name} takes one look at you and bolts.`);
+  }
   return game;
 }
 
@@ -241,6 +307,11 @@ function fightRound(game: Game, action: string): Game {
   hero.action = action;
   const monster = quest.monster;
   monster.action = chooseMonsterAction(monster, game.rng);
+  if (fleesBeforeFighting(monster)) {
+    quest.ending = "mobFled";
+    quest.log.push(`${monster.name} breaks and runs.`);
+    return game;
+  }
 
   const round = battleRound(hero, monster, game.rng);
   for (const outcome of round.outcomes) {
@@ -268,6 +339,15 @@ function finishQuest(game: Game, character: Character, quest: QuestState, ending
       quest.log.push(
         `You defeat ${quest.monster.name}, gaining ${quest.monster.experience} experience.`,
       );
+      const loot = rollLoot(quest.definition.entity, game.content, game.rng);
+      if (loot.marks > 0) {
+        character.marks += loot.marks;
+        quest.log.push(`You take ${loot.marks} Marks from the body.`);
+      }
+      for (const item of loot.items) {
+        character.pack.push(item);
+        quest.log.push(`You find: ${item.name}.`);
+      }
       const levelled = tryToLevel(character.level, character.exp);
       if (levelled.levelled) {
         character.level = levelled.level;
@@ -293,6 +373,9 @@ function finishQuest(game: Game, character: Character, quest: QuestState, ending
     case "mobControlled":
     case "mobSwindled":
       quest.log.push(`${quest.monster.name} gets the better of you and you stumble away.`);
+      break;
+    case "mobFled":
+      quest.log.push(`${quest.monster.name} is gone.`);
       break;
     case "roundCap":
       quest.log.push("Neither of you can land a decisive blow.");

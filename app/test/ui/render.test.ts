@@ -107,16 +107,51 @@ describe("the fields", () => {
     expect(buttons()).toContain("Go questing");
   });
 
-  it("starts a fight when you go questing", () => {
+  it("starts an encounter when you go questing", () => {
     click("Go questing");
     expect(game.place.kind).toBe("quest");
     expect(root.querySelector(".log")).not.toBeNull();
   });
+
+  it("lets a timid creature simply run, without a fight", () => {
+    // Not every encounter is a battle, and the interface has to cope with one that ends at once.
+    let fled = false;
+    for (let attempt = 0; attempt < 80 && !fled; attempt++) {
+      if (game.place.kind !== "fields") {
+        apply(game, { kind: "goTo", place: { kind: "fields" } });
+        render(root, game, ui);
+      }
+      click("Go questing");
+      fled = game.quest?.ending === "mobFled";
+    }
+    expect(fled).toBe(true);
+    expect(buttons()).toContain("Back to the fields");
+  });
 });
+
+/**
+ * Goes questing until something actually stands and fights.
+ *
+ * Timid creatures bolt the moment they see you and the encounter ends before a blow is struck, so
+ * a test that assumes questing always produces a fight is flaky by construction.
+ */
+function questUntilEngaged(): void {
+  for (let attempt = 0; attempt < 60; attempt++) {
+    if (game.place.kind !== "fields") {
+      apply(game, { kind: "goTo", place: { kind: "fields" } });
+      render(root, game, ui);
+    }
+    click("Go questing");
+    if (buttons().includes("Attack")) {
+      return;
+    }
+  }
+  throw new Error("nothing stood and fought in 60 quests");
+}
 
 describe("a fight", () => {
   beforeEach(() => {
-    click("Go questing");
+    questUntilEngaged();
   });
 
   it("offers every action the rules support", () => {
@@ -262,6 +297,7 @@ describe("the whole loop, played through", () => {
         guard++;
       }
       expect(guard).toBeLessThan(200);
+      void 0;
     }
     expect(root.textContent.length).toBeGreaterThan(0);
   });

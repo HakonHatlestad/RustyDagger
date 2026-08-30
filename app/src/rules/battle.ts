@@ -42,6 +42,18 @@ export const BattleTrait = {
   STUBBORN: "Stubborn",
 } as const;
 
+/**
+ * Whether a chosen action is the named one.
+ *
+ * Case-insensitive, because the game's own `isMatch` is. That is not a detail: monsters carry their
+ * options in the content in lower case — `control`, `swindle`, `backstab` — while the constants are
+ * capitalised. Comparing exactly means a monster never hypnotises anyone, which is a rule silently
+ * missing rather than a rule slightly wrong.
+ */
+export function isAction(chosen: string, name: string): boolean {
+  return chosen.toLowerCase() === name.toLowerCase();
+}
+
 export interface Fighter {
   readonly name: string;
   guts: number;
@@ -96,26 +108,18 @@ function prepare(f: Fighter, swings: number): { own: Prepared; opponentSwings: n
   const own: Prepared = { guts: f.guts, speed: effectiveSkill(f), swings };
   let opponentSwings: number | null = null;
 
-  switch (f.action) {
-    case Action.BACKSTAB:
-      own.guts *= 2;
-      own.speed *= 2;
-      opponentSwings = 1;
-      break;
-    case Action.BERZERK:
-    case Action.IEATSU:
-      own.guts *= 2;
-      own.speed *= 2;
-      own.swings = 4;
-      break;
-    case Action.CONTROL:
-      own.speed = f.wits;
-      break;
-    case Action.SWINDLE:
-      own.speed = f.charm;
-      break;
-    default:
-      break;
+  if (isAction(f.action, Action.BACKSTAB)) {
+    own.guts *= 2;
+    own.speed *= 2;
+    opponentSwings = 1;
+  } else if (isAction(f.action, Action.BERZERK) || isAction(f.action, Action.IEATSU)) {
+    own.guts *= 2;
+    own.speed *= 2;
+    own.swings = 4;
+  } else if (isAction(f.action, Action.CONTROL)) {
+    own.speed = f.wits;
+  } else if (isAction(f.action, Action.SWINDLE)) {
+    own.speed = f.charm;
   }
 
   if (f.traits.has(BattleTrait.REFLEX)) {
@@ -153,10 +157,10 @@ export function act(
   defenderSpeed: number,
   rng: GameRandom,
 ): ActOutcome {
-  if (attacker.action === Action.CONTROL) {
+  if (isAction(attacker.action, Action.CONTROL)) {
     return contestOfWills(attacker, defender, 2 * attacker.wits, defender.wits, State.CONTROL, rng);
   }
-  if (attacker.action === Action.SWINDLE) {
+  if (isAction(attacker.action, Action.SWINDLE)) {
     return contestOfWills(
       attacker,
       defender,
@@ -169,11 +173,11 @@ export function act(
 
   // A defender who saw it coming is harder to hit, but only against the move they read.
   let ds = defenderSpeed;
-  if (attacker.action === Action.BACKSTAB && defender.traits.has(BattleTrait.ALERT)) {
+  if (isAction(attacker.action, Action.BACKSTAB) && defender.traits.has(BattleTrait.ALERT)) {
     ds += 30;
   }
   if (
-    (attacker.action === Action.BERZERK || attacker.action === Action.IEATSU) &&
+    (isAction(attacker.action, Action.BERZERK) || isAction(attacker.action, Action.IEATSU)) &&
     defender.traits.has(BattleTrait.FENCER)
   ) {
     ds += 30;
@@ -281,8 +285,8 @@ export function battleRound(hero: Fighter, mob: Fighter, rng: GameRandom): Round
     h.own.swings = m.opponentSwings;
   }
 
-  const heroFleeing = hero.action === Action.RUNAWAY;
-  const mobFleeing = mob.action === Action.RUNAWAY;
+  const heroFleeing = isAction(hero.action, Action.RUNAWAY);
+  const mobFleeing = isAction(mob.action, Action.RUNAWAY);
   let heroFirst: boolean;
   if (mobFleeing && !heroFleeing) {
     heroFirst = true;
@@ -319,6 +323,7 @@ export function battleRound(hero: Fighter, mob: Fighter, rng: GameRandom): Round
 
 /** How a fight finished, in the order the game tests for it. */
 export type Ending =
+  | "mobFled"
   | "heroDied"
   | "heroControlled"
   | "heroSwindled"
@@ -327,7 +332,12 @@ export type Ending =
   | "mobSwindled"
   | "roundCap";
 
-/** Whether the fight is over, and how. Null while it continues. */
+/**
+ * Whether the fight is over, and how. Null while it continues.
+ *
+ * Note this does not cover a monster running away, which ends the encounter *before* a round is
+ * fought rather than after one — see {@link fleesBeforeFighting}.
+ */
 export function endingOf(hero: Fighter, mob: Fighter): Ending | null {
   if (hero.state === State.DEAD) return "heroDied";
   if (hero.state === State.CONTROL) return "heroControlled";
@@ -336,4 +346,15 @@ export function endingOf(hero: Fighter, mob: Fighter): Ending | null {
   if (mob.state === State.CONTROL) return "mobControlled";
   if (mob.state === State.SWINDLE) return "mobSwindled";
   return null;
+}
+
+/**
+ * A monster that has decided to run leaves, and no round happens at all.
+ *
+ * This is easy to miss and changes the game enormously: `arQuest` returns `mobFlees()` the moment
+ * the monster's chosen action is Runaway, before any blow is struck. Without it, timid creatures
+ * stand and fight to the death, and the whole early game becomes far deadlier than it is.
+ */
+export function fleesBeforeFighting(mob: Fighter): boolean {
+  return isAction(mob.action, Action.RUNAWAY);
 }

@@ -32,6 +32,13 @@ export interface MonsterDefinition {
   /** What you may try instead of fighting: bribe, riddle, seduce, trade… */
   readonly options: readonly string[];
   readonly picture: string | null;
+  /**
+   * The skill counts in the monster's `temp` list, which decide what it tries in a fight — fight,
+   * magic, thief, ieatsu — plus how many actions it has.
+   */
+  readonly skills: ReadonlyMap<string, number>;
+  /** What it is carrying, by name. Dust and potions decide what it tries in a fight. */
+  readonly carrying: ReadonlyMap<string, number>;
   /** The flavour text shown when you meet it, with its `$name$`-style slots already chosen. */
   readonly entity: Entity;
 }
@@ -82,6 +89,20 @@ function valueNamed(entity: Entity, name: string): string | null {
   return null;
 }
 
+/** Named counts in a list, e.g. the skills in `temp`. */
+function countsIn(list: Entity | null): Map<string, number> {
+  const counts = new Map<string, number>();
+  if (list === null) {
+    return counts;
+  }
+  for (const field of list.fields) {
+    if (isEntity(field)) {
+      counts.set(field.name, num(field.fields[0]));
+    }
+  }
+  return counts;
+}
+
 export function weaponFrom(entry: RawEntry): WeaponDefinition {
   const entity = parseEntity(entry.source);
   const [attack, defend, skill, ...rest] = entity.fields;
@@ -115,6 +136,8 @@ export function monsterFrom(entry: RawEntry): MonsterDefinition {
         ? []
         : opts.fields.filter((f): f is string => typeof f === "string" && f.length > 0),
     picture: valueNamed(entity, "pic"),
+    skills: countsIn(listNamed(entity, "temp")),
+    carrying: countsIn(listNamed(entity, "pack")),
     entity,
   };
 }

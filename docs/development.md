@@ -195,6 +195,26 @@ exported content, and to import existing `.hero` saves. Its tests run against ev
 arms and monsters the Java build exports, so the grammar is checked against the real game rather
 than against invented examples.
 
+## Checking the port against the Java build
+
+The TypeScript app's suite includes `app/test/parity.test.ts`, which plays complete fights and
+compares how they end against `baseline/distributions.txt` — every monster against four hero builds,
+200 fights each. Everything below it is checked piece by piece; this checks the assembly, and it is
+the test that has found the most.
+
+It is compared by shape, not seed for seed, for the reason in the note about obfuscated counts
+above. Divergences that are known and understood are listed by monster in `KNOWN_GAPS` with the
+reason, rather than by loosening the tolerance, so a *new* divergence anywhere else still fails.
+A companion test asserts that every entry on that list is still needed, so the list cannot quietly
+become a place for real regressions to hide.
+
+Bugs it has caught so far, none of which any unit test could have: monsters deriving Skill from
+their base value instead of from Wits and Charm; action matching being case-sensitive when the
+game's is not, so no monster ever hypnotised anyone; the whole `chooseActions` decision order; and a
+fleeing monster ending an encounter before a round is fought. It also caught a flaw in the *harness*
+— its own fight driver skipped the flee branch, so the baseline was recording a game in which
+nothing ever ran away.
+
 ## Testing the browser build
 
 CheerpJ needs a real HTTP origin; `file://` will not work.

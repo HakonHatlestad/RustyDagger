@@ -36,10 +36,10 @@ monster=Brasil:Harpy build=0 heroDied=30% mobControlled=47% mobSwindled=22% mean
 monster=Brasil:Harpy build=1 heroDied=23% mobControlled=56% mobSwindled=20% meanRounds=1
 monster=Brasil:Harpy build=2 heroWon=69% mobControlled=20% mobSwindled=10% meanRounds=1
 monster=Brasil:Harpy build=3 heroWon=92% mobControlled=4% mobSwindled=4% meanRounds=1
-monster=Brasil:Hero build=0 heroDied=100% meanRounds=1
-monster=Brasil:Hero build=1 heroDied=100% meanRounds=1
-monster=Brasil:Hero build=2 heroDied=92% heroWon=7% meanRounds=2
-monster=Brasil:Hero build=3 heroWon=100% meanRounds=1
+monster=Brasil:Hero build=0 heroDied=67% mobFled=33% meanRounds=0
+monster=Brasil:Hero build=1 heroDied=67% mobFled=33% meanRounds=0
+monster=Brasil:Hero build=2 heroDied=63% heroWon=4% mobFled=33% meanRounds=1
+monster=Brasil:Hero build=3 heroWon=67% mobFled=33% meanRounds=0
 monster=Brasil:Medusa build=0 heroDied=29% mobControlled=43% mobSwindled=27% meanRounds=1
 monster=Brasil:Medusa build=1 heroDied=29% mobControlled=44% mobSwindled=26% meanRounds=1
 monster=Brasil:Medusa build=2 heroDied=0% heroWon=65% mobControlled=23% mobSwindled=10% meanRounds=1
@@ -48,10 +48,10 @@ monster=Castle:Guard build=0 heroDied=100% meanRounds=1
 monster=Castle:Guard build=1 heroDied=100% meanRounds=1
 monster=Castle:Guard build=2 heroDied=98% heroWon=2% meanRounds=1
 monster=Castle:Guard build=3 heroWon=100% meanRounds=1
-monster=Dunjeon:Gang build=0 heroDied=100% meanRounds=1
-monster=Dunjeon:Gang build=1 heroDied=90% heroWon=9% meanRounds=2
-monster=Dunjeon:Gang build=2 heroWon=100% meanRounds=1
-monster=Dunjeon:Gang build=3 heroWon=100% meanRounds=1
+monster=Dunjeon:Gang build=0 heroDied=93% mobFled=6% meanRounds=0
+monster=Dunjeon:Gang build=1 heroDied=86% heroWon=7% mobFled=6% meanRounds=2
+monster=Dunjeon:Gang build=2 heroWon=93% mobFled=6% meanRounds=0
+monster=Dunjeon:Gang build=3 heroWon=93% mobFled=6% meanRounds=0
 monster=Dunjeon:Mage build=0 heroDied=51% mobControlled=14% mobSwindled=34% meanRounds=1
 monster=Dunjeon:Mage build=1 heroDied=1% mobControlled=65% mobSwindled=34% meanRounds=1
 monster=Dunjeon:Mage build=2 heroWon=83% mobControlled=9% mobSwindled=8% meanRounds=1
@@ -72,14 +72,14 @@ monster=Dunjeon:Troll build=0 heroDied=71% mobSwindled=28% meanRounds=1
 monster=Dunjeon:Troll build=1 heroDied=70% mobSwindled=30% meanRounds=1
 monster=Dunjeon:Troll build=2 heroDied=2% heroWon=87% mobSwindled=10% meanRounds=1
 monster=Dunjeon:Troll build=3 heroWon=97% mobSwindled=2% meanRounds=1
-monster=Faery build=0 heroWon=21% mobControlled=77% roundCap=1% meanRounds=6
-monster=Faery build=1 heroWon=74% mobControlled=25% meanRounds=5
-monster=Faery build=2 heroWon=95% mobControlled=5% meanRounds=2
-monster=Faery build=3 heroWon=97% mobControlled=2% meanRounds=1
-monster=Fields:Centaur build=0 heroDied=100% meanRounds=1
-monster=Fields:Centaur build=1 heroWon=100% meanRounds=1
-monster=Fields:Centaur build=2 heroWon=100% meanRounds=1
-monster=Fields:Centaur build=3 heroWon=100% meanRounds=1
+monster=Faery build=0 heroWon=8% mobControlled=23% mobFled=68% meanRounds=3
+monster=Faery build=1 heroWon=28% mobControlled=10% mobFled=62% meanRounds=3
+monster=Faery build=2 heroWon=27% mobControlled=3% mobFled=69% meanRounds=0
+monster=Faery build=3 heroWon=29% mobControlled=2% mobFled=69% meanRounds=0
+monster=Fields:Centaur build=0 heroDied=81% mobFled=18% meanRounds=1
+monster=Fields:Centaur build=1 heroWon=81% mobFled=18% meanRounds=0
+monster=Fields:Centaur build=2 heroWon=81% mobFled=18% meanRounds=0
+monster=Fields:Centaur build=3 heroWon=81% mobFled=18% meanRounds=0
 monster=Fields:Goblin build=0 heroWon=100% meanRounds=1
 monster=Fields:Goblin build=1 heroWon=100% meanRounds=1
 monster=Fields:Goblin build=2 heroWon=100% meanRounds=1
@@ -88,10 +88,10 @@ monster=Fields:Gypsy build=0 heroDied=45% heroWon=54% meanRounds=2
 monster=Fields:Gypsy build=1 heroWon=100% meanRounds=1
 monster=Fields:Gypsy build=2 heroWon=100% meanRounds=1
 monster=Fields:Gypsy build=3 heroWon=100% meanRounds=1
-monster=Fields:Merchant build=0 heroWon=100% meanRounds=1
-monster=Fields:Merchant build=1 heroWon=100% meanRounds=1
-monster=Fields:Merchant build=2 heroWon=100% meanRounds=1
-monster=Fields:Merchant build=3 heroWon=100% meanRounds=1
+monster=Fields:Merchant build=0 mobFled=100% meanRounds=0
+monster=Fields:Merchant build=1 mobFled=100% meanRounds=0
+monster=Fields:Merchant build=2 mobFled=100% meanRounds=0
+monster=Fields:Merchant build=3 mobFled=100% meanRounds=0
 monster=Fields:Rodent build=0 heroWon=100% meanRounds=1
 monster=Fields:Rodent build=1 heroWon=100% meanRounds=1
 monster=Fields:Rodent build=2 heroWon=100% meanRounds=1
@@ -100,18 +100,18 @@ monster=Fields:Soldier build=0 heroDied=100% meanRounds=1
 monster=Fields:Soldier build=1 heroWon=100% meanRounds=1
 monster=Fields:Soldier build=2 heroWon=100% meanRounds=1
 monster=Fields:Soldier build=3 heroWon=100% meanRounds=1
-monster=Fields:Wizard build=0 heroDied=77% mobControlled=23% meanRounds=8
-monster=Fields:Wizard build=1 heroWon=99% mobControlled=0% meanRounds=1
-monster=Fields:Wizard build=2 heroWon=99% mobControlled=0% meanRounds=1
-monster=Fields:Wizard build=3 heroWon=100% meanRounds=1
+monster=Fields:Wizard build=0 heroDied=52% mobControlled=13% mobFled=34% meanRounds=5
+monster=Fields:Wizard build=1 heroWon=65% mobControlled=0% mobFled=34% meanRounds=0
+monster=Fields:Wizard build=2 heroWon=65% mobControlled=0% mobFled=34% meanRounds=0
+monster=Fields:Wizard build=3 heroWon=66% mobFled=34% meanRounds=0
 monster=Forest:Boar build=0 heroDied=100% meanRounds=1
 monster=Forest:Boar build=1 heroWon=100% meanRounds=1
 monster=Forest:Boar build=2 heroWon=100% meanRounds=1
 monster=Forest:Boar build=3 heroWon=100% meanRounds=1
-monster=Forest:Elf build=0 heroDied=100% meanRounds=1
-monster=Forest:Elf build=1 heroDied=4% heroWon=95% meanRounds=1
-monster=Forest:Elf build=2 heroWon=100% meanRounds=1
-monster=Forest:Elf build=3 heroWon=100% meanRounds=1
+monster=Forest:Elf build=0 heroDied=66% mobFled=34% meanRounds=0
+monster=Forest:Elf build=1 heroDied=3% heroWon=63% mobFled=34% meanRounds=1
+monster=Forest:Elf build=2 heroWon=66% mobFled=34% meanRounds=0
+monster=Forest:Elf build=3 heroWon=66% mobFled=34% meanRounds=0
 monster=Forest:Gryphon build=0 heroDied=100% meanRounds=1
 monster=Forest:Gryphon build=1 heroDied=39% heroWon=60% meanRounds=2
 monster=Forest:Gryphon build=2 heroWon=100% meanRounds=1
@@ -124,10 +124,10 @@ monster=Forest:Snot build=0 heroDied=100% meanRounds=1
 monster=Forest:Snot build=1 heroDied=17% heroWon=83% meanRounds=2
 monster=Forest:Snot build=2 heroWon=100% meanRounds=1
 monster=Forest:Snot build=3 heroWon=100% meanRounds=1
-monster=Forest:Unicorn build=0 heroDied=32% mobControlled=67% meanRounds=1
-monster=Forest:Unicorn build=1 heroWon=2% mobControlled=98% meanRounds=1
-monster=Forest:Unicorn build=2 heroWon=89% mobControlled=11% meanRounds=1
-monster=Forest:Unicorn build=3 heroWon=96% mobControlled=3% meanRounds=1
+monster=Forest:Unicorn build=0 mobControlled=67% mobFled=32% meanRounds=0
+monster=Forest:Unicorn build=1 heroWon=0% mobControlled=67% mobFled=32% meanRounds=0
+monster=Forest:Unicorn build=2 heroWon=56% mobControlled=11% mobFled=32% meanRounds=0
+monster=Forest:Unicorn build=3 heroWon=64% mobControlled=3% mobFled=32% meanRounds=0
 monster=Hills:Basilisk build=0 heroDied=100% meanRounds=1
 monster=Hills:Basilisk build=1 heroDied=65% heroWon=35% meanRounds=3
 monster=Hills:Basilisk build=2 heroWon=100% meanRounds=1
@@ -188,18 +188,18 @@ monster=Mound:Thief build=0 heroDied=58% mobSwindled=41% meanRounds=1
 monster=Mound:Thief build=1 heroDied=11% heroWon=56% mobSwindled=32% meanRounds=2
 monster=Mound:Thief build=2 heroWon=93% mobSwindled=6% meanRounds=1
 monster=Mound:Thief build=3 heroWon=98% mobSwindled=1% meanRounds=1
-monster=Mound:Vault build=0 heroDied=100% meanRounds=1
-monster=Mound:Vault build=1 heroDied=100% meanRounds=1
-monster=Mound:Vault build=2 heroWon=100% meanRounds=1
-monster=Mound:Vault build=3 heroWon=100% meanRounds=1
+monster=Mound:Vault build=0 heroDied=63% mobFled=37% meanRounds=0
+monster=Mound:Vault build=1 heroDied=63% mobFled=37% meanRounds=1
+monster=Mound:Vault build=2 heroWon=63% mobFled=37% meanRounds=0
+monster=Mound:Vault build=3 heroWon=61% mobFled=39% meanRounds=0
 monster=Mound:Worm build=0 heroDied=100% meanRounds=1
 monster=Mound:Worm build=1 heroDied=89% heroWon=10% meanRounds=2
 monster=Mound:Worm build=2 heroWon=100% meanRounds=1
 monster=Mound:Worm build=3 heroWon=100% meanRounds=1
-monster=Ocean:Mermaid build=0 heroDied=61% mobControlled=38% mobSwindled=1% meanRounds=1
-monster=Ocean:Mermaid build=1 heroDied=3% heroWon=5% mobControlled=89% mobSwindled=2% meanRounds=1
-monster=Ocean:Mermaid build=2 heroWon=75% mobControlled=24% mobSwindled=0% meanRounds=1
-monster=Ocean:Mermaid build=3 heroWon=95% mobControlled=4% mobSwindled=0% meanRounds=1
+monster=Ocean:Mermaid build=0 heroDied=34% mobControlled=38% mobFled=27% mobSwindled=1% meanRounds=0
+monster=Ocean:Mermaid build=1 heroDied=3% heroWon=3% mobControlled=62% mobFled=29% mobSwindled=2% meanRounds=1
+monster=Ocean:Mermaid build=2 heroWon=51% mobControlled=17% mobFled=31% mobSwindled=0% meanRounds=0
+monster=Ocean:Mermaid build=3 heroWon=61% mobControlled=4% mobFled=34% mobSwindled=0% meanRounds=0
 monster=Ocean:Serpent build=0 heroDied=100% meanRounds=1
 monster=Ocean:Serpent build=1 heroDied=100% meanRounds=1
 monster=Ocean:Serpent build=2 heroWon=100% meanRounds=2
@@ -210,20 +210,20 @@ monster=Ocean:Traders build=2 heroDied=12% heroWon=70% mobSwindled=18% meanRound
 monster=Ocean:Traders build=3 heroWon=92% mobSwindled=7% meanRounds=1
 monster=Shang:Gunner build=0 heroDied=100% meanRounds=1
 monster=Shang:Gunner build=1 heroDied=100% meanRounds=1
-monster=Shang:Gunner build=2 heroDied=45% heroWon=54% meanRounds=1
-monster=Shang:Gunner build=3 heroWon=100% meanRounds=1
+monster=Shang:Gunner build=2 heroDied=45% heroWon=53% mobFled=1% meanRounds=1
+monster=Shang:Gunner build=3 heroWon=72% mobFled=27% meanRounds=0
 monster=Shang:Ninja build=0 heroDied=56% mobControlled=15% mobSwindled=28% meanRounds=1
 monster=Shang:Ninja build=1 heroDied=58% mobControlled=14% mobSwindled=27% meanRounds=1
 monster=Shang:Ninja build=2 heroDied=52% mobControlled=18% mobSwindled=29% meanRounds=1
 monster=Shang:Ninja build=3 heroWon=80% mobControlled=11% mobSwindled=9% meanRounds=1
-monster=Shang:Panda build=0 heroDied=37% mobControlled=63% meanRounds=1
-monster=Shang:Panda build=1 heroDied=39% mobControlled=61% meanRounds=1
-monster=Shang:Panda build=2 heroDied=29% mobControlled=71% meanRounds=1
-monster=Shang:Panda build=3 heroWon=78% mobControlled=21% meanRounds=1
-monster=Shang:Peasant build=0 heroDied=100% meanRounds=1
-monster=Shang:Peasant build=1 heroDied=100% meanRounds=1
-monster=Shang:Peasant build=2 heroWon=100% meanRounds=1
-monster=Shang:Peasant build=3 heroWon=100% meanRounds=1
+monster=Shang:Panda build=0 heroDied=2% mobControlled=63% mobFled=35% meanRounds=0
+monster=Shang:Panda build=1 heroDied=4% mobControlled=61% mobFled=35% meanRounds=0
+monster=Shang:Panda build=2 heroDied=3% mobControlled=62% mobFled=35% meanRounds=0
+monster=Shang:Panda build=3 heroWon=44% mobControlled=21% mobFled=35% meanRounds=0
+monster=Shang:Peasant build=0 mobFled=100% meanRounds=0
+monster=Shang:Peasant build=1 mobFled=100% meanRounds=0
+monster=Shang:Peasant build=2 mobFled=100% meanRounds=0
+monster=Shang:Peasant build=3 mobFled=100% meanRounds=0
 monster=Shang:Plague build=0 heroDied=100% meanRounds=1
 monster=Shang:Plague build=1 heroDied=100% meanRounds=1
 monster=Shang:Plague build=2 heroDied=80% heroWon=19% meanRounds=2

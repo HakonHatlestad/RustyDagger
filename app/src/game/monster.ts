@@ -7,6 +7,7 @@
  */
 
 import { State, type Fighter } from "../rules/battle.js";
+import { calcCombat } from "../rules/combat.js";
 import type { GameRandom } from "../rules/random.js";
 import type { MonsterDefinition } from "./content.js";
 
@@ -50,6 +51,15 @@ export function stanceFor(passion: string): number {
 
 export interface Monster extends Fighter {
   readonly key: string;
+  /** Fight, magic, thief and ieatsu, from the monster's `temp` list. */
+  readonly skills: ReadonlyMap<string, number>;
+  /** What it is carrying, which decides whether it reaches for dust instead of a skill. */
+  readonly carrying: ReadonlyMap<string, number>;
+  /**
+   * Charges of the two scripted moves some creatures have — a goat's charge, a worm's swallow.
+   * Each is spent once and takes priority over anything else the monster might do.
+   */
+  scripted: { goat: number; worm: number };
   /** Rises each round for hostile and defensive monsters, which is how a fight escalates. */
   stance: number;
   readonly options: readonly string[];
@@ -80,9 +90,28 @@ export function balance(
   const wits = spread(Math.trunc(def.wits * ratio), rng);
   const charm = spread(Math.trunc(def.charm * ratio), rng);
 
-  const attack = def.baseAttack;
-  const defend = def.baseDefend;
-  const skill = def.baseSkill;
+  // A monster's fighting stats go through the same derivation a hero's do: its baseA/baseD/baseS
+  // are what its "gear" contributes, and Skill then adds the Wits-and-Charm term on top. Using
+  // the base numbers alone leaves a monster fighting at a fraction of its real Skill -- which,
+  // measured, made a bare newcomer win 198 fights out of 200.
+  const stats = calcCombat({
+    wits,
+    charm,
+    gear: [
+      {
+        attack: def.baseAttack,
+        defend: def.baseDefend,
+        skill: def.baseSkill,
+        enchant: 0,
+        traits: new Set<string>(),
+      },
+    ],
+    fightRank: 0,
+    magicRank: 0,
+    thiefRank: 0,
+    traits: new Set<string>(),
+  });
+  const { attack, defend, skill } = stats;
 
   return {
     key: def.key,
@@ -100,6 +129,12 @@ export function balance(
     blastCharges: 0,
     disease: 0,
     stance: stanceFor(def.passion),
+    skills: def.skills,
+    carrying: def.carrying,
+    scripted: {
+      goat: def.skills.get("goat") ?? 0,
+      worm: def.skills.get("worm") ?? 0,
+    },
     options: def.options,
     experience: Math.trunc(((1 + attack + defend) * (100 + skill)) / 100),
     fame: Math.trunc((guts + wits + charm) / 30) + Math.trunc(weight / 4),
@@ -113,19 +148,160 @@ export function advanceStance(monster: Monster): void {
   }
 }
 
+/** The dusts a monster throws instead of fighting, from `GearTypes`. */
+const MAGIC_ITEMS = ["Blinding Dust", "Panic Dust", "Blast Powder"] as const;
+
+/** How much dust it has to throw. */
+function packMagic(monster: Monster): number {
+  return MAGIC_ITEMS.reduce((sum, name) => sum + (monster.carrying.get(name) ?? 0), 0);
+}
+
+function skill(monster: Monster, name: string): number {
+  return monster.skills.get(name) ?? monster.skills.get(name.toLowerCase()) ?? 0;
+}
+
+/** Everything it knows how to do, added up. */
+function guildSkill(monster: Monster): number {
+  return (
+    skill(monster, "fight") +
+    skill(monster, "magic") +
+    skill(monster, "thief") +
+    skill(monster, "Ieatsu")
+  );
+}
+
+/** A guild rank is worth half the base, per rank. */
+function scale(rank: number, base: number): number {
+  return rank * Math.trunc(base / 2);
+}
+
+/** How dangerous something is overall, the same weighting the game uses to compare two fighters. */
+export function powerOf(f: {
+  attack: number;
+  defend: number;
+  skill: number;
+  guts: number;
+  wits: number;
+  charm: number;
+  fight?: number;
+  magic?: number;
+  thief?: number;
+}): number {
+  return (
+    f.attack * 4 +
+    f.defend * 4 +
+    f.skill +
+    f.guts * 2 +
+    f.wits +
+    f.charm +
+    scale(f.fight ?? 0, 12) +
+    scale(f.magic ?? 0, 16) +
+    scale(f.thief ?? 0, 8)
+  );
+}
+
+function monsterPower(monster: Monster): number {
+  return powerOf({
+    attack: monster.attack,
+    defend: monster.defend,
+    skill: monster.skill,
+    guts: monster.guts,
+    wits: monster.wits,
+    charm: monster.charm,
+    fight: skill(monster, "fight"),
+    magic: skill(monster, "magic"),
+    thief: skill(monster, "thief"),
+  });
+}
+
 /**
- * What the monster does this round.
+ * What it plays to, once it has decided to fight: `itMonster.useSkills`.
  *
- * Only an aggressive monster attacks unprompted; anything calmer waits, which is what makes talking
- * your way past one possible at all.
+ * It bolts when `roll(3)` reaches its stance, so a passive creature nearly always flees and an
+ * aggressive one never does — which is why stance rising each round is what commits it to the
+ * fight. Otherwise it uses what it has: opening, magic against thievery and swordsmanship, so a
+ * magical thing hypnotises you before you have swung; afterwards only magic and fighting remain, so
+ * it either hypnotises or goes berserk.
  */
-export function chooseMonsterAction(monster: Monster, rng: GameRandom): string {
-  if (monster.stance < Stance.HOSTILE) {
-    return "Wait";
+function useSkills(monster: Monster, rng: GameRandom, first: boolean): string {
+  if (rng.roll(3) >= monster.stance) {
+    return "Runaway";
   }
-  // A monster with tricks available uses one now and then rather than always swinging.
-  if (monster.options.length > 0 && rng.percent(20)) {
-    return rng.select(monster.options);
+  const fight = skill(monster, "fight");
+  const magic = skill(monster, "magic");
+  const thief = skill(monster, "thief");
+  const ieatsu = skill(monster, "Ieatsu");
+
+  if (first) {
+    if (thief + magic + ieatsu >= 1) {
+      if (rng.contest(magic, thief + ieatsu)) {
+        return "Control";
+      }
+      if (rng.contest(ieatsu, thief)) {
+        return "Ieatsu";
+      }
+      return rng.roll(2) === 0 ? "Swindle" : "Backstab";
+    }
+  } else if (magic + fight >= 1) {
+    return rng.contest(magic, fight) ? "Control" : "Berzek";
   }
   return "Attack";
+}
+
+/**
+ * What the monster does this round, ported from `itMonster.chooseActions`.
+ *
+ * The order matters and each step earns its place.
+ *
+ * **A monster with no actions left never reaches for anything** and goes straight to its skills.
+ * That gate is easy to miss and decides a great deal: the field Wizard and the Wyvern carry no
+ * Actions at all, so they always cast rather than throw dust, and skipping the gate turns the
+ * Wyvern from something that hypnotises you almost every time into something that mostly does not.
+ *
+ * **A scripted move outranks everything** — a goat's charge, a worm's swallow — and is spent as it
+ * is used.
+ *
+ * **Then dust against skill.** How much dust it can actually throw is capped by its actions, and
+ * the skill side is weighted by how outmatched it is, so a creature facing someone far stronger
+ * leans harder on what it knows.
+ *
+ * Not ported: the healing and stimulant handling, where a wounded monster drinks Troll Blood or
+ * Ginseng to buy itself back actions. That is why trolls in particular still last longer in the
+ * Java build than here.
+ */
+export function chooseMonsterAction(
+  monster: Monster,
+  rng: GameRandom,
+  first = false,
+  heroPower = 0,
+): string {
+  const actions = skill(monster, "Actions");
+  if (actions < 1) {
+    return useSkills(monster, rng, first);
+  }
+
+  if (monster.scripted.goat > 0) {
+    monster.scripted.goat -= 1;
+    return "goat";
+  }
+  if (monster.scripted.worm > 0) {
+    monster.scripted.worm -= 1;
+    return "worm";
+  }
+
+  const mine = monsterPower(monster);
+  const danger = mine <= 0 ? 0 : Math.trunc(((heroPower - mine) * 4) / mine);
+
+  let dust = packMagic(monster);
+  const cap = actions + 2 * (monster.carrying.get("Ginseng Root") ?? 0);
+  if (dust > cap) {
+    dust = cap;
+  }
+  let known = guildSkill(monster);
+  if (known > 0) {
+    known += danger;
+  }
+  const against = first ? known - skill(monster, "fight") : known - skill(monster, "thief");
+
+  return rng.contest(dust, against) ? "Spells" : useSkills(monster, rng, first);
 }

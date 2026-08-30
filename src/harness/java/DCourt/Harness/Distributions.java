@@ -145,6 +145,9 @@ final class Distributions {
     try {
       arQuest q = new arQuest(null, 3, "fight", proto);
       itMonster mob = q.getMob();
+      if (BattleAccess.fleeing(mob)) {
+        return new Outcome(0, "mobFled");
+      }
       int rounds = 0;
       while (rounds < MAX_ROUNDS) {
         new arBattle(q, "fight");
@@ -160,6 +163,9 @@ final class Distributions {
         BattleAccess.nextRound(q, h, mob);
         mob.resetActions();
         mob.chooseActions(false);
+        if (BattleAccess.fleeing(mob)) {
+          return new Outcome(rounds, "mobFled");
+        }
       }
       return new Outcome(rounds, "roundCap");
     } catch (RuntimeException e) {

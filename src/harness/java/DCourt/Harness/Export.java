@@ -74,6 +74,7 @@ final class Export {
       }
       String source = it.toString();
       verify(key, source);
+      verifySemantics(key, source, it);
       StringBuilder row = new StringBuilder();
       row.append("    {\n");
       row.append("      \"key\": ").append(json(key)).append(",\n");
@@ -115,6 +116,53 @@ final class Export {
     }
     write(out, "gear", rows);
     return rows.size();
+  }
+
+  /**
+   * Checks that the exported text still describes the same object, field by field.
+   *
+   * <p>Textual round-tripping is not enough on its own and this is the proof: {@code
+   * itMonster.toString} used to write the derived attack, defence and skill rather than the base
+   * ones it reads back, so every monster exported as zeroes -- and re-parsing those zeroes produced
+   * the same zeroes, so the text round-tripped perfectly while the content was ruined. A round-trip
+   * check compares a serialiser against a parser; it cannot see the serialiser dropping something
+   * they both agree to drop. Comparing against the live object can.
+   */
+  private static void verifySemantics(String key, String source, Item original) {
+    Item back = Item.factory(source);
+    if (back == null) {
+      return; // already reported by the textual check
+    }
+    if (original instanceof itMonster before && back instanceof itMonster after) {
+      compare(key, "guts", before.getGuts(), after.getGuts());
+      compare(key, "wits", before.getWits(), after.getWits());
+      compare(key, "charm", before.getCharm(), after.getCharm());
+      compare(key, "baseA", baseStat(before, "baseA"), baseStat(after, "baseA"));
+      compare(key, "baseD", baseStat(before, "baseD"), baseStat(after, "baseD"));
+      compare(key, "baseS", baseStat(before, "baseS"), baseStat(after, "baseS"));
+    }
+    if (original instanceof itArms before && back instanceof itArms after) {
+      compare(key, "attack", before.getAttack(), after.getAttack());
+      compare(key, "defend", before.getDefend(), after.getDefend());
+      compare(key, "skill", before.getSkill(), after.getSkill());
+    }
+  }
+
+  private static void compare(String key, String field, int before, int after) {
+    if (before != after) {
+      lossy.add(key + ": " + field + " was " + before + ", came back as " + after);
+    }
+  }
+
+  /** The base combat stats are private and have no accessor, so they are read reflectively. */
+  private static int baseStat(itMonster monster, String field) {
+    try {
+      Field f = itMonster.class.getDeclaredField(field);
+      f.setAccessible(true);
+      return f.getInt(monster);
+    } catch (ReflectiveOperationException e) {
+      throw new IllegalStateException("could not read " + field, e);
+    }
   }
 
   /**

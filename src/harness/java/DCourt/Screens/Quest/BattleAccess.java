@@ -45,6 +45,17 @@ public final class BattleAccess {
   }
 
   /**
+   * Whether the monster has decided to run, which ends the encounter before a round happens.
+   *
+   * <p>{@code arQuest} returns {@code mobFlees()} the moment the chosen action is Runaway, before
+   * any blow is struck. A fight driver that skips this records a game in which timid creatures
+   * stand and fight to the death, which is a different and far deadlier game.
+   */
+  public static boolean fleeing(itMonster mob) {
+    return mob.getActions().isMatch(DCourt.Static.Constants.RUNAWAY);
+  }
+
+  /**
    * Advances the round the way {@code arQuest.battleActionResult} does. This is not presentation:
    * {@code Options.nextRound} calls {@code incStance} on hostile and defensive monsters, so
    * skipping it would quietly record a different game.

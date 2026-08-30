@@ -121,6 +121,35 @@ rules-changing group that ships as an opt-in toggle.
 
 **Leave the flag dead.** It is not a latent feature waiting for a one-line fix.
 
+## A monster decides what to do before it fights you
+
+`itMonster.chooseActions` runs every round and the order of its decisions matters more than any
+single one of them.
+
+**A monster with no actions left goes straight to its skills**, skipping everything else. That gate
+decides a great deal: the field Wizard and the Hills Wyvern carry no `Actions` at all, so they
+always cast rather than throw dust.
+
+**A scripted move outranks everything** — the goat's charge, the worm's swallow — and is spent as it
+is used.
+
+**Then dust against skill.** How much dust it can throw is capped by its actions, and the skill side
+is weighted by how outmatched it is, so a creature facing someone far stronger leans on what it
+knows rather than what it carries.
+
+**Then `useSkills`.** It bolts when `roll(3)` reaches its stance — so a passive creature nearly
+always flees and an aggressive one never does, which is why stance rising each round is what commits
+it to the fight. Otherwise: opening round, magic against thievery and swordsmanship; later rounds,
+only magic against fighting.
+
+**A monster that decides to run leaves, and no round happens at all.** `arQuest` returns
+`mobFlees()` the moment the chosen action is Runaway, before a blow is struck. This is easy to miss
+and changes the whole early game: without it, timid creatures stand and fight to the death.
+
+Note also that `isMatch` is **case-insensitive**, and monsters carry their options in the content in
+lower case (`control`, `swindle`) while the constants are capitalised. Comparing exactly means a
+monster never hypnotises anyone.
+
 ## Every number you own is stored obfuscated
 
 `itCount` — which holds your Marks, your stats, every weapon's attack value, every count in the

@@ -22,6 +22,7 @@ import {
   type Move,
 } from "../game/state.js";
 import { raiseFor } from "../rules/levelling.js";
+import { WEAPON_SHOP, sellPrice, stockOf } from "../game/shop.js";
 import type { Carried } from "../game/hero.js";
 import { compareToWorn, deltaClass, deltaLabel, describeItem, type ItemView } from "./describe.js";
 
@@ -292,6 +293,10 @@ function fieldsScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTM
       dispatch({ kind: "goTo", place: { kind: "status" } });
       rerender();
     }),
+    button("Weapon shop", () => {
+      dispatch({ kind: "goTo", place: { kind: "shop", shop: WEAPON_SHOP.key } });
+      rerender();
+    }),
   );
   panel.append(actions);
   return panel;
@@ -464,6 +469,145 @@ function deadScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTMLE
   return panel;
 }
 
+/**
+ * The shop.
+ *
+ * Both halves show the same stat comparison the inventory does, so what a weapon is worth to *you*
+ * is visible whether you are buying it, selling it, or just looking at what you already own.
+ */
+function shopScreen(
+  game: Game,
+  ui: UiState,
+  dispatch: Dispatch,
+  rerender: () => void,
+): HTMLElement {
+  const panel = el("section", "panel");
+  const character = game.character;
+  if (character === null) {
+    return panel;
+  }
+  panel.append(el("h1", undefined, WEAPON_SHOP.name));
+  for (const notice of game.notices) {
+    panel.append(el("p", "notice", notice));
+  }
+
+  const worn = wornViews(character);
+  const columns = el("div", "columns");
+
+  const buying = el("section");
+  buying.append(el("h2", undefined, "For sale"));
+  const stock = el("ul", "itemlist");
+  stock.setAttribute("role", "listbox");
+  stock.setAttribute("aria-label", "For sale");
+  for (const row of stockOf(game.content, WEAPON_SHOP)) {
+    const li = el("li");
+    li.tabIndex = 0;
+    li.setAttribute("role", "option");
+    li.append(el("span", "item__name", row.name));
+    const meta = el("span", "item__meta");
+    const view = toItemView(row.item);
+    meta.textContent = `${String(row.price)} Marks · `;
+    if (view !== null) {
+      const comparison = compareToWorn(view, worn);
+      const label = deltaLabel(comparison);
+      meta.append(el("span", deltaClass(comparison), label === "" ? "" : label));
+    }
+    li.append(meta);
+    li.classList.toggle("empty", false);
+    const affordable = row.price <= character.marks;
+    if (!affordable) {
+      li.style.opacity = "0.5";
+    }
+    const activate = (): void => {
+      dispatch({ kind: "buy", name: row.name });
+      rerender();
+    };
+    li.addEventListener("click", activate);
+    li.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        activate();
+      }
+    });
+    stock.append(li);
+  }
+  buying.append(stock);
+
+  const selling = el("section");
+  selling.append(el("h2", undefined, "Your pack"));
+  if (character.pack.length === 0) {
+    selling.append(el("div", "empty", "Nothing to sell."));
+  } else {
+    const list = el("ul", "itemlist");
+    list.setAttribute("role", "listbox");
+    list.setAttribute("aria-label", "Your pack");
+    character.pack.forEach((item, index) => {
+      const li = el("li");
+      li.tabIndex = 0;
+      li.setAttribute("role", "option");
+      li.append(el("span", "item__name", item.name));
+      const price = sellPrice(
+        game.content,
+        WEAPON_SHOP,
+        item.name,
+        character.charm,
+        character.traits.has("Merchant"),
+      );
+      li.append(el("span", "item__meta", price > 0 ? `sells for ${String(price)}` : "worthless"));
+      const activate = (): void => {
+        dispatch({ kind: "sell", index });
+        rerender();
+      };
+      li.addEventListener("click", activate);
+      li.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          activate();
+        }
+      });
+      list.append(li);
+    });
+    selling.append(list);
+  }
+
+  const help = el("section");
+  help.append(el("h2", undefined, "Haggling"));
+  const detail = el("div", "detail");
+  detail.append(
+    el(
+      "div",
+      "detail__line",
+      "Click to buy or sell. The coloured number is how much better or worse an item is than what you are wearing.",
+    ),
+  );
+  detail.append(
+    el(
+      "div",
+      "detail__line",
+      `Your Charm of ${String(character.charm)} is what gets you a fair price when selling.`,
+    ),
+  );
+  help.append(detail);
+
+  columns.append(buying, selling, help);
+  panel.append(columns);
+
+  const actions = el("div", "actions");
+  actions.append(
+    button(
+      "Back",
+      () => {
+        dispatch({ kind: "goTo", place: { kind: "fields" } });
+        rerender();
+      },
+      { primary: true },
+    ),
+  );
+  panel.append(actions);
+  void ui;
+  return panel;
+}
+
 /** Draws the whole game into `root`. */
 export function render(root: HTMLElement, game: Game, ui: UiState): void {
   const rerender = (): void => {
@@ -484,6 +628,9 @@ export function render(root: HTMLElement, game: Game, ui: UiState): void {
       break;
     case "status":
       root.append(statusScreen(game, ui, dispatch, rerender));
+      break;
+    case "shop":
+      root.append(shopScreen(game, ui, dispatch, rerender));
       break;
     case "dead":
       root.append(deadScreen(game, dispatch, rerender));

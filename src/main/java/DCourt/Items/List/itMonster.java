@@ -51,6 +51,17 @@ public class itMonster extends itAgent {
 
   @Override // DCourt.Items.List.itAgent, DCourt.Items.itList, DCourt.Items.itToken,
   // DCourt.Items.Item
+  /**
+   * Writes the three stat fields {@code loadSecondary} reads back -- the base values, not the
+   * derived ones.
+   *
+   * <p>It used to write {@code getAttack()}, {@code getDefend()} and {@code getSkill()}, which
+   * {@code calcCombat} only fills in once a monster has been balanced for an encounter. So writing
+   * out a prototype produced zeroes where its attack, defence and skill should be, and reading that
+   * back gave a monster that could not fight. Nothing in the game hit it, because monsters are
+   * parsed from source once and never written; exporting the content for the port is what surfaced
+   * it.
+   */
   public String toString(int depth) {
     return String.valueOf(
             String.valueOf(
@@ -74,11 +85,11 @@ public class itMonster extends itAgent {
                                 String.valueOf(
                                     String.valueOf(
                                         new StringBuffer("|")
-                                            .append(getAttack())
+                                            .append(gearAttack())
                                             .append("|")
-                                            .append(getDefend())
+                                            .append(gearDefend())
                                             .append("|")
-                                            .append(getSkill())
+                                            .append(gearSkill())
                                             .append("\n\t"))))))))
         .concat(String.valueOf(String.valueOf(listBody(depth))));
   }

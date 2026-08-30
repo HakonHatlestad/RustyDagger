@@ -30,7 +30,7 @@ public final class Baseline {
   /**
    * Bumped whenever the recording format changes, so a stale baseline cannot be diffed silently.
    */
-  private static final String FORMAT = "2";
+  private static final String FORMAT = "3";
 
   private Baseline() {}
 
@@ -142,6 +142,9 @@ public final class Baseline {
             try {
               arQuest q = new arQuest(null, weight, "baseline", mob);
               arBattle battle = new arBattle(q, "baseline");
+              // q.getMob(), not mob: arQuest copies the prototype and balances the copy, so
+              // the monster passed in is an input and the one that fought is q's. Recording
+              // the input hid the whole effect of monster scaling behind identical columns.
               w.println(
                   prefix
                       + " | text="
@@ -149,7 +152,7 @@ public final class Baseline {
                       + " | hero="
                       + Harness.agentState(h)
                       + " | mob="
-                      + Harness.agentState(mob));
+                      + Harness.agentState(q.getMob()));
             } catch (RuntimeException e) {
               // Recorded rather than swallowed: a monster that throws is a fact about the
               // game, and the port has to be told about it rather than quietly matching a

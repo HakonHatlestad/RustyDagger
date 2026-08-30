@@ -25,7 +25,6 @@ public class Player implements Constants {
   private String powers = null;
   private String leader = null;
   private String best = null;
-  private String pass = null;
   private String name = null;
   private int sessionID = 0;
   private itHero hero = null;
@@ -43,10 +42,6 @@ public class Player implements Constants {
 
   public String getName() {
     return this.name;
-  }
-
-  public String getPass() {
-    return this.pass;
   }
 
   public String getBest() {
@@ -113,11 +108,10 @@ public class Player implements Constants {
     this.start.add(Constants.MONEY, this.hero.getMoney());
   }
 
-  public boolean loadHero(String tname, String tpass) {
+  public boolean loadHero(String tname) {
     this.name = tname;
-    this.pass = tpass;
     this.sessionID = Tools.nextInt();
-    String msg = tname + "|" + tpass + "|" + this.sessionID;
+    String msg = tname + "|" + this.sessionID;
     this.sessionID = alterSessionID(this.sessionID);
     if (!readFindValues(FileLoader.cgiBuffer(Loader.FINDHERO, msg))) {
       return false;

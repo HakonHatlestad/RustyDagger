@@ -1,9 +1,11 @@
 package DCourt.Screens.Command;
 
 import DCourt.Components.FTextField;
+import DCourt.Components.FTextList;
 import DCourt.Components.Portrait;
 import DCourt.Control.PlaceTable;
 import DCourt.Control.Player;
+import DCourt.Control.SaveStore;
 import DCourt.Items.List.itHero;
 import DCourt.Screens.Screen;
 import DCourt.Screens.Utility.arNotice;
@@ -26,7 +28,7 @@ import java.awt.event.MouseListener;
 public class arEntry extends Screen
     implements GameStrings, KeyListener, ActionListener, MouseListener {
   FTextField nameTXF;
-  FTextField passTXF;
+  FTextList heroes;
   Button lists;
   Button credits;
   Image splash;
@@ -107,8 +109,8 @@ public class arEntry extends Screen
     g.setColor(getForeground());
     g.setFont(getFont());
     int val2 = getFontMetrics(getFont()).getAscent();
-    g.drawString("Hero Name", 25, 232 + val2);
-    g.drawString("Password", 28, 262 + val2);
+    g.drawString("Hero Name", 25, 210 + val2);
+    g.drawString(this.heroes.isEmpty() ? "(no saves)" : "Heroes", 25, 238 + val2);
   }
 
   /*
@@ -168,7 +170,7 @@ public class arEntry extends Screen
   /*
   public boolean handleEvent(Event e) {
       boolean val = this.handleEvent(e);
-      if (e.target == this.nameTXF || e.target == this.passTXF) {
+      if (e.target == this.nameTXF) {
           getPic(0).show(testNames());
       }
       return val;
@@ -189,11 +191,10 @@ public class arEntry extends Screen
     int a = 0;
     a += 1;
     String name = scoreString(this.nameTXF.getText());
-    String pass = scoreString(this.passTXF.getText());
     a += 1;
     Player player = Tools.getPlayer();
     a += 1;
-    if (!player.loadHero(name, pass)) {
+    if (!player.loadHero(name)) {
       System.out.println("error loadHero EnterGame: " + a);
       a += 1;
       return player.errorScreen(this);
@@ -272,15 +273,28 @@ public class arEntry extends Screen
     this.nameTXF = new FTextField(15);
     this.nameTXF.setBackground(entryC);
     this.nameTXF.setForeground(Color.black);
-    this.nameTXF.reshape(100, 230, 120, 22);
+    this.nameTXF.reshape(100, 208, 120, 22);
     this.nameTXF.addKeyListener(this);
 
-    this.passTXF = new FTextField(15);
-    this.passTXF.setEchoCharacter('*');
-    this.passTXF.setBackground(entryC);
-    this.passTXF.setForeground(Color.black);
-    this.passTXF.reshape(100, 260, 120, 22);
-    this.passTXF.addKeyListener(this);
+    // Picking an existing save beats retyping the name, and it is the only way to discover
+    // what you have without going to the filesystem.
+    this.heroes = new FTextList();
+    this.heroes.setBackground(entryC);
+    this.heroes.setForeground(Color.black);
+    this.heroes.setFill(entryC);
+    this.heroes.reshape(100, 236, 120, 58);
+    for (String hero : SaveStore.listHeroes()) {
+      this.heroes.addItem(hero);
+    }
+    this.heroes.addActionListener(
+        e -> {
+          String picked = this.heroes.getItem(this.heroes.getSelect());
+          if (picked != null) {
+            this.nameTXF.setText(picked);
+            getPic(0).show(testNames());
+            repaint();
+          }
+        });
 
     this.lists = new Button("Lists");
     this.lists.reshape(340, 232, 55, 20);
@@ -293,16 +307,14 @@ public class arEntry extends Screen
   @Override // DCourt.Screens.Screen
   public void addTools() {
     add(this.nameTXF);
-    add(this.passTXF);
+    add(this.heroes);
     add(this.lists);
     add(this.credits);
   }
 
   public boolean testNames() {
-    return this.nameTXF.getText().length() >= 4;
-    /* no password with local storage
-    && this.passTXF.getText().length() >= 4;
-    */
+    // The 4-character minimum guarded a shared server namespace. There isn't one now.
+    return !this.nameTXF.getText().isBlank();
   }
 
   public String scoreString(String msg) {

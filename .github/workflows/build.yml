@@ -1,16 +1,27 @@
 name: Dragon Court
-run-name: Buid JAR
-on: [push]
+run-name: Build JAR
+on: [push, pull_request]
+
 jobs:
-  lint-and-build:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The toolchain always compiles to Java 17; this checks the build itself still
+        # runs on newer JDKs, including the one that dropped the Applet API.
+        java: ['17', '21', '25']
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 11
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-      - run: gradle spotlessCheck
-      - run: gradle jar
+          java-version: ${{ matrix.java }}
+      - uses: gradle/actions/setup-gradle@v5
+      - run: ./gradlew spotlessCheck build webDist
+
+      - if: matrix.java == '17'
+        uses: actions/upload-artifact@v4
+        with:
+          name: RustyDagger-web
+          path: build/web/

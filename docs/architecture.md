@@ -186,6 +186,7 @@ They are not all the same kind of thing, and treating them as one pile hides whi
 | `economy.test.ts` | Does a shop charge and pay what the Java charges and pays? |
 | `levelling`, `combat`, `random`, `parse` | Does this rule match its recorded values, exactly? |
 | `balance.test.ts` | Is the game any *good*? Winnable, losable, and does progress happen? |
+| `promises.test.ts` | Does the game do what the interface **says** it does? |
 | `ui/render.test.ts` | Does the interface a player touches actually work? |
 | `scripts/smoke.mjs` | Does the built artefact boot, play and save? |
 
@@ -193,3 +194,10 @@ They are not all the same kind of thing, and treating them as one pile hides whi
 and asserts things like "a new character still dies sometimes" and "the Hills are as dangerous as
 the warning says". Removing the day cycle took out everything that used to pace the game, so those
 properties stopped being free and started needing a check.
+
+`promises.test.ts` exists because of a specific failure worth not repeating. The inventory told
+players which items a swap "would replace" — computed correctly, and correct since the day it was
+written — while the game appended to a list and replaced nothing, so five right-hand weapons could
+be worn at once. Every piece passed its own tests; nobody checked whether the sentence on the screen
+was *true*. That file is written from the wording a player sees rather than from the implementation,
+and it is where a new promise should be pinned.

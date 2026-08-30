@@ -463,7 +463,7 @@ public class itHero extends itAgent {
   }
 
   public int packMax() {
-    return 60 + (hasTrait(Constants.TRADER) ? 20 : 0) + (hasTrait(Constants.MERCHANT) ? 20 : 0);
+    return 75 + (hasTrait(Constants.TRADER) ? 20 : 0) + (hasTrait(Constants.MERCHANT) ? 20 : 0);
   }
 
   public int storeMax() {

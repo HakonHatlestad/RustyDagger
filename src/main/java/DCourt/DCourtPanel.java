@@ -1,5 +1,6 @@
 package DCourt;
 
+import DCourt.Control.Player;
 import DCourt.Screens.Command.arLoading;
 import DCourt.Screens.Screen;
 import DCourt.Tools.StaticLayout;
@@ -72,6 +73,13 @@ public class DCourtPanel extends Panel {
       add(this.region);
       setEnabled(true);
       this.region.repaint();
+      // Every navigation in the game funnels through here, which makes it the one place an
+      // autosave belongs. The new screen has already run init(), so the hero's location is
+      // current by the time it is written.
+      Player player = Tools.getPlayer();
+      if (player != null) {
+        player.autoSave();
+      }
     }
   }
 

@@ -166,6 +166,22 @@ public class Player implements Constants {
     return true;
   }
 
+  /**
+   * Saves the hero if there is a live one to save, ignoring failures.
+   *
+   * <p>Called on every screen change. Creation and death run their own save paths, and a hero
+   * mid-creation has no name to save under, so both are skipped here.
+   */
+  public boolean autoSave() {
+    if (!GameRules.AUTOSAVE || this.hero == null || this.name == null || !isAlive()) {
+      return false;
+    }
+    if (Tools.getToday() == null) {
+      return false;
+    }
+    return saveHero();
+  }
+
   public boolean saveHero() {
     this.hero.fix("Date", Tools.getToday());
     /*

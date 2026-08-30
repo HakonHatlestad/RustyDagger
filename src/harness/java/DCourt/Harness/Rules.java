@@ -260,7 +260,21 @@ final class Rules {
    */
   private static void economy(PrintWriter w) {
     w.println("== ECONOMY ==");
-    String[] goods = {"Knife", "Long Sword", "Battle Axe", "Long Bow", "Half Plate"};
+    // The last five carry value-bearing traits -- glows, bless, lucky, blind, panic -- which are
+    // worth far more than the stats they sit on, and are the part of the price a port is most
+    // likely to get wrong, because nothing in any shop's stock has one.
+    String[] goods = {
+      "Knife",
+      "Long Sword",
+      "Battle Axe",
+      "Long Bow",
+      "Half Plate",
+      "Miners Cap",
+      "Unicorn Horn",
+      "Dwarf Axe",
+      "Silver Gladius",
+      "Terror Rod"
+    };
     for (int charm : new int[] {5, 20, 60, 200}) {
       for (boolean merchant : new boolean[] {false, true}) {
         itHero h = Harness.hero("E", 30, 20, charm, 0, 0, 0);

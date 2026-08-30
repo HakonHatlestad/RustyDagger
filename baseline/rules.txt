@@ -1387,19 +1387,24 @@ guts=16 wits=16 charm=16 class=magic -> attack=0 defend=0 skill=17 raise=50 ques
 guts=16 wits=16 charm=16 class=fight -> attack=1 defend=0 skill=16 raise=50 quests=30 power=90
 
 == ECONOMY ==
-charm=5 merchant=false Knife=stock:11/sell:4 Long Sword=stock:158/sell:57 Battle Axe=stock:549/sell:198 Long Bow=stock:551/sell:198 Half Plate=stock:324/sell:117
-charm=5 merchant=true Knife=stock:11/sell:4 Long Sword=stock:158/sell:60 Battle Axe=stock:549/sell:208 Long Bow=stock:551/sell:209 Half Plate=stock:324/sell:123
-charm=20 merchant=false Knife=stock:11/sell:5 Long Sword=stock:158/sell:71 Battle Axe=stock:549/sell:247 Long Bow=stock:551/sell:248 Half Plate=stock:324/sell:146
-charm=20 merchant=true Knife=stock:11/sell:5 Long Sword=stock:158/sell:75 Battle Axe=stock:549/sell:260 Long Bow=stock:551/sell:261 Half Plate=stock:324/sell:153
-charm=60 merchant=false Knife=stock:11/sell:6 Long Sword=stock:158/sell:83 Battle Axe=stock:549/sell:288 Long Bow=stock:551/sell:289 Half Plate=stock:324/sell:170
-charm=60 merchant=true Knife=stock:11/sell:6 Long Sword=stock:158/sell:87 Battle Axe=stock:549/sell:303 Long Bow=stock:551/sell:305 Half Plate=stock:324/sell:179
-charm=200 merchant=false Knife=stock:11/sell:6 Long Sword=stock:158/sell:90 Battle Axe=stock:549/sell:315 Long Bow=stock:551/sell:315 Half Plate=stock:324/sell:186
-charm=200 merchant=true Knife=stock:11/sell:6 Long Sword=stock:158/sell:95 Battle Axe=stock:549/sell:331 Long Bow=stock:551/sell:333 Half Plate=stock:324/sell:195
+charm=5 merchant=false Knife=stock:11/sell:4 Long Sword=stock:158/sell:57 Battle Axe=stock:549/sell:198 Long Bow=stock:551/sell:198 Half Plate=stock:324/sell:117 Miners Cap=stock:385/sell:139 Unicorn Horn=stock:1411/sell:508 Dwarf Axe=stock:1088/sell:392 Silver Gladius=stock:38220/sell:13760 Terror Rod=stock:4986/sell:1795
+charm=5 merchant=true Knife=stock:11/sell:4 Long Sword=stock:158/sell:60 Battle Axe=stock:549/sell:208 Long Bow=stock:551/sell:209 Half Plate=stock:324/sell:123 Miners Cap=stock:385/sell:146 Unicorn Horn=stock:1411/sell:535 Dwarf Axe=stock:1088/sell:413 Silver Gladius=stock:38220/sell:14483 Terror Rod=stock:4986/sell:1890
+charm=20 merchant=false Knife=stock:11/sell:5 Long Sword=stock:158/sell:71 Battle Axe=stock:549/sell:247 Long Bow=stock:551/sell:248 Half Plate=stock:324/sell:146 Miners Cap=stock:385/sell:174 Unicorn Horn=stock:1411/sell:635 Dwarf Axe=stock:1088/sell:489 Silver Gladius=stock:38220/sell:17199 Terror Rod=stock:4986/sell:2244
+charm=20 merchant=true Knife=stock:11/sell:5 Long Sword=stock:158/sell:75 Battle Axe=stock:549/sell:260 Long Bow=stock:551/sell:261 Half Plate=stock:324/sell:153 Miners Cap=stock:385/sell:183 Unicorn Horn=stock:1411/sell:669 Dwarf Axe=stock:1088/sell:516 Silver Gladius=stock:38220/sell:18104 Terror Rod=stock:4986/sell:2362
+charm=60 merchant=false Knife=stock:11/sell:6 Long Sword=stock:158/sell:83 Battle Axe=stock:549/sell:288 Long Bow=stock:551/sell:289 Half Plate=stock:324/sell:170 Miners Cap=stock:385/sell:203 Unicorn Horn=stock:1411/sell:741 Dwarf Axe=stock:1088/sell:571 Silver Gladius=stock:38220/sell:20066 Terror Rod=stock:4986/sell:2618
+charm=60 merchant=true Knife=stock:11/sell:6 Long Sword=stock:158/sell:87 Battle Axe=stock:549/sell:303 Long Bow=stock:551/sell:305 Half Plate=stock:324/sell:179 Miners Cap=stock:385/sell:213 Unicorn Horn=stock:1411/sell:780 Dwarf Axe=stock:1088/sell:602 Silver Gladius=stock:38220/sell:21121 Terror Rod=stock:4986/sell:2756
+charm=200 merchant=false Knife=stock:11/sell:6 Long Sword=stock:158/sell:90 Battle Axe=stock:549/sell:315 Long Bow=stock:551/sell:315 Half Plate=stock:324/sell:186 Miners Cap=stock:385/sell:221 Unicorn Horn=stock:1411/sell:808 Dwarf Axe=stock:1088/sell:623 Silver Gladius=stock:38220/sell:21890 Terror Rod=stock:4986/sell:2856
+charm=200 merchant=true Knife=stock:11/sell:6 Long Sword=stock:158/sell:95 Battle Axe=stock:549/sell:331 Long Bow=stock:551/sell:333 Half Plate=stock:324/sell:195 Miners Cap=stock:385/sell:232 Unicorn Horn=stock:1411/sell:851 Dwarf Axe=stock:1088/sell:656 Silver Gladius=stock:38220/sell:23041 Terror Rod=stock:4986/sell:3006
 equippedDelta wearing=Long Sword vs=Knife -> " -6"
 equippedDelta wearing=Long Sword vs=Long Sword -> " ="
 equippedDelta wearing=Long Sword vs=Battle Axe -> " +7"
 equippedDelta wearing=Long Sword vs=Long Bow -> " +13"
 equippedDelta wearing=Long Sword vs=Half Plate -> " +6"
+equippedDelta wearing=Long Sword vs=Miners Cap -> " +9"
+equippedDelta wearing=Long Sword vs=Unicorn Horn -> " +19"
+equippedDelta wearing=Long Sword vs=Dwarf Axe -> " +25"
+equippedDelta wearing=Long Sword vs=Silver Gladius -> " +113"
+equippedDelta wearing=Long Sword vs=Terror Rod -> " +20"
 
 == QUEST ACCOUNTING (daily limit off, the default) ==
 level=1 fatigue=0 packOver=0 -> quests=30 overload=0 packMax=75

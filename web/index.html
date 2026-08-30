@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RustyDagger — Dragon Court</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: #1a1410;
+        color: #d8c9a8;
+        font-family: system-ui, sans-serif;
+        text-align: center;
+      }
+      #display {
+        border: 4px ridge #6b563a;
+        background: #000;
+        /* The game draws into a fixed 400x300 canvas; scale it up for modern screens. */
+        image-rendering: pixelated;
+      }
+      button {
+        font-size: 1.1rem;
+        padding: 0.6rem 1.4rem;
+        cursor: pointer;
+      }
+      small {
+        opacity: 0.65;
+        max-width: 34rem;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Dragon Court</h1>
+    <div id="display"></div>
+    <p id="status"><button id="launch">Play</button></p>
+    <small>
+      Dragon Court by Fred Haslam (Fiends.com). Runs in the browser via
+      <a href="https://cheerpj.com/" style="color: #c8a96a">CheerpJ</a>, a WebAssembly JVM by Leaning
+      Technologies. First load fetches the Java runtime and takes a while.
+    </small>
+
+    <script src="https://cjrtnc.leaningtech.com/4.3/loader.js"></script>
+    <script>
+      // 400x300 is Tools.DEFAULT_WIDTH/HEIGHT; 2x keeps it legible without resampling artefacts.
+      const SCALE = 2;
+      const WIDTH = 400;
+      const HEIGHT = 300;
+
+      document.getElementById("launch").addEventListener("click", async (e) => {
+        const status = document.getElementById("status");
+        status.textContent = "Loading the Java runtime, this can take a minute…";
+        try {
+          await cheerpjInit();
+          cheerpjCreateDisplay(WIDTH * SCALE, HEIGHT * SCALE, document.getElementById("display"));
+          status.textContent = "";
+          // "/app/" is CheerpJ's mount for the web server root this page came from.
+          await cheerpjRunJar("/app/RustyDagger.jar");
+        } catch (err) {
+          status.textContent = "Failed to start: " + err;
+        }
+      });
+    </script>
+  </body>
+</html>

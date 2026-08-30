@@ -1,5 +1,11 @@
 # Architecture
 
+**Two implementations live here.** This document describes the Java one, which is still the whole
+game and the reference the rewrite is checked against. The rewrite is described at the bottom, under
+[The TypeScript app](#the-typescript-app).
+
+## The Java build
+
 The game is one AWT window that swaps a single full-screen "region" component as you move
 around. There is no scene graph, no game loop and no threading: everything happens on the AWT
 event thread in response to a click.
@@ -117,3 +123,36 @@ called, silently. So if you add any listener to a widget, move *all* of its inpu
 in the same change. `FTextList` does this: clicking a row is handled in its `mousePressed`, and
 it re-posts the old-style `ACTION_EVENT` itself so screens keying off `e.target == theList` keep
 working. Other widgets still on the 1.0 model are fine as they are — leave them.
+
+
+## The TypeScript app
+
+`app/` is the rewrite. It is layered, which the Java build is not, and the layering is the point:
+the rules are held to the Java build's recorded behaviour, so they must not know anything about
+screens.
+
+```
+app/src/
+  format/   the {type|field|field} grammar: parse and serialise
+  rules/    the game's maths -- nothing here imports anything below it
+  game/     content, characters, monsters, loot, shops, and the state machine
+  ui/       drawing, and the item descriptions and comparisons a player reads
+```
+
+Three rules hold it together.
+
+**The rules layer knows nothing about the interface.** `rules/` takes numbers and returns numbers.
+That is what lets `app/test/parity.test.ts` play thousands of fights headlessly and compare them
+against `baseline/distributions.txt`.
+
+**Every move goes through one function.** `game/state.ts` exposes `apply(game, move)` and nothing
+else mutates the game. That is the same discipline `DCourtPanel.setRegion` enforces on the Java
+side, and for the same reason: it is where anything that must happen on *every* transition goes.
+
+**The interface reads state and emits moves.** Plain DOM, no framework — the state is small and
+every move re-renders. Text is built with `textContent` and never by assembling HTML, because item
+and monster names come from content files and from hand-editable saves.
+
+The one deliberate coupling: `ui/describe.ts` imports from `rules/combat.ts` so that the stat
+comparison a shop shows is computed by the same code that decides a fight. Showing a player a
+number the rules disagree with would be worse than showing nothing.

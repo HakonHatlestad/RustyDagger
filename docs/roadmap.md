@@ -31,9 +31,33 @@ months of improvement. It also removes the plan's worst property: that every pha
 left you worse off than not starting, so a stall in the middle was strictly harmful. The Java build
 now keeps improving whatever happens to the rewrite.
 
+## Where this has got to
+
+**Phases 0 to 4 are done; the game is playable in a browser.** `app/` holds the TypeScript port —
+run `cd app && pnpm install && pnpm dev`. You can load an existing `.hero` character or start a new
+one, go questing in the fields, fight, take what a monster was carrying, spend it in the weapon
+shop, and equip what you buy. 198 tests, plus a smoke test that boots the built bundle and plays
+through it.
+
+| Phase | State |
+|---|---|
+| 0 — Ground truth | **Done.** Harness, baseline, content export. |
+| 1 — New project, quality net | **Done.** Type checking, linting, formatting and tests gate every commit, and CI runs them. |
+| 2 — The maths, under parity | **Mostly done.** Generator, levelling, decay, combat, the battle round, monster balancing and behaviour, save import. Not ported: the consumables, where a wounded monster drinks something to buy back actions. |
+| 3 — Vertical slice | **Done.** Hero, quest, battle, shop, equip, end to end. |
+| 4 — Menu cluster and levelling display | **Done.** Experience and health bars, item descriptions, and the stat comparison shared across inventory and shop. |
+| 5 — Breadth | Not started. One region of the world exists. |
+| 6 — Presentation | **Half done.** Text and interface are sharp and reflow; the artwork is untouched. |
+| 7 — Portable remake features | Not started. |
+| 8 — Retire the Java build | Not started, and should not be until the gaps in Phase 2 close. |
+
+**What is not there yet**, stated plainly so nobody has to discover it: the town's other shops, the
+forest, hills, mound and castle, the queen's minigames, the bank, the guild, the healer, character
+creation as a screen, and the artwork. The loop is complete; the world is one region of it.
+
 ## Phases
 
-### Phase 0 — Ground truth
+### Phase 0 — Ground truth ✅
 
 Build a seeded characterisation harness against the Java build: fix the RNG seed, drive combat,
 loot, gear decay, levelling and quest outcomes at volume, and record every result as the parity
@@ -66,7 +90,7 @@ This phase is what makes the regeneration rule above meaningful.
 *Docs touched:* [development.md](development.md), [gameplay.md](gameplay.md),
 [../SPEC.md](../SPEC.md), [architecture.md](architecture.md), [../CLAUDE.md](../CLAUDE.md).
 
-### Phase 1 — New project, quality net first
+### Phase 1 — New project, quality net first ✅
 
 A TypeScript app in a new directory in this repository, served locally, with type checking,
 linting, formatting and tests wired up before the first feature rather than after the shape
@@ -77,11 +101,15 @@ misdiagnosed twice.
 No framework or library choice is made here or anywhere in this document; that belongs to this
 phase's own session.
 
+**Done.** `app/` is Vite, TypeScript, Vitest, ESLint and Prettier, with `pnpm check` gating type
+checking, linting, formatting and tests. CI runs that, builds the bundle, and separately checks that
+regenerating the exported content produces no diff — generated files go stale silently otherwise.
+
 *What changes for the player:* nothing yet.
 *Docs touched:* [development.md](development.md), [architecture.md](architecture.md),
 [../README.md](../README.md).
 
-### Phase 2 — The maths, under parity
+### Phase 2 — The maths, under parity — mostly done
 
 Port the roughly 3,000 lines of behaviour-critical rules and check every outcome against Phase 0's
 baseline: the combat round and damage formula documented in [gameplay.md](gameplay.md), the
@@ -94,10 +122,22 @@ Read existing `.hero` saves so current characters survive the move. The new save
 human-readable plain text committed to git, because meaningful diffs between sessions and
 git-based syncing between machines are both deliberate ([saves.md](saves.md)).
 
+**Mostly done**, and the checking is the interesting part. Each rule is held to the baseline
+exactly — the generator against recorded sequences, decay against 91 item trajectories, combat
+against a 1,296-row damage grid and all 64 Skill matchups. On top of that, `app/test/parity.test.ts`
+plays *complete fights* and compares how they end, which is a different question and has found far
+more: see [development.md](development.md) for the five bugs it caught, one of them in the harness
+itself.
+
+**Not ported:** the consumable handling in `itMonster.chooseActions`, where a wounded monster drinks
+Troll Blood or Ginseng to heal and buy back actions. That is the whole of the remaining divergence,
+it is listed monster by monster in the parity test rather than hidden, and it is what Phase 8 waits
+on.
+
 *What changes for the player:* nothing visible, but their existing heroes now load in the new app.
 *Docs touched:* [gameplay.md](gameplay.md), [saves.md](saves.md), [../SPEC.md](../SPEC.md).
 
-### Phase 3 — Vertical slice
+### Phase 3 — Vertical slice ✅
 
 Create a hero, take one quest, fight one battle, visit one shop, equip one item — end to end,
 before any breadth. A thin slice exercises every layer at once (data, rules, saves, interface,
@@ -110,10 +150,14 @@ against a parity harness is a materially safer proposition than the surgery on t
 action menu (`DCourt.Screens.Quest.Options`, still on `handleEvent`) that was previously the only
 option available.
 
+**Done.** Load or start a character, quest in the fields, fight a monster through to an ending,
+take its loot, buy and sell in the weapon shop, equip what you own. The battle screen was rebuilt
+from scratch rather than surgically altered, as intended.
+
 *What changes for the player:* the first playable thing in the new app.
 *Docs touched:* [architecture.md](architecture.md), [porting-notes.md](porting-notes.md).
 
-### Phase 4 — The menu cluster and the levelling display
+### Phase 4 — The menu cluster and the levelling display ✅
 
 The inventory and gear menu, the shop menu, and item descriptions are one job, not three. Today
 every list in the game is the one shared `FTextList` widget, which is why wheel and keyboard
@@ -128,6 +172,11 @@ Add the experience bar and a real visual treatment of levelling. The fixed 400x3
 nowhere to put one, which is the single clearest example of the layout constraining the game rather
 than the other way round.
 
+**Done.** The stat comparison is built once in `app/src/ui/describe.ts` and used by the inventory
+and the shop alike, closing the asymmetry rather than copying it — and it handles the sixteen
+two-handed weapons properly, so a pike costs you the shield as well as the sword. Item descriptions
+are sentences rather than three integers. Health and experience bars sit on every screen.
+
 *What changes for the player:* the biggest visible improvement in the whole plan.
 *Docs touched:* [gameplay.md](gameplay.md), [porting-notes.md](porting-notes.md).
 
@@ -140,12 +189,13 @@ minigames, the bank, the guild, the healer. Enumerated from the package map in
 *What changes for the player:* the new app becomes the whole game rather than a slice of it.
 *Docs touched:* [architecture.md](architecture.md).
 
-### Phase 6 — Presentation
+### Phase 6 — Presentation — half done
 
 "Better resolution" is two different jobs with very different costs, and separating them matters.
 
-**Text and interface** become sharp for free, because they stop being a 400x300 bitmap. This is not
-scheduled work; it is a consequence of Phase 1.
+**Text and interface** are done, and were free as predicted: nothing in the interface is given a
+fixed width, so it reflows and stays sharp at any size. That also means the text clipping the remake
+had to patch out twice cannot come back.
 
 **The pictures** can only be upscaled. Measured: 96 image files under `Images/` — 95 JPEG and one
 GIF — of which 45 are 80x80, 29 are 96x64 and 12 are 72x96, with the rest one-offs up to 400x300.

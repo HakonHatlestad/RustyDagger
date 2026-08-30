@@ -9,7 +9,31 @@ Dragon Court, the classic 90's game by Fred Haslam (Ffiends.com). A Quest to rev
 - [Dragon Court: Revived](https://dragoncourt.penguinchilling.com/) — the live, still-maintained
   descendant of this game (build v1.22.012), also run in the browser via CheerpJ
 
+## Two builds
+
+This repository holds the game twice over, on purpose.
+
+- **`app/`** — the TypeScript rewrite, and where the work is. Playable in a browser: a character,
+  the fields, fights, loot, a shop. This is what [docs/roadmap.md](docs/roadmap.md) is about.
+- **the Java build** — the 1997 applet, ported to run on the desktop and in a browser. Still fully
+  playable, and it is also the **reference the rewrite is checked against**: `./gradlew baseline`
+  records how it behaves and the TypeScript suite is held to that.
+
+Neither is finished replacing the other. The Java build is the whole game; the rewrite is one region
+of it, built properly. See [docs/roadmap.md](docs/roadmap.md) for what is done and what is not.
+
 ## Build & Run
+
+### The rewrite
+
+```
+$ cd app
+$ pnpm install
+$ pnpm dev              # play it at the address printed
+$ pnpm verify           # type check, lint, format, 198 tests, build, smoke test
+```
+
+Needs Node 20+ and pnpm. It loads a `.hero` character from browser storage, or starts a new one.
 
 ### Requirements
 
@@ -64,6 +88,9 @@ can move between machines with a `git pull`. See [docs/saves.md](docs/saves.md).
   changed, and which of it we take
 - [CLAUDE.md](CLAUDE.md) - orientation for agents working in this repo
 
+The rewrite's own working notes live with the code: `app/src/rules/` is the game's maths,
+`app/src/game/` the state and content, `app/src/ui/` the interface.
+
 ## Options
 
 All set with `-D` on the command line, e.g.
@@ -99,6 +126,9 @@ your saved heroes instead of asking for a password. Full list, with reasons:
 - Multiplayer was removed. There is no server, so the clan hall, postal service and
   rankings are inert.
 - Hero data is saved to a file named after the hero, in the working directory.
+
+In the rewrite, additionally: only the fields region exists, there is no character-creation screen,
+and the artwork has not been carried over. [docs/roadmap.md](docs/roadmap.md) has the full list.
 
 ## Notes on the port
 

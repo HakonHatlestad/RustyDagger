@@ -5,6 +5,20 @@ this file is the short version plus the traps.
 
 ## What this is
 
+Two things at once, and knowing which you are in matters.
+
+**`app/`** is a TypeScript rewrite, and where new work goes. It is playable, has a full quality gate
+(`cd app && pnpm check`) and is checked against the Java build's recorded behaviour. Modern code;
+treat it as you would any TypeScript project.
+
+**Everything else** is a 1997 Java applet, decompiled, now a desktop AWT program that also runs in a
+browser. It still works, and it is the reference the rewrite is measured against, so it stays.
+
+Read [docs/roadmap.md](docs/roadmap.md) before starting anything substantial — it says what is done
+and what is not.
+
+### The Java side
+
 A 1997 Java **applet** game, decompiled, now a desktop AWT program that also runs in a browser.
 The gameplay code is machine-decompiled and reads like it: `String.valueOf(String.valueOf(x))`
 everywhere, AWT 1.0 event handling, `ar*` class names. **That is expected, not something to
@@ -13,7 +27,10 @@ tidy up wholesale.** Reformatting a file you did not otherwise touch buries the 
 ## Build and run
 
 ```
-./gradlew run                       # play it
+cd app && pnpm dev                  # play the rewrite
+cd app && pnpm verify               # the rewrite's full gate
+
+./gradlew run                       # play the Java build
 ./gradlew build                     # jar -> build/libs/RustyDagger.jar
 ./gradlew webDist                   # browser build -> build/web/
 ./gradlew spotlessApply             # format; ALWAYS before committing
@@ -78,6 +95,8 @@ a real subprocess with a working native stack, scrub the environment first:
   one-line change. The same is true of navigation (`DCourtPanel.setRegion`, where autosave hangs)
   and of item lists (`FTextList`, where wheel and keyboard support went in once for every screen).
   Look for the chokepoint before editing thirty call sites.
+- **New gameplay work goes in `app/`, not the Java build.** The Java build is the reference; change
+  it only to fix something genuinely broken, and never to add a feature.
 - **Any gameplay change ships with a regenerated baseline.** Run `./gradlew baseline`, look at the
   diff, and say in the commit message what moved. The Java build is the reference the TypeScript
   port is checked against, so a rule change that nobody noticed would quietly corrupt it. This

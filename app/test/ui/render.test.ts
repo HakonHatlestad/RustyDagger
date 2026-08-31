@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadContent, type Content } from "../../src/game/content.js";
+import { JOINING_FEE } from "../../src/game/guild.js";
 import { parseHero } from "../../src/game/hero.js";
 import { apply, characterFrom, type Game } from "../../src/game/state.js";
 import { GameRandom } from "../../src/rules/random.js";
@@ -491,10 +492,14 @@ describe("the shops", () => {
 
 describe("the guild", () => {
   /** Timber is a real 1997 save and is already a member, so joining is tested on a fresh one. */
+  // Enough to join and still have a purse afterwards. The assertions below derive from it
+  // rather than restating the arithmetic, so a change to the fee cannot leave them stale.
+  const OUTSIDER_MARKS = 20000;
+
   function asOutsider(): void {
     game.character!.traits.delete("Guild");
     game.character!.ranks = { fight: 0, magic: 0, thief: 0 };
-    game.character!.marks = 20000;
+    game.character!.marks = OUTSIDER_MARKS;
     apply(game, { kind: "goTo", place: { kind: "guild" } });
     render(root, game, ui);
   }
@@ -508,19 +513,19 @@ describe("the guild", () => {
 
   it("asks an outsider to join before it teaches anything", () => {
     asOutsider();
-    expect(root.textContent).toContain("Membership is 4000 Marks");
+    expect(root.textContent).toContain(`Membership is ${String(JOINING_FEE)} Marks`);
   });
 
   it("takes the fee and then offers all three tracks", () => {
     asOutsider();
-    click("Join — 4000 Marks");
-    expect(game.character!.marks).toBe(16000);
+    click(`Join — ${String(JOINING_FEE)} Marks`);
+    expect(game.character!.marks).toBe(OUTSIDER_MARKS - JOINING_FEE);
     expect(root.querySelectorAll("button.choice").length).toBe(3);
   });
 
   it("says what each track actually buys you", () => {
     asOutsider();
-    click("Join — 4000 Marks");
+    click(`Join — ${String(JOINING_FEE)} Marks`);
     expect(root.textContent).toContain("+1 Attack per rank");
     expect(root.textContent).toContain("+1 Defence per rank");
   });
@@ -528,7 +533,7 @@ describe("the guild", () => {
   it("trains a rank and shows it on the status panel", () => {
     asOutsider();
     game.character!.level = 5;
-    click("Join — 4000 Marks");
+    click(`Join — ${String(JOINING_FEE)} Marks`);
     clickCard("Fighting");
     expect(game.character!.ranks.fight).toBe(1);
     expect(root.textContent).toContain("Guild: Fighting 1");
@@ -537,7 +542,7 @@ describe("the guild", () => {
   it("explains itself rather than just refusing", () => {
     asOutsider();
     game.character!.level = 1;
-    click("Join — 4000 Marks");
+    click(`Join — ${String(JOINING_FEE)} Marks`);
     clickCard("Fighting");
     render(root, game, ui);
     // One rank at level 1 is the cap, so it has to say why there is no second.

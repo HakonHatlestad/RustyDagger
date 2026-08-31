@@ -210,7 +210,9 @@ function statusPanel(character: Character): HTMLElement {
       "health",
     ),
     bar(
-      "Level",
+      // Not "Level": it sits directly under "Aldis, level 1" and the two numbers mean different
+      // things, so sharing a word makes the bar read as the level rather than the road to it.
+      "Next level",
       expFraction(character),
       `${String(character.exp)} / ${String(raiseFor(character.level))}`,
       "exp",
@@ -799,6 +801,19 @@ function questScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTML
       swing(chosen.action);
       return true;
     });
+
+    // What the six moves cost, foldable. These used to live only in `title` tooltips, which are
+    // unreachable on a touchscreen and awkward with a keyboard — and since three of them now carry
+    // real rules rather than flavour, a player who cannot read them cannot play well. Closed by
+    // default because six rules every round is noise once you know them; the browser remembers.
+    const legend = el("details", "legend");
+    legend.append(el("summary", undefined, "What these do"));
+    const list = el("dl");
+    for (const choice of choices) {
+      list.append(el("dt", undefined, choice.label), el("dd", undefined, choice.hint));
+    }
+    legend.append(list);
+    panel.append(legend);
     // Two rules now change what these buttons do, and both are invisible state on the fighter.
     // A disabled-looking outcome with no stated reason reads as a bug, so say them out loud —
     // the tooltips carry the standing rules, but these are about *this* round.
@@ -1125,6 +1140,7 @@ function shopScreen(
     const item = bestWornArms(character, service);
     const bench = el("section", "bench");
     const spec = FORGE_SERVICES[service];
+    bench.append(el("h2", undefined, `${spec.label} what you are wearing`));
     if (item === null) {
       bench.append(el("p", "aside", `Wearing nothing I could ${spec.label.toLowerCase()}.`));
     } else {
@@ -1155,43 +1171,72 @@ function shopScreen(
   }
 
   const buying = el("section");
-  buying.append(el("h2", undefined, "For sale"));
-  const stock = el("ul", "itemlist");
-  stock.setAttribute("role", "listbox");
-  stock.setAttribute("aria-label", "For sale");
-  for (const row of stockOf(game.content, shop)) {
-    const li = el("li");
-    li.tabIndex = 0;
-    li.setAttribute("role", "option");
-    li.append(el("span", "item__name", row.name));
-    const meta = el("span", "item__meta", `${String(row.price)} Marks`);
-    const view = toItemView(row.item);
-    if (view !== null) {
-      const comparison = compareToWorn(view, worn);
-      const label = deltaLabel(comparison);
-      if (label !== "") {
-        meta.append(el("span", deltaClass(comparison), ` ${label}`));
+
+  // Sally sells fish at two Marks and a Rutter for Shangala at twelve thousand off the same shelf.
+  // One is lunch and the other is the next third of the game, so they are not the same list: a
+  // player deciding what to save for should not have to read past the food to find the ladder.
+  const all = stockOf(game.content, shop);
+  const isWayOnward = (name: string): boolean => /^Map to |^Rutter for |Permit$/.test(name);
+  const onward = all.filter((row) => isWayOnward(row.name));
+  const supplies = all.filter((row) => !isWayOnward(row.name));
+
+  const stockList = (rows: typeof all): HTMLElement => {
+    const stock = el("ul", "itemlist");
+    stock.setAttribute("role", "listbox");
+    stock.setAttribute("aria-label", "For sale");
+    for (const row of rows) {
+      const li = el("li");
+      li.tabIndex = 0;
+      li.setAttribute("role", "option");
+      li.append(el("span", "item__name", row.name));
+      const meta = el("span", "item__meta", `${String(row.price)} Marks`);
+      const view = toItemView(row.item);
+      if (view !== null) {
+        const comparison = compareToWorn(view, worn);
+        const label = deltaLabel(comparison);
+        if (label !== "") {
+          meta.append(el("span", deltaClass(comparison), ` ${label}`));
+        }
       }
-    }
-    li.append(meta);
-    const affordable = row.price <= character.marks;
-    if (!affordable) {
-      li.classList.add("is-dear");
-    }
-    const activate = (): void => {
-      dispatch({ kind: "buy", shop: shop.key, name: row.name });
-      rerender();
-    };
-    li.addEventListener("click", activate);
-    li.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        activate();
+      li.append(meta);
+      const affordable = row.price <= character.marks;
+      if (!affordable) {
+        li.classList.add("is-dear");
       }
-    });
-    stock.append(li);
+      const activate = (): void => {
+        dispatch({ kind: "buy", shop: shop.key, name: row.name });
+        rerender();
+      };
+      li.addEventListener("click", activate);
+      li.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          activate();
+        }
+      });
+      stock.append(li);
+    }
+    return stock;
+  };
+
+  const shelf = (heading: string, rows: typeof all): HTMLElement | null => {
+    if (rows.length === 0) {
+      return null;
+    }
+    const section = el("section");
+    section.append(el("h2", undefined, heading));
+    section.append(stockList(rows));
+    return section;
+  };
+
+  for (const section of [
+    shelf(onward.length > 0 ? "Supplies" : "For sale", supplies),
+    shelf("The way onward", onward),
+  ]) {
+    if (section !== null) {
+      buying.append(section);
+    }
   }
-  buying.append(stock);
 
   const selling = el("section");
   selling.append(el("h2", undefined, "Your pack"));

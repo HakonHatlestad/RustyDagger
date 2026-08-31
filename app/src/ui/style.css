@@ -509,6 +509,67 @@ button[data-key]::after {
   vertical-align: 0.05em;
 }
 
+/*
+ * A service counter inside a shop or the temple: the smith's bench, the Bishop's training.
+ *
+ * Set apart from the stock list rather than floated above it, because it is a different kind of
+ * transaction — you are not picking a thing off a shelf, you are paying for work on what you have.
+ */
+.bench {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  background: color-mix(in srgb, var(--panel) 70%, var(--bevel-light));
+  border-left: 3px solid var(--gold);
+}
+
+.bench h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.bench .aside {
+  margin: 0 0 0.6rem;
+}
+
+.bench .actions {
+  margin: 0;
+}
+
+/*
+ * The fold-away explanation of the fight actions.
+ *
+ * Closed by default: six rules on screen every round is noise once you know them, and hidden
+ * behind a tooltip is useless on a touchscreen and to anyone reading with a keyboard. `details`
+ * costs nothing, opens for whoever needs it, and stays open once opened.
+ */
+.legend {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.legend summary {
+  cursor: pointer;
+  padding: 0.15rem 0;
+}
+
+.legend dl {
+  margin: 0.4rem 0 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 0.75rem;
+}
+
+.legend dt {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.legend dd {
+  margin: 0;
+}
+
 .ranks {
   font-size: 0.85rem;
   color: var(--ink-soft);

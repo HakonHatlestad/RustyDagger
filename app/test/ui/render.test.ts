@@ -111,7 +111,7 @@ describe("the status bar", () => {
     // The experience bar is the thing the 400x300 canvas had nowhere to put.
     const bars = root.querySelectorAll('[role="progressbar"]');
     expect(bars).toHaveLength(2);
-    expect([...bars].map((b) => b.getAttribute("aria-label"))).toEqual(["Health", "Level"]);
+    expect([...bars].map((b) => b.getAttribute("aria-label"))).toEqual(["Health", "Next level"]);
   });
 
   it("moves the health bar as you take damage", () => {
@@ -516,6 +516,24 @@ describe("the list of places to hunt", () => {
   });
 });
 
+describe("the fight screen's legend", () => {
+  it("explains every action it offers, without being asked twice", () => {
+    // These lived only in `title` tooltips, which a touchscreen cannot reach and a keyboard reaches
+    // awkwardly. Three of the six now carry real rules rather than flavour, so a player who cannot
+    // read them cannot play well. Folded away, because six rules a round is noise once you know them.
+    click("Go hunting");
+    clickCard("The Fields");
+    const summary = root.querySelector("details.legend summary")!;
+    expect(summary.textContent).toBe("What these do");
+    const terms = [...root.querySelectorAll("details.legend dt")].map((n) => n.textContent);
+    const labels = [...root.querySelectorAll("div.actions button")].map((n) => n.textContent);
+    // Every button gets a line, and no line describes a button that is not there.
+    expect(terms).toEqual(labels);
+    const backstab = [...root.querySelectorAll("details.legend dd")][terms.indexOf("Backstab")]!;
+    expect(backstab.textContent).toContain("only from surprise");
+  });
+});
+
 describe("what the fight screen tells you about this round", () => {
   // Three rules change what the buttons do, and all three live as invisible state on the fighter.
   // A move that silently does something else is the worst kind of interface bug: the player has no
@@ -556,6 +574,30 @@ describe("what the fight screen tells you about this round", () => {
     expect(text).not.toContain("off balance");
     expect(text).not.toContain("lands as an ordinary swing");
     expect(text).not.toContain("will not fall for it again");
+  });
+});
+
+describe("the shelves in a shop", () => {
+  it("keeps the way onward off the same shelf as the fish", () => {
+    // Sally sells Fish at two Marks and a Rutter for Shangala at twelve thousand. One is lunch and
+    // the other is the next third of the game; a player deciding what to save for should not have
+    // to read past the food to find the ladder.
+    click("Sally Trader's");
+    const headings = [...root.querySelectorAll("h2")].map((h) => h.textContent);
+    expect(headings).toContain("Supplies");
+    expect(headings).toContain("The way onward");
+    const lists = [...root.querySelectorAll("ul.itemlist")];
+    const onward = lists.find((l) => l.textContent.includes("Rutter for Shangala"))!;
+    expect(onward.textContent).toContain("Castle Permit");
+    expect(onward.textContent).not.toContain("Fish");
+  });
+
+  it("does not split a shop that has no way onward to sell", () => {
+    // Bill sells weapons and nothing else, so a second heading would be an empty promise.
+    click("Bill Smith's");
+    const headings = [...root.querySelectorAll("h2")].map((h) => h.textContent);
+    expect(headings).toContain("For sale");
+    expect(headings).not.toContain("The way onward");
   });
 });
 

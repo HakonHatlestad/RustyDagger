@@ -606,6 +606,19 @@ describe("what the fight screen tells you about this round", () => {
     expect(game.quest!.rounds).toBeGreaterThan(before);
   });
 
+  it("puts what is true of this round above the standing rules", () => {
+    // The note is about the round you are in and the legend is reference. Reading order should
+    // match: seen in a browser, the note sat under a collapsed "What these do" and was the last
+    // thing on the screen.
+    game.quest!.hero.winded = true;
+    render(root, game, ui);
+    const note = [...root.querySelectorAll("p.aside")].find((n) =>
+      n.textContent.includes("off balance"),
+    )!;
+    const legend = root.querySelector("details.legend")!;
+    expect(note.compareDocumentPosition(legend) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("says nothing at all on the opening round, when none of it applies", () => {
     const text = root.textContent;
     expect(text).not.toContain("off balance");

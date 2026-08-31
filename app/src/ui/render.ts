@@ -822,18 +822,6 @@ function questScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTML
       return true;
     });
 
-    // What the six moves cost, foldable. These used to live only in `title` tooltips, which are
-    // unreachable on a touchscreen and awkward with a keyboard — and since three of them now carry
-    // real rules rather than flavour, a player who cannot read them cannot play well. Closed by
-    // default because six rules every round is noise once you know them; the browser remembers.
-    const legend = el("details", "legend");
-    legend.append(el("summary", undefined, "What these do"));
-    const list = el("dl");
-    for (const choice of choices) {
-      list.append(el("dt", undefined, choice.label), el("dd", undefined, choice.hint));
-    }
-    legend.append(list);
-    panel.append(legend);
     // Two rules now change what these buttons do, and both are invisible state on the fighter.
     // A disabled-looking outcome with no stated reason reads as a bug, so say them out loud —
     // the tooltips carry the standing rules, but these are about *this* round.
@@ -852,6 +840,18 @@ function questScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTML
       panel.append(el("p", "aside", notes.join(" ")));
     }
 
+    // What the six moves cost, foldable. These used to live only in `title` tooltips, which are
+    // unreachable on a touchscreen and awkward with a keyboard — and since three of them now carry
+    // real rules rather than flavour, a player who cannot read them cannot play well. Closed by
+    // default because six rules every round is noise once you know them; the browser remembers.
+    const legend = el("details", "legend");
+    legend.append(el("summary", undefined, "What these do"));
+    const list = el("dl");
+    for (const choice of choices) {
+      list.append(el("dt", undefined, choice.label), el("dd", undefined, choice.hint));
+    }
+    legend.append(list);
+    panel.append(legend);
     const items = usableRow(game, character, true, dispatch, rerender);
     if (items !== null) {
       panel.append(items);
@@ -1243,7 +1243,7 @@ function shopScreen(
     if (rows.length === 0) {
       return null;
     }
-    const section = el("section");
+    const section = el("section", "shelf");
     section.append(el("h2", undefined, heading));
     section.append(stockList(rows));
     return section;

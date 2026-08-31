@@ -203,6 +203,11 @@ h2 {
   gap: 0.5rem;
 }
 
+/* The fight log runs to the edge of the buttons underneath it without this. */
+.log + .actions {
+  margin-top: 0.75rem;
+}
+
 button {
   font: inherit;
   font-size: 0.95rem;
@@ -255,6 +260,16 @@ button.primary:hover:not(:disabled) {
   grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
   gap: 1rem;
   align-items: start;
+}
+
+/*
+ * Shelves stacked in one column — Sally's "Supplies" above "The way onward".
+ *
+ * Without this the second heading sits flush against the bottom border of the list above it and
+ * the two shelves read as one. Seen in a browser; the structure was right and the spacing was not.
+ */
+.shelf + .shelf {
+  margin-top: 1.1rem;
 }
 
 .itemlist {

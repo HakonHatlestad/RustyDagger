@@ -96,20 +96,30 @@ worth knowing: it is recorded ground truth that nothing checks.
 ### What dying costs is capped (rewrite only)
 
 The death penalty was already softened to "a tenth of your purse" when the 1997 rule went (see
-below). A tenth of a purse has no ceiling, though, and that turned out to scale faster than any
-region's takings: measured on a veteran with a 7,770-Mark purse, the Goblin Mound grossed 28.3
-Marks a fight and handed 40.3 of them straight back in death losses. The Hills were worse. The
-rational play was to farm the safest region in the game forever, which is the exact opposite of the
-risk-for-reward ladder the regions exist to be.
+below). A tenth of a purse has no ceiling, though, and wealth outgrows what any region pays, so the
+penalty ended up scaling faster than the reward for facing it.
 
-The loss is now a tenth of your purse **or 150 Marks, whichever is smaller** (`LOSS_CAP` in
-[`state.ts`](../app/src/game/state.ts)). Early on nothing changes — a tenth of 200 Marks is still
-20. Once you have something to lose, the penalty stops outgrowing the reward. Measured after the
-change, net Marks per fight for the same veteran: Fields 5.5, Goblin Mound 11.9, Forest 19.9.
+Measured on a level-17 veteran **who sells what he finds** — the qualifier matters, see below —
+the uncapped rule left the Goblin Mound netting 10.7 Marks a fight against the starting region's
+36, despite a 79% win rate there. The Hills came out at −62. The rational play was to farm the
+safest region in the game forever, which is the opposite of what ten regions are for.
 
-The Hills remain net-negative at −18.5, and that is left alone deliberately: at a 43% death rate
-they *should* be a bad idea for that character, and `assess` in
-[`world.ts`](../app/src/game/world.ts) already tells the player so in words before they go.
+The loss is now a tenth of your purse **or 750 Marks, whichever is smaller** (`LOSS_CAP` in
+[`state.ts`](../app/src/game/state.ts)). Early on nothing changes: a tenth of a 200-Mark purse is
+20, and the cap never binds until you are carrying 7,500. Afterwards a death costs a real 750 —
+about two fights' takings in a deep region — without ever outgrowing the reason to go there.
+
+Net Marks per fight for that veteran after the change: Fields 36, Forest 332, Goblin Mound 255,
+Hills 61. The Hills stay poor on purpose; at a 47% death rate they *should* be a bad idea for that
+character, and `assess` in [`world.ts`](../app/src/game/world.ts) says so in words before they go.
+
+**A measurement trap worth recording, because it produced a confidently wrong answer first.** An
+earlier reading of all this had every deep region net-negative and concluded the ladder was broken
+outright. It was not: the simulation never visited a shop, and most of what a deep region pays is
+*goods*, not coin. Per kill, Shangala drops no coin at all and 4,189 Marks' worth of goods;
+Hie Brasil 2,800 and 3,900; the Fields 12 and 66. Any measurement of this game's economy that does
+not sell what it finds is measuring the Fields fairly and everywhere else at a fraction of its
+worth. `playPlan` in `app/test/balance.test.ts` now sells every 25 quests for exactly this reason.
 
 ### The daily quest limit is off
 

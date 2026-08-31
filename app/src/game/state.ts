@@ -1058,13 +1058,17 @@ export const LOSS_SHARE = 10;
 /**
  * The most anyone can take off you while you are unconscious.
  *
- * Without a ceiling the penalty scales with your wealth, which inverts the whole risk ladder:
- * measured on a veteran with a 7,770-Mark purse, the Goblin Mound grossed 28.3 Marks a fight and
- * paid 40.3 of them straight back out in death losses, so the rational play was to farm the safest
- * region in the game forever. A tenth of a small purse is still a real early sting; a tenth of a
- * large one was a tax on going anywhere interesting.
+ * Without a ceiling the penalty scales with your wealth, and wealth outgrows what any region pays.
+ * Measured on a level-17 veteran who sells what he finds: uncapped, the Goblin Mound netted 10.7
+ * Marks a fight against the starting region's 36, despite a 79% win rate there. The rational play
+ * was to farm the safest region in the game forever, which is the opposite of what ten regions are
+ * for.
+ *
+ * At 750 the same veteran nets 255 in the Mound, 332 in the Forest and 61 in the Hills, where the
+ * death rate is 47% — so depth pays, and recklessness still does not. A tenth of a small purse is
+ * untouched by the cap, so an early death stings exactly as it always did.
  */
-export const LOSS_CAP = 150;
+export const LOSS_CAP = 750;
 
 export function lossOnFalling(marks: number): number {
   return Math.min(Math.trunc(marks / LOSS_SHARE), LOSS_CAP);

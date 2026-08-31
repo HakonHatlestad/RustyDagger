@@ -14,7 +14,7 @@ import {
 } from "../src/game/state.js";
 import { parseHero } from "../src/game/hero.js";
 import { newHeroText, backgroundByKey } from "../src/game/creation.js";
-import { ARMOUR_SHOP, WEAPON_SHOP, buyPrice, sellPrice, stockOf } from "../src/game/shop.js";
+import { ARMOUR_SHOP, SHOPS, WEAPON_SHOP, buyPrice, sellPrice, stockOf } from "../src/game/shop.js";
 import { REGIONS, pickEncounter } from "../src/game/world.js";
 import { GameRandom } from "../src/rules/random.js";
 import { Action, act, battleRound } from "../src/rules/battle.js";
@@ -126,8 +126,24 @@ function playPlan(game: Game, region: string, quests: number, plan: (round: numb
     } else {
       apply(game, { kind: "leaveQuest" });
     }
+    // Home to sell every so often, which is how the game is actually played. Leaving this out is
+    // not a simplification: most of what a deep region pays is goods rather than coin -- 4,189
+    // Marks of goods per kill in Shangala against no coin at all -- so a session that never
+    // visits a shop measures the Fields fairly and everywhere else at a fraction of its worth.
+    if (i % 25 === 24) {
+      sellEverything(game);
+    }
   }
+  sellEverything(game);
   return { wins, deaths, fights, marks: character.marks };
+}
+
+/** Sells everything loose at whichever town shop pays best for it. */
+function sellEverything(game: Game): void {
+  for (const shop of SHOPS) {
+    apply(game, { kind: "sellAll", shop: shop.key, what: "valuables" });
+    apply(game, { kind: "sellAll", shop: shop.key, what: "arms" });
+  }
 }
 
 /** The line of play a competent player settles into: charge, breathe, charge. */

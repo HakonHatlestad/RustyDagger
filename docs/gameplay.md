@@ -70,16 +70,25 @@ One round, in [`arBattle.battle()`](../src/main/java/DCourt/Screens/Quest/arBatt
 5. **Severity** — scaled against the defender's *remaining* health, not their maximum. If damage
    is at least what they have left, it is an instant kill.
 
-Special actions are multipliers, not modifiers:
+Special actions are multipliers, not modifiers. **The rewrite charges for three of them where the
+Java build does not** — measured, an uncosted Berzerk beat an ordinary swing on both win rate and
+death rate in every region, which made five of the six buttons decoration. The Java column is what
+`baseline/rules.txt` records; the rewrite column is what `app/` does, and
+[porting-notes.md](porting-notes.md) says why they differ.
 
-| Action | Effect |
-|---|---|
-| Backstab | doubles your Guts and Speed, and cuts the enemy to a single swing |
-| Berzerk / Ieatsu | doubles your Guts and Speed, and locks you at the maximum 4 swings |
-| Control | replaces your Speed with Wits |
-| Swindle | replaces your Speed with Charm |
-| `Reflex` trait | flat +30 Speed — decisive at low levels |
-| `Blind` | halves Speed and swings |
+| Action | Java (the reference) | The rewrite (`app/`) |
+|---|---|---|
+| Backstab | doubles your Guts and Speed, and cuts the enemy to a single swing, every round | the same, but **only from surprise** — against something not yet fighting you. Afterwards it is an ordinary swing |
+| Berzerk / Ieatsu | doubles your Guts and Speed, and locks you at the maximum 4 swings | the same, but **they swing first, your guard is halved for the round, and you are winded the next** — a second charge in a row does not connect as one |
+| Control | replaces your Speed with Wits | the same, but **one attempt per fight**: a failure makes them wise to it |
+| Swindle | replaces your Speed with Charm | the same, and likewise one attempt |
+| `Reflex` trait | flat +30 Speed — decisive at low levels | unchanged |
+| `Blind` | halves Speed and swings | unchanged |
+
+`Alert` (against a Backstab) and `Fencer` (against a Berzerk) add +30 to the defender's Skill in
+both builds. In the Java, and in the port until recently, **no monster carried either** — the
+counters existed and had never fired. The rewrite assigns them by kind in `MONSTER_TRAITS`
+([`monster.ts`](../app/src/game/monster.ts)).
 
 ### Winning without a fight
 

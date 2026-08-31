@@ -3,11 +3,14 @@
  *
  * ## Why this exists
  *
- * Marks had nowhere to go. Both gear shops together come to about three thousand, the region
- * ladder to forty and a half, and after that a long campaign simply accumulates: measured, a
- * veteran grinding the Fields passed eighteen thousand Marks with nothing left to buy. A game with
- * no ending needs a sink with no bottom, or its economy stops meaning anything the moment you have
- * won it.
+ * Marks had nowhere to go. Both gear shops together come to about three thousand, the region ladder
+ * to forty and a half, and after that a long campaign simply accumulates.
+ *
+ * **This is the smaller of the two sinks, by a long way.** A point of Attack is worth having in the
+ * middle of the game and is rounding error at the end of it: measured against Shangala, whose
+ * creatures carry 500 Guts and 600 Skill, nineteen reforgings — three hundred and seventy thousand
+ * Marks — moved a level-21 hero's win rate not at all. What reaches the far regions is
+ * `training.ts`, which sells Guts and Wits. Reforging is what you spend on between here and there.
  *
  * ## Why it is not the enchanting scrolls
  *

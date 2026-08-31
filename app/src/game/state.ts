@@ -61,6 +61,7 @@ import {
   timesDone,
   type ForgeService,
 } from "./forge.js";
+import { TRAINABLE, hardenCost, refusal as hardenRefusal, type TrainableKey } from "./training.js";
 
 import {
   JOINING_FEE,
@@ -303,6 +304,7 @@ export type Move =
   | { readonly kind: "joinGuild" }
   | { readonly kind: "train"; readonly track: TrackKey }
   | { readonly kind: "forge"; readonly service: ForgeService }
+  | { readonly kind: "harden"; readonly stat: TrainableKey }
   | { readonly kind: "readScroll"; readonly scrollIndex: number; readonly target: number }
   | { readonly kind: "equip"; readonly index: number }
   | { readonly kind: "unequip"; readonly index: number }
@@ -354,6 +356,9 @@ export function apply(game: Game, move: Move): Game {
 
     case "forge":
       return forge(game, move.service);
+
+    case "harden":
+      return harden(game, move.stat);
 
     case "readScroll":
       return applyScroll(game, move.scrollIndex, move.target);
@@ -427,6 +432,33 @@ function joinGuild(game: Game): Game {
  * A rank is permanent and immediately real: `asFighter` reads the ranks straight into Attack,
  * Defence and Skill, so the number on the character screen moves the moment you pay.
  */
+/**
+ * Buying a permanent point of Guts, Wits or Charm.
+ *
+ * The one sink that reaches the far regions: measured, Attack and Defence are rounding error
+ * against creatures with 500 Guts and 600 Skill, and these three are not. See `game/training.ts`.
+ */
+function harden(game: Game, stat: TrainableKey): Game {
+  const character = game.character;
+  if (character === null) {
+    return game;
+  }
+  const current = character[stat];
+  const why = hardenRefusal(current, character.marks);
+  if (why !== null) {
+    game.notices = [why];
+    return game;
+  }
+  const cost = hardenCost(current);
+  character.marks -= cost;
+  character[stat] += 1;
+  const name = TRAINABLE.find((t) => t.key === stat)?.name ?? stat;
+  game.notices = [
+    `${String(cost)} Marks, and a great deal of it hurts. ${name} ${String(character[stat])}.`,
+  ];
+  return game;
+}
+
 /**
  * The worn piece a smith would work on: the one already carrying the most of what they add.
  *

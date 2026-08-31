@@ -33,13 +33,18 @@ file that proves it.
   actually do, because a win teaches you whatever won it (`docs/gameplay.md:117-120`).
 - **Upgrades are the ladder.** Attack comes from gear rather than from stats, which is why money
   matters at all — an unarmed character ends a campaign far worse off than an armed one
-  (`app/test/balance.test.ts:250-256`). Joining the guild costs 4,000 Marks
+  (`app/test/balance.test.ts:266-272`). Joining the guild costs 4,000 Marks
   (`app/src/game/guild.ts:43`), deliberately beyond a long run in the starting region, so it is the
   first thing in the game that asks you to go somewhere dangerous
-  (`app/test/balance.test.ts:285-291`).
+  (`app/test/balance.test.ts:301-307`).
+- **You buy your way deeper.** Gold is the progression, not a scoreboard: a smith reforges what you
+  carry, and Elden Bishop sells Guts, Wits and Charm at ten Marks for every point you already have.
+  Both get dearer the further you push them, so neither runs out, and the far regions are pitched
+  where only a trained character can stand (`app/test/progression.test.ts:146-184`;
+  [porting-notes.md](porting-notes.md) for why gear alone is not enough out there).
 - **Risk is what buys reward.** Ten hunting regions (`docs/roadmap.md:61`), and the deeper ones pay
   far better and teach faster, which is the whole reason to leave the Fields
-  (`app/test/balance.test.ts:260-270` and `app/test/balance.test.ts:272-283`).
+  (`app/test/balance.test.ts:276-286` and `app/test/balance.test.ts:288-299`).
 - **The tension lives in the fight**, not in the pacing around it. Within a fight your health is the
   resource and the only way to get it back is something you are carrying
   (`docs/porting-notes.md:29-33`).
@@ -69,38 +74,39 @@ anywhere in the code.
 
 ## The design intent, as the tests state it
 
-One bullet per assertion in `app/test/balance.test.ts`, in the order they appear there. There are
-twenty-one, and all twenty-one are here: this list is meant to be the complete prose copy of the
-executable intent, because a partial copy drifts without anything noticing.
+One bullet per assertion in `app/test/balance.test.ts` and `app/test/progression.test.ts`, in the
+order they appear there. There are twenty-one in the first and two in the second, and all
+twenty-three are here: this list is meant to be the complete prose copy of the executable intent,
+because a partial copy drifts without anything noticing.
 
 - A character who buys a weapon and hunts gets somewhere over a few hundred fights. The campaign is
-  progress, not a treadmill (`app/test/balance.test.ts:202-218`).
+  progress, not a treadmill (`app/test/balance.test.ts:218-234`).
 - The starting region is a beginner's area — a win rate above 0.6, and deaths under a third of wins
-  (`app/test/balance.test.ts:220-228`).
+  (`app/test/balance.test.ts:236-244`).
 - The fights can still kill you, so they are not a formality
-  (`app/test/balance.test.ts:230-240`).
+  (`app/test/balance.test.ts:246-256`).
 - The Hills kill a new character, which is exactly what the region card says they will: the warnings
-  on the cards are true (`app/test/balance.test.ts:242-248`).
+  on the cards are true (`app/test/balance.test.ts:258-264`).
 - An unarmed character ends up far worse off than an armed one, because attack comes from gear,
-  which is why money matters (`app/test/balance.test.ts:250-256`).
+  which is why money matters (`app/test/balance.test.ts:266-272`).
 - There is a reason to leave the starting region: the deeper ones pay far better
-  (`app/test/balance.test.ts:260-270`).
+  (`app/test/balance.test.ts:276-286`).
 - …and they teach faster too, so depth buys progress as well as money
-  (`app/test/balance.test.ts:272-283`).
+  (`app/test/balance.test.ts:288-299`).
 - The guild is something you have to travel for — the first thing in the game that asks the player
-  to go somewhere more dangerous (`app/test/balance.test.ts:285-291`).
+  to go somewhere more dangerous (`app/test/balance.test.ts:301-307`).
 - Money cannot be manufactured by buying an item and selling the same one back
-  (`app/test/balance.test.ts:295-305`).
+  (`app/test/balance.test.ts:311-321`).
 - Money goes up over a campaign, but never so fast that the shops stop mattering
-  (`app/test/balance.test.ts:307-315`).
+  (`app/test/balance.test.ts:323-331`).
 - The shop is priced so that a starting purse buys a real weapon but not the best one, which makes
-  the first purchase a choice (`app/test/balance.test.ts:317-321`).
+  the first purchase a choice (`app/test/balance.test.ts:333-337`).
 - Every starting background can hold its own in the fields; none of them is a trap
-  (`app/test/balance.test.ts:325-333`).
+  (`app/test/balance.test.ts:341-349`).
 - Each level costs more than the last, so progression never trivialises
-  (`app/test/balance.test.ts:338-346`).
+  (`app/test/balance.test.ts:354-362`).
 - Resting restores you completely, so a session never turns into a war of attrition
-  (`app/test/balance.test.ts:355-362`).
+  (`app/test/balance.test.ts:371-378`).
 
 Two about the ladder out of the starting region, which are checked as *play* rather than as a
 formula — the older "pays far better the deeper you go" above compares the experience multiplier at
@@ -108,9 +114,9 @@ two region weights, which cannot see win rates or what dying costs, and both of 
 ladder actually failed:
 
 - Depth pays better in play, not merely in the experience formula
-  (`app/test/balance.test.ts:397-402`).
+  (`app/test/balance.test.ts:413-418`).
 - Dying does not tax you for being rich, which is what used to make depth irrational
-  (`app/test/balance.test.ts:404-410`).
+  (`app/test/balance.test.ts:420-426`).
 
 And five about the fight itself, which are the newest and were added because the game did not
 honour them. Measured, a berserk charge used to beat an ordinary swing on **both** win rate and
@@ -119,20 +125,31 @@ of the six buttons the interface offers were decoration and the one it marks as 
 worst of them:
 
 - No action is simply the best one: the charge wins more fights, the ambush loses fewer, and
-  neither beats the other at both (`app/test/balance.test.ts:419-428`).
+  neither beats the other at both (`app/test/balance.test.ts:435-444`).
 - An ordinary swing is part of the best line, because a charge leaves you winded and alternating
-  beats holding one button down (`app/test/balance.test.ts:430-436`).
+  beats holding one button down (`app/test/balance.test.ts:446-452`).
 - A backstab needs something that is not yet fighting you; round after round it degrades to an
-  ordinary swing (`app/test/balance.test.ts:438-446`).
+  ordinary swing (`app/test/balance.test.ts:454-462`).
 - You cannot talk your way past the same creature twice, so Hypnotise and Swindle are a gamble
-  rather than a free re-roll (`app/test/balance.test.ts:448-462`).
+  rather than a free re-roll (`app/test/balance.test.ts:464-478`).
 - A berserk charge costs its guard and its initiative — they swing first
-  (`app/test/balance.test.ts:464-475`).
+  (`app/test/balance.test.ts:480-491`).
+
+And two in a second file, `app/test/progression.test.ts`, which plays one campaign from a fresh hero
+to the far end of the ladder rather than sampling a region. It exists because every assertion above
+passed while the loop the game is built around did not close: at level 21 with the best weapon the
+shops sell, a hero won 2% of fights in the Ocean, and 370,000 Marks of reforging moved that not at
+all, because Attack is rounding error against creatures carrying 500 Guts and 600 Skill.
+
+- Getting harder costs more for every point you already have, so no purse ever outruns it
+  (`app/test/progression.test.ts:133-144`).
+- The loop closes: hunt where you can survive, sell what you find, spend it on being harder, and
+  thereby reach a region that would have killed you (`app/test/progression.test.ts:146-184`).
 
 A change that breaks one of these assertions is a change to the design rather than a test failure to
-be tuned away, and [balance-protocol.md](balance-protocol.md) says what to do about it. If a
-twenty-second assertion is ever added to that file, a bullet belongs here in the same change, because
-this list claims to be complete.
+be tuned away, and [balance-protocol.md](balance-protocol.md) says what to do about it. If another
+assertion is ever added to either file, a bullet belongs here in the same change, because this list
+claims to be complete.
 
 ## Open questions
 

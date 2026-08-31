@@ -25,6 +25,7 @@ import {
 } from "../game/state.js";
 import { raiseFor } from "../rules/levelling.js";
 import { FORGE_SERVICES, forgeCost, timesDone, type ForgeService } from "../game/forge.js";
+import { TRAINABLE, hardenCost } from "../game/training.js";
 import { SHOPS, sellPrice, shopByKey, stockOf } from "../game/shop.js";
 import { REGIONS, assess, canEnter, pickEncounter, tableFor } from "../game/world.js";
 import { powerOf, typicalPower } from "../game/monster.js";
@@ -883,6 +884,38 @@ function templeScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTM
   const box = notices(game);
   if (box !== null) {
     panel.append(box);
+  }
+
+  // The Bishop's other trade. Attack and Defence are rounding error against what lives in the far
+  // regions -- 500 Guts and 600 Skill apiece -- and these three are what actually get you there.
+  if (character !== null) {
+    const bench = el("section", "bench");
+    bench.append(el("h2", undefined, "Hard training, for a donation"));
+    bench.append(
+      el(
+        "p",
+        "aside",
+        "Ten Marks for every point you already have, so each one costs more than the last. " +
+          "This is what a long campaign's winnings are for.",
+      ),
+    );
+    const row = el("div", "actions");
+    for (const stat of TRAINABLE) {
+      const current = character[stat.key];
+      const cost = hardenCost(current);
+      row.append(
+        button(
+          `${stat.name} ${String(current)} to ${String(current + 1)} — ${String(cost)} Marks`,
+          () => {
+            dispatch({ kind: "harden", stat: stat.key });
+            rerender();
+          },
+          { disabled: character.marks < cost, hint: stat.what },
+        ),
+      );
+    }
+    bench.append(row);
+    panel.append(bench);
   }
 
   const actions = el("div", "actions");

@@ -365,6 +365,34 @@ Wounds and disease persist between sessions, in the hero's `temp` list where the
 
 ## Things added
 
+### A trainer who sells Guts, Wits and Charm (rewrite only)
+
+The far half of the ladder was unreachable, and not because it was hard. Measured at level 21 with
+the best weapon the shops sell, a hero won 2% of fights in the Ocean and died in 82% of them. The
+reason is in the numbers the deep creatures carry: a Shangala Samurai has 508 Guts and 514 Skill, a
+Shogun 601 Skill, against a hero's 190-odd Guts and a Skill built from a fraction of that. Whether
+a blow lands is Skill against Skill and how hard it hits is mostly Guts, so **a point of Attack is
+rounding error out there** — nineteen reforgings, 370,000 Marks, moved that 2% not at all.
+
+Growth by use carries a long campaign a good way on its own, to about 190 Guts over two thousand
+fights, and then flattens. Levelling adds two points a level against a cost that rises by half each
+time, so it is logarithmic in play time; nothing in the game could take a hero to the 300-plus the
+far regions are pitched at.
+
+Elden Bishop now trains you, for **ten Marks per point you already have**. The next point of Guts
+costs ten times your Guts, so going from a fresh hero to 300 in one stat is a little over four
+hundred thousand Marks — about what a long campaign in the Goblin Mound pays. The total cost to
+reach any level is quadratic, so it is endless in the way the game is endless: no purse outruns it.
+
+Measured end to end, and pinned in `app/test/progression.test.ts`: a hero who works the Fields, the
+Forest and the Mound, buys every key on Sally's shelf, and spends the winnings on training arrives
+in the Ocean with 262 Guts and 247 Wits and an 89% win rate, where the same hero untrained won 2%.
+
+It also makes Wits and Charm live decisions rather than numbers you were dealt at creation, which is
+the shape the "simple stat system" in [design-vision.md](design-vision.md) is supposed to have.
+
+Prices are design judgement, not ported values — the Java has no such service.
+
 ### A smith who will take any amount of money (rewrite only)
 
 Marks had nowhere to go. Both gear shops together come to about three thousand, the region ladder

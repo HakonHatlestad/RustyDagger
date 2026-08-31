@@ -732,30 +732,35 @@ function questScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTML
   } else {
     const actions = el("div", "actions");
     const choices: { label: string; action: string; key: string; hint: string }[] = [
-      { label: "Attack", action: Action.ATTACK, key: "a", hint: "An ordinary swing." },
+      {
+        label: "Attack",
+        action: Action.ATTACK,
+        key: "a",
+        hint: "An ordinary swing, and how you get your breath back after a charge.",
+      },
       {
         label: "Backstab",
         action: Action.BACKSTAB,
         key: "b",
-        hint: "Double Guts and Speed, but it only gets one blow in.",
+        hint: "Double Guts and Speed and they get one blow — but only from surprise, before they are fighting you.",
       },
       {
         label: "Berzerk",
         action: Action.BERZERK,
         key: "z",
-        hint: "Double Guts and Speed and four swings. You will be hit back.",
+        hint: "Double Guts and Speed and four swings. They swing first, your guard is halved, and you are winded after.",
       },
       {
         label: "Hypnotise",
         action: Action.CONTROL,
         key: "h",
-        hint: "Opposed Wits. Wins the fight outright, or wastes the round.",
+        hint: "Opposed Wits. Wins the fight outright, or wastes the round — and they will not fall for it twice.",
       },
       {
         label: "Swindle",
         action: Action.SWINDLE,
         key: "s",
-        hint: "Opposed Charm. Takes what it carries without a fight.",
+        hint: "Opposed Charm. Takes what it carries without a fight, and only works once.",
       },
       { label: "Run away", action: Action.RUNAWAY, key: "r", hint: "Leave. You always act last." },
     ];

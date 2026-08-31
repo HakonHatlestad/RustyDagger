@@ -28,6 +28,19 @@ export const Action = {
 
 export type ActionName = (typeof Action)[keyof typeof Action];
 
+/**
+ * What going berserk costs: your guard, halved for that round.
+ *
+ * Not the Java's -- the Java charges nothing, which is why `baseline/rules.txt`'s SPECIAL ACTIONS
+ * rows and the port now disagree on purpose. See `docs/porting-notes.md`.
+ */
+export const BERZERK_GUARD_DIVISOR = 2;
+
+/** Whether an action is an all-out charge, which costs both the guard and the initiative. */
+function wildCharge(action: string): boolean {
+  return isAction(action, Action.BERZERK) || isAction(action, Action.IEATSU);
+}
+
 /** Traits that change how a round plays, beyond the stat bonuses in `combat.ts`. */
 export const BattleTrait = {
   /** Sees a Backstab coming: +30 to the defender's Skill for that roll. */
@@ -125,6 +138,28 @@ export interface Fighter {
   readonly strikeTraits: ReadonlySet<string>;
   /** Queued effects awaiting a landing blow. */
   pending: PendingEffects;
+  /**
+   * Rounds this fighter has already been through, which is what surprise is made of.
+   *
+   * Backstab needs a target who has not been trading blows with you: measured, an always-available
+   * Backstab was strictly better than an ordinary swing in every region, because it doubled Guts
+   * and Speed *and* cut the other side to one swing for no cost at all.
+   */
+  roundsFought: number;
+  /**
+   * Has seen a Hypnotise or a Swindle fail, and will not fall for the next one.
+   *
+   * Without this, both are free re-rolls: they end the fight outright or cost a round, and a round
+   * is cheap, so grinding them beat fighting outright in the deep regions.
+   */
+  wise: boolean;
+  /**
+   * Still off balance from the last charge, so this one will not connect as a charge.
+   *
+   * Without it, Berzerk was simply the button you held down: there was no round in which an
+   * ordinary swing was the better choice, so five of the six actions were decoration.
+   */
+  winded: boolean;
 }
 
 export const State = {
@@ -145,6 +180,8 @@ interface Prepared {
   guts: number;
   speed: number;
   swings: number;
+  /** Defence for this round only. Berzerk drops it; nothing else moves it. */
+  defence: number;
 }
 
 /**
@@ -154,17 +191,32 @@ interface Prepared {
  * reaches across and cuts the *other* side down to one swing.
  */
 function prepare(f: Fighter, swings: number): { own: Prepared; opponentSwings: number | null } {
-  const own: Prepared = { guts: f.guts, speed: effectiveSkill(f), swings: swings + f.bonusSwings };
+  const own: Prepared = {
+    guts: f.guts,
+    speed: effectiveSkill(f),
+    swings: swings + f.bonusSwings,
+    defence: f.defend,
+  };
   let opponentSwings: number | null = null;
 
   if (isAction(f.action, Action.BACKSTAB)) {
-    own.guts *= 2;
-    own.speed *= 2;
-    opponentSwings = 1;
-  } else if (isAction(f.action, Action.BERZERK) || isAction(f.action, Action.IEATSU)) {
-    own.guts *= 2;
-    own.speed *= 2;
-    own.swings = 4;
+    // Only from surprise. Once they are trading blows with you there is no back to stab.
+    if (f.roundsFought === 0) {
+      own.guts *= 2;
+      own.speed *= 2;
+      opponentSwings = 1;
+    }
+  } else if (wildCharge(f.action)) {
+    // A second charge in a row is just flailing: you pay the guard and the initiative for it
+    // either way, which is what makes an ordinary swing the right move in between.
+    if (!f.winded) {
+      own.guts *= 2;
+      own.speed *= 2;
+      own.swings = 4;
+    }
+    // The whole point of going berserk: everything into the swing and nothing left guarding.
+    // Without this it was strictly the best move in the game, which the interface never claimed.
+    own.defence = Math.trunc(own.defence / BERZERK_GUARD_DIVISOR);
   } else if (isAction(f.action, Action.CONTROL)) {
     own.speed = f.wits;
   } else if (isAction(f.action, Action.SWINDLE)) {
@@ -207,6 +259,7 @@ export function act(
   attackerSpeed: number,
   defenderSpeed: number,
   rng: GameRandom,
+  defenderDefence: number = defender.defend,
 ): ActOutcome {
   if (isAction(attacker.action, Action.CONTROL)) {
     return contestOfWills(attacker, defender, 2 * attacker.wits, defender.wits, State.CONTROL, rng);
@@ -251,7 +304,7 @@ export function act(
     swings,
     attack: attacker.attack,
     attackerSkill: attackerSpeed,
-    defence: defender.defend,
+    defence: defenderDefence,
     defenderSkill: ds,
     defenderGuts: defender.guts,
     defenderWounds: defender.wounds,
@@ -353,9 +406,12 @@ function contestOfWills(
   rng: GameRandom,
 ): ActOutcome {
   const ds = defenderBase + (defender.traits.has(BattleTrait.STUBBORN) ? 30 : 0);
-  const won = rng.contest(attackerValue, ds);
+  // Once they have seen the patter fail they do not fall for it again this fight.
+  const won = !defender.wise && rng.contest(attackerValue, ds);
   if (won) {
     attacker.state = winState;
+  } else {
+    defender.wise = true;
   }
   return {
     attacker: attacker.name,
@@ -398,13 +454,20 @@ export function battleRound(hero: Fighter, mob: Fighter, rng: GameRandom): Round
 
   const heroFleeing = isAction(hero.action, Action.RUNAWAY);
   const mobFleeing = isAction(mob.action, Action.RUNAWAY);
+  // A berserk charge is telegraphed: you wind up, they see it, and they get theirs in first.
+  // Halving the guard alone was not a cost, because at four swings the fight was usually over
+  // before anything could be swung back. Yielding the initiative is what makes it a gamble.
+  const heroWild = wildCharge(hero.action);
+  const mobWild = wildCharge(mob.action);
   let heroFirst: boolean;
   if (mobFleeing && !heroFleeing) {
     heroFirst = true;
-  } else if (!heroFleeing || mobFleeing) {
-    heroFirst = rng.contest(h.own.speed, m.own.speed);
-  } else {
+  } else if (heroFleeing && !mobFleeing) {
     heroFirst = false;
+  } else if (heroWild !== mobWild) {
+    heroFirst = mobWild;
+  } else {
+    heroFirst = rng.contest(h.own.speed, m.own.speed);
   }
 
   const first = heroFirst ? hero : mob;
@@ -414,7 +477,16 @@ export function battleRound(hero: Fighter, mob: Fighter, rng: GameRandom): Round
 
   const outcomes: ActOutcome[] = [];
   outcomes.push(
-    act(first, second, firstNums.guts, firstNums.swings, firstNums.speed, secondNums.speed, rng),
+    act(
+      first,
+      second,
+      firstNums.guts,
+      firstNums.swings,
+      firstNums.speed,
+      secondNums.speed,
+      rng,
+      secondNums.defence,
+    ),
   );
   if (!outcomes[0]!.ended) {
     outcomes.push(
@@ -426,9 +498,17 @@ export function battleRound(hero: Fighter, mob: Fighter, rng: GameRandom): Round
         secondNums.speed,
         firstNums.speed,
         rng,
+        firstNums.defence,
       ),
     );
   }
+  // Both sides have now been in it, so nobody's back is turned any more.
+  hero.roundsFought += 1;
+  mob.roundsFought += 1;
+  // A charge that connected leaves you winded next round; one thrown while already winded does
+  // not, so the cost is one round of ordinary fighting rather than a permanent tax.
+  hero.winded = wildCharge(hero.action) && !hero.winded;
+  mob.winded = wildCharge(mob.action) && !mob.winded;
   return { heroFirst, outcomes };
 }
 
@@ -443,7 +523,7 @@ export function oneSidedRound(actor: Fighter, target: Fighter, rng: GameRandom):
   const a = prepare(actor, rng.twice(3));
   const t = prepare(target, rng.twice(3));
   actor.bonusSwings = 0;
-  return act(actor, target, a.own.guts, a.own.swings, a.own.speed, t.own.speed, rng);
+  return act(actor, target, a.own.guts, a.own.swings, a.own.speed, t.own.speed, rng, t.own.defence);
 }
 
 /**

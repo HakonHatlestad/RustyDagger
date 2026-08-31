@@ -6,7 +6,7 @@
  * how aggressive it starts out. That is `balance`, and it happens once when the quest begins.
  */
 
-import { State, noPending, type Fighter } from "../rules/battle.js";
+import { BattleTrait, State, noPending, type Fighter } from "../rules/battle.js";
 import { calcCombat } from "../rules/combat.js";
 import type { GameRandom } from "../rules/random.js";
 import type { Content, MonsterDefinition } from "./content.js";
@@ -79,6 +79,47 @@ export interface Monster extends Fighter {
  * level, is not implemented, because it never worked in the original and cannot be made to work
  * against a linear damage rule. It was enabled and measured; those monsters became unkillable.
  */
+/**
+ * Which creatures read a telegraphed move coming, and which cannot be crept up on.
+ *
+ * `Fencer` adds 30 to the defender's Skill against a Berzerk, `Alert` the same against a Backstab.
+ * Both rules were already in `battle.ts` and **neither had ever fired**: every monster was built
+ * with an empty trait set, so the two counters to the game's two strongest moves were dead code,
+ * and Berzerk was strictly the best action in every region.
+ *
+ * These assignments are **design judgement, not ported values** -- the Java build gives its
+ * monsters no traits at all, so there is no number to source here and nothing to regenerate. The
+ * rule used: `Fencer` goes to drilled, disciplined fighters who would read a wild charge, `Alert`
+ * to the wary, the quick and the many-eyed. A handful of the very best carry both. Recorded in
+ * `docs/porting-notes.md`.
+ */
+export const MONSTER_TRAITS: ReadonlyMap<string, readonly string[]> = new Map([
+  // Drilled fighters: they have seen a berserker before.
+  ["Fields:Soldier", [BattleTrait.FENCER]],
+  ["Forest:Elf", [BattleTrait.FENCER]],
+  ["Castle:Guard", [BattleTrait.FENCER]],
+  ["Mound:Guard", [BattleTrait.FENCER]],
+  ["Town:Guard", [BattleTrait.FENCER]],
+  ["Vortex:Guard", [BattleTrait.FENCER]],
+  ["Brasil:Fighter", [BattleTrait.FENCER]],
+  ["Shang:Samurai", [BattleTrait.FENCER]],
+  ["Hills:Sphinx", [BattleTrait.FENCER]],
+  // Wary, quick, or watching every direction at once.
+  ["Mound:Thief", [BattleTrait.ALERT]],
+  ["Fields:Gypsy", [BattleTrait.ALERT]],
+  ["Forest:Unicorn", [BattleTrait.ALERT]],
+  ["Hills:Basilisk", [BattleTrait.ALERT]],
+  ["Brasil:Medusa", [BattleTrait.ALERT]],
+  ["Ocean:Mermaid", [BattleTrait.ALERT]],
+  ["Faery", [BattleTrait.ALERT]],
+  // The best of them do both.
+  ["Shang:Ninja", [BattleTrait.ALERT, BattleTrait.FENCER]],
+  ["Shang:Shogun", [BattleTrait.ALERT, BattleTrait.FENCER]],
+  ["Mound:Champ", [BattleTrait.ALERT, BattleTrait.FENCER]],
+  ["Mound:Queen", [BattleTrait.ALERT, BattleTrait.FENCER]],
+  ["Brasil:Hero", [BattleTrait.ALERT, BattleTrait.FENCER]],
+]);
+
 export function balance(
   def: MonsterDefinition,
   heroLevel: number,
@@ -125,12 +166,15 @@ export function balance(
     wounds: 0,
     state: State.ALIVE,
     action: "Attack",
-    traits: new Set<string>(),
+    traits: new Set<string>(MONSTER_TRAITS.get(def.key) ?? []),
     blastCharges: 0,
     disease: 0,
     blinded: false,
     panicked: false,
     bonusSwings: 0,
+    roundsFought: 0,
+    wise: false,
+    winded: false,
     // Written in the content in lower case; the rules compare them capitalised.
     strikeTraits: new Set(def.gearTraits.map((t) => t.charAt(0).toUpperCase() + t.slice(1))),
     pending: noPending(),

@@ -88,6 +88,9 @@ function heroOf(build: readonly number[]): Fighter {
     blinded: false,
     panicked: false,
     bonusSwings: 0,
+    roundsFought: 0,
+    wise: false,
+    winded: false,
     strikeTraits: new Set<string>(),
     pending: noPending(),
   };

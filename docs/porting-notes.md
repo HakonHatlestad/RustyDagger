@@ -59,6 +59,40 @@ encounter in `arQuest`.
 
 ## Rules that changed
 
+### The special actions now cost something (rewrite only)
+
+**This is the first place the rewrite deliberately departs from the Java on combat arithmetic**, so
+`baseline/rules.txt`'s `== SPECIAL ACTIONS ==` rows and `app/` now disagree on purpose. That
+disagreement is a decision, not the port defect that
+[balance-protocol.md](balance-protocol.md) tells you to report. Nothing under `src/main/java/`
+changed, and the Java build still plays the 1997 way.
+
+Why: measured over 12 heroes and 200 quests apiece, **Berzerk beat an ordinary swing on both win
+rate and death rate in every region** — 0.954 win / 0.000 death against 0.846 / 0.106 in the
+Fields, and 0.646 / 0.250 against 0.015 / 0.876 in the Forest. `prepare` in
+[`battle.ts`](../app/src/rules/battle.ts) gave it double Guts, double Speed and four swings and
+charged nothing for any of it. Five of the six buttons the interface offers were decoration, and
+the one it marks as primary was the worst of them. The two counters that would have punished it —
+`Alert` against a Backstab, `Fencer` against a Berzerk — were implemented and **had never once
+fired**, because every monster was built with an empty trait set.
+
+| Action | Was | Is now |
+|---|---|---|
+| Berzerk / Ieatsu | ×2 Guts, ×2 Speed, 4 swings, no cost | The same, but you yield the initiative, your guard is halved for the round, and you are winded the round after |
+| Backstab | ×2 Guts, ×2 Speed, cuts them to one swing, every round | The same, but only against something not yet fighting you; afterwards it is an ordinary swing |
+| Hypnotise / Swindle | Opposed check, retryable every round | One attempt per fight — a failure makes them wise to it |
+| Monster traits | Every monster had none | `Alert` and `Fencer` assigned by region and kind, in `MONSTER_TRAITS` |
+
+The trait assignments are **design judgement, not ported values**: the Java gives its monsters no
+traits at all, so there was no number to source and nothing to regenerate. Drilled fighters read a
+wild charge; the wary and the quick cannot be crept up on. They live in one table in
+[`monster.ts`](../app/src/game/monster.ts).
+
+The parity harness still passes unchanged — `parity.test.ts`, `combat.test.ts` and `economy.test.ts`
+all agree with the Java, because the recorded whole-fight comparisons drive the hero with ordinary
+attacks and the `== SPECIAL ACTIONS ==` section has never been read by any test. That last part is
+worth knowing: it is recorded ground truth that nothing checks.
+
 ### The daily quest limit is off
 
 A hero had `27 + 3 * level` quests a day; every action spent fatigue against that, and when it ran

@@ -33,13 +33,13 @@ file that proves it.
   actually do, because a win teaches you whatever won it (`docs/gameplay.md:117-120`).
 - **Upgrades are the ladder.** Attack comes from gear rather than from stats, which is why money
   matters at all — an unarmed character ends a campaign far worse off than an armed one
-  (`app/test/balance.test.ts:162-168`). Joining the guild costs 4,000 Marks
+  (`app/test/balance.test.ts:229-235`). Joining the guild costs 4,000 Marks
   (`app/src/game/guild.ts:43`), deliberately beyond a long run in the starting region, so it is the
   first thing in the game that asks you to go somewhere dangerous
-  (`app/test/balance.test.ts:197-203`).
+  (`app/test/balance.test.ts:264-270`).
 - **Risk is what buys reward.** Ten hunting regions (`docs/roadmap.md:61`), and the deeper ones pay
   far better and teach faster, which is the whole reason to leave the Fields
-  (`app/test/balance.test.ts:172-182` and `app/test/balance.test.ts:184-195`).
+  (`app/test/balance.test.ts:239-249` and `app/test/balance.test.ts:251-262`).
 - **The tension lives in the fight**, not in the pacing around it. Within a fight your health is the
   resource and the only way to get it back is something you are carrying
   (`docs/porting-notes.md:29-33`).
@@ -70,41 +70,58 @@ anywhere in the code.
 ## The design intent, as the tests state it
 
 One bullet per assertion in `app/test/balance.test.ts`, in the order they appear there. There are
-fourteen, and all fourteen are here: this list is meant to be the complete prose copy of the
+nineteen, and all nineteen are here: this list is meant to be the complete prose copy of the
 executable intent, because a partial copy drifts without anything noticing.
 
 - A character who buys a weapon and hunts gets somewhere over a few hundred fights. The campaign is
-  progress, not a treadmill (`app/test/balance.test.ts:114-130`).
+  progress, not a treadmill (`app/test/balance.test.ts:181-197`).
 - The starting region is a beginner's area — a win rate above 0.6, and deaths under a third of wins
-  (`app/test/balance.test.ts:132-140`).
+  (`app/test/balance.test.ts:199-207`).
 - The fights can still kill you, so they are not a formality
-  (`app/test/balance.test.ts:142-152`).
+  (`app/test/balance.test.ts:209-219`).
 - The Hills kill a new character, which is exactly what the region card says they will: the warnings
-  on the cards are true (`app/test/balance.test.ts:154-160`).
+  on the cards are true (`app/test/balance.test.ts:221-227`).
 - An unarmed character ends up far worse off than an armed one, because attack comes from gear,
-  which is why money matters (`app/test/balance.test.ts:162-168`).
+  which is why money matters (`app/test/balance.test.ts:229-235`).
 - There is a reason to leave the starting region: the deeper ones pay far better
-  (`app/test/balance.test.ts:172-182`).
+  (`app/test/balance.test.ts:239-249`).
 - …and they teach faster too, so depth buys progress as well as money
-  (`app/test/balance.test.ts:184-195`).
+  (`app/test/balance.test.ts:251-262`).
 - The guild is something you have to travel for — the first thing in the game that asks the player
-  to go somewhere more dangerous (`app/test/balance.test.ts:197-203`).
+  to go somewhere more dangerous (`app/test/balance.test.ts:264-270`).
 - Money cannot be manufactured by buying an item and selling the same one back
-  (`app/test/balance.test.ts:207-217`).
+  (`app/test/balance.test.ts:274-284`).
 - Money goes up over a campaign, but never so fast that the shops stop mattering
-  (`app/test/balance.test.ts:219-227`).
+  (`app/test/balance.test.ts:286-294`).
 - The shop is priced so that a starting purse buys a real weapon but not the best one, which makes
-  the first purchase a choice (`app/test/balance.test.ts:229-233`).
+  the first purchase a choice (`app/test/balance.test.ts:296-300`).
 - Every starting background can hold its own in the fields; none of them is a trap
-  (`app/test/balance.test.ts:237-245`).
+  (`app/test/balance.test.ts:304-312`).
 - Each level costs more than the last, so progression never trivialises
-  (`app/test/balance.test.ts:250-258`).
+  (`app/test/balance.test.ts:317-325`).
 - Resting restores you completely, so a session never turns into a war of attrition
-  (`app/test/balance.test.ts:267-274`).
+  (`app/test/balance.test.ts:334-341`).
+
+And five about the fight itself, which are the newest and were added because the game did not
+honour them. Measured, a berserk charge used to beat an ordinary swing on **both** win rate and
+death rate in every region — 0.954 against 0.846 in the Fields, at a tenth of the deaths — so five
+of the six buttons the interface offers were decoration and the one it marks as primary was the
+worst of them:
+
+- No action is simply the best one: the charge wins more fights, the ambush loses fewer, and
+  neither beats the other at both (`app/test/balance.test.ts:350-359`).
+- An ordinary swing is part of the best line, because a charge leaves you winded and alternating
+  beats holding one button down (`app/test/balance.test.ts:361-367`).
+- A backstab needs something that is not yet fighting you; round after round it degrades to an
+  ordinary swing (`app/test/balance.test.ts:369-377`).
+- You cannot talk your way past the same creature twice, so Hypnotise and Swindle are a gamble
+  rather than a free re-roll (`app/test/balance.test.ts:379-393`).
+- A berserk charge costs its guard and its initiative — they swing first
+  (`app/test/balance.test.ts:395-406`).
 
 A change that breaks one of these assertions is a change to the design rather than a test failure to
 be tuned away, and [balance-protocol.md](balance-protocol.md) says what to do about it. If a
-fifteenth assertion is ever added to that file, a bullet belongs here in the same change, because
+twentieth assertion is ever added to that file, a bullet belongs here in the same change, because
 this list claims to be complete.
 
 ## Open questions

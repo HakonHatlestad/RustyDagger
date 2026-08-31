@@ -2,12 +2,21 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { loadContent, type Content } from "../src/game/content.js";
-import { apply, characterFrom, recover, type Character, type Game } from "../src/game/state.js";
+import {
+  apply,
+  asFighter,
+  characterFrom,
+  recover,
+  type Character,
+  type Game,
+} from "../src/game/state.js";
 import { parseHero } from "../src/game/hero.js";
 import { newHeroText, backgroundByKey } from "../src/game/creation.js";
 import { WEAPON_SHOP, buyPrice, sellPrice, stockOf } from "../src/game/shop.js";
 import { REGIONS, pickEncounter } from "../src/game/world.js";
 import { GameRandom } from "../src/rules/random.js";
+import { Action, act, battleRound } from "../src/rules/battle.js";
+import { balance as balanceMonster } from "../src/game/monster.js";
 import { killExperience } from "../src/game/monster.js";
 import { grows } from "../src/rules/growth.js";
 import { JOINING_FEE } from "../src/game/guild.js";
@@ -59,6 +68,64 @@ function armUp(game: Game): void {
   if (index >= 0) {
     apply(game, { kind: "equip", index });
   }
+}
+
+/**
+ * Plays a session where the action is chosen per round, so a *line of play* can be measured
+ * rather than a single button. {@link play} is the special case that always swings.
+ */
+function playPlan(game: Game, region: string, quests: number, plan: (round: number) => string) {
+  const character = game.character!;
+  const found = REGIONS.find((r) => r.key === region)!;
+  const known = new Set(content.monsters.keys());
+  let wins = 0;
+  let deaths = 0;
+  let fights = 0;
+  for (let i = 0; i < quests; i++) {
+    if (character.wounds > character.guts / 2) {
+      apply(game, { kind: "rest" });
+    }
+    const quarry = pickEncounter(found, character.level, known, game.rng);
+    if (quarry === null) {
+      break;
+    }
+    apply(game, { kind: "startQuest", monsterKey: quarry, weight: found.weight });
+    let round = 0;
+    while (game.quest?.ending === null && round < 300) {
+      apply(game, { kind: "fight", action: plan(round) });
+      round++;
+    }
+    if (round > 0) {
+      fights++;
+    }
+    const ending = game.quest?.ending;
+    if (ending === "heroWon") {
+      wins++;
+    }
+    if (ending === "heroDied") {
+      deaths++;
+      recover(game);
+    } else {
+      apply(game, { kind: "leaveQuest" });
+    }
+  }
+  return { wins, deaths, fights, marks: character.marks };
+}
+
+/** Runs a line of play across several heroes and returns the pooled rates. */
+function line(region: string, plan: (round: number) => string, seeds = 10, quests = 200) {
+  let wins = 0;
+  let deaths = 0;
+  let fights = 0;
+  for (let seed = 1; seed <= seeds; seed++) {
+    const game = freshGame(seed);
+    armUp(game);
+    const s = playPlan(game, region, quests, plan);
+    wins += s.wins;
+    deaths += s.deaths;
+    fights += s.fights;
+  }
+  return { win: wins / fights, death: deaths / fights };
 }
 
 interface Session {
@@ -271,5 +338,70 @@ describe("resting", () => {
     apply(game, { kind: "rest" });
     expect(characterOf(game).wounds).toBe(0);
     expect(characterOf(game).disease).toBe(0);
+  });
+});
+
+describe("the fight is a decision, not a button", () => {
+  // Every one of these was false before the special actions were costed. Measured then: Berzerk
+  // beat an ordinary swing on BOTH win rate and death rate in every region -- 0.954/0.000 against
+  // 0.846/0.106 in the Fields -- so five of the six actions in the interface were decoration, and
+  // the one the game marks as primary was the worst of them.
+
+  it("has no action that is simply the best one", () => {
+    // The charge wins more fights; the ambush loses fewer. Neither beats the other at both, which
+    // is what stops one button being the whole game.
+    const charge = line("fields", () => Action.BERZERK);
+    const ambush = line("fields", () => Action.BACKSTAB);
+    expect(charge.win).toBeGreaterThan(ambush.win - 0.05);
+    expect(ambush.death).toBeLessThan(charge.death + 0.05);
+    const dominates = charge.win > ambush.win + 0.02 && charge.death < ambush.death - 0.02;
+    expect(dominates).toBe(false);
+  });
+
+  it("makes an ordinary swing part of the best line, because a charge leaves you winded", () => {
+    // Alternating beats holding the charge button down. That is the whole reason `winded` exists:
+    // without it there was no round in which an ordinary swing was the right move.
+    const spam = line("forest", () => Action.BERZERK);
+    const alternate = line("forest", (r) => (r % 2 === 0 ? Action.BERZERK : Action.ATTACK));
+    expect(alternate.win).toBeGreaterThan(spam.win);
+  });
+
+  it("only lets you backstab something that is not yet fighting you", () => {
+    // Surprise is the cost. Opening with it is strong; using it as a rotation is not.
+    const opener = line("fields", (r) => (r === 0 ? Action.BACKSTAB : Action.ATTACK));
+    const always = line("fields", () => Action.BACKSTAB);
+    expect(opener.win).toBeGreaterThan(0.8);
+    // Round after round it degrades to an ordinary swing, so it cannot beat opening with it
+    // and then fighting properly by any real margin.
+    expect(always.win).toBeLessThan(opener.win + 0.05);
+  });
+
+  it("does not let you talk your way past the same creature twice", () => {
+    // Hypnotise and Swindle used to be free re-rolls: they ended the fight outright or cost a
+    // round, and a round was cheap, so grinding them out-earned fighting in regions that would
+    // otherwise kill you. One attempt each is what makes them a gamble.
+    const rng = new GameRandom(5);
+    const def = content.monsters.get("Fields:Goblin")!;
+    const mob = balanceMonster(def, 1, 1, rng);
+    expect(mob.wise).toBe(false);
+    // A hero who cannot possibly win the contest still gets exactly one attempt.
+    const hero = asFighter(characterFrom(parseHero(newHeroText("P", backgroundByKey("squire")))));
+    hero.wits = 0;
+    hero.action = Action.CONTROL;
+    act(hero, mob, 10, 2, 10, 10, rng);
+    expect(mob.wise).toBe(true);
+  });
+
+  it("costs a berserk charge its guard and its initiative", () => {
+    // The interface promises "they swing first, your guard is halved". This is that promise.
+    const rng = new GameRandom(3);
+    const def = content.monsters.get("Fields:Goblin")!;
+    const mob = balanceMonster(def, 1, 1, rng);
+    const hero = asFighter(characterFrom(parseHero(newHeroText("P", backgroundByKey("squire")))));
+    hero.skill = 9999; // would always win initiative on speed alone
+    hero.action = Action.BERZERK;
+    mob.action = Action.ATTACK;
+    const result = battleRound(hero, mob, rng);
+    expect(result.heroFirst).toBe(false);
   });
 });

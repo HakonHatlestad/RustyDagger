@@ -259,6 +259,9 @@ export function asFighter(character: Character): Fighter {
     blinded: false,
     panicked: false,
     bonusSwings: 0,
+    roundsFought: 0,
+    wise: false,
+    winded: false,
     // What you strike with can carry its own effects: a diseased blade, a panicking rod.
     strikeTraits: new Set(
       character.gear

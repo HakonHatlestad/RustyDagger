@@ -30,6 +30,9 @@ function fighter(name: string, over: Partial<Fighter> = {}): Fighter {
     blinded: false,
     panicked: false,
     bonusSwings: 0,
+    roundsFought: 0,
+    wise: false,
+    winded: false,
     strikeTraits: new Set<string>(),
     pending: noPending(),
     ...over,
@@ -142,7 +145,9 @@ describe("traits that change a round", () => {
       const rng = new GameRandom(4);
       let landed = 0;
       for (let i = 0; i < 600; i++) {
-        const hero = fighter("H", { action: Action.BERZERK, skill: 20 });
+        // Both sides need to outlast the round: a berserker now yields the initiative and
+        // fights with half its guard, so a hero on default Guts dies before it ever swings.
+        const hero = fighter("H", { action: Action.BERZERK, skill: 20, guts: 9000 });
         const mob = fighter("M", { skill: 60, guts: 9000, traits });
         const r = battleRound(hero, mob, rng);
         const mine = r.outcomes.find((o) => o.attacker === "H");

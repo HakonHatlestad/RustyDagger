@@ -160,6 +160,17 @@ export interface Fighter {
    * ordinary swing was the better choice, so five of the six actions were decoration.
    */
   winded: boolean;
+  /**
+   * Whether this fighter has already had its one quick reach for something this fight.
+   *
+   * Reaching used to cost the whole round, every time, and measured that made **every consumable
+   * in the game a trap**: drinking at half health lowered both win rate and survival in Hie Brasil
+   * and Shangala, because a round of fighting was worth more than any draught. Raising the amounts
+   * did not fix it — the tempo was the cost, not the size of the heal. One free reach per fight
+   * makes a potion an emergency button; the second and every one after still costs the round, so
+   * it never becomes a way of fighting.
+   */
+  reached: boolean;
 }
 
 export const State = {

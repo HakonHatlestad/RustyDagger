@@ -177,6 +177,7 @@ export function balance(
     roundsFought: 0,
     wise: false,
     winded: false,
+    reached: false,
     // Written in the content in lower case; the rules compare them capitalised.
     strikeTraits: new Set(def.gearTraits.map((t) => t.charAt(0).toUpperCase() + t.slice(1))),
     pending: noPending(),

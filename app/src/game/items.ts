@@ -95,9 +95,9 @@ export function isUsableHere(content: Content, item: Carried, inFight: boolean):
 export function describeUse(effect: number, medic: boolean): string {
   switch (effect) {
     case Effect.HEAL:
-      return `Heals ${medic ? "25" : "15"} points of damage.`;
+      return `Heals ${medic ? "25" : "15"} points of damage, or a ${medic ? "third" : "quarter"} of your Guts if that is more.`;
     case Effect.REVIVE:
-      return `Heals ${medic ? "50" : "30"} points and clears what ails you.`;
+      return `Heals ${medic ? "50" : "30"} points — ${medic ? "two thirds" : "half"} of your Guts if that is more — and clears what ails you.`;
     case Effect.FOOD:
       return `A small meal: heals ${medic ? "3" : "2"} points.`;
     case Effect.CURE:
@@ -113,6 +113,24 @@ export function describeUse(effect: number, medic: boolean): string {
     default:
       return "Nothing you know how to use.";
   }
+}
+
+/**
+ * What a draught is actually worth to this body.
+ *
+ * The 1997 numbers are flat — fifteen points from a salve, thirty from a Gold Apple — and a flat
+ * heal stops meaning anything the moment a hero has two hundred Guts. Measured before this, every
+ * healing item in the game was a *trap*: spending the round to drink one lowered both win rate and
+ * survival in Hie Brasil and Shangala, because a round of fighting was worth more than the heal.
+ *
+ * So a draught mends the stated points **or a share of what you are made of, whichever is more**.
+ * A starting hero is untouched by this — a quarter of 60 Guts is 15, exactly the flat figure — and
+ * it keeps its meaning all the way out. The shares are design judgement, not ported values; see
+ * `docs/porting-notes.md`.
+ */
+export function healingFor(fighter: Fighter, flat: number, share: number): number {
+  const scaled = Math.trunc(fighter.guts / share);
+  return scaled > flat ? scaled : flat;
 }
 
 function heal(fighter: Fighter, points: number): number {
@@ -152,13 +170,13 @@ export function useItem(
 ): UseResult {
   switch (effect) {
     case Effect.HEAL: {
-      const healed = heal(self, medic ? 25 : 15);
+      const healed = heal(self, healingFor(self, medic ? 25 : 15, medic ? 3 : 4));
       return healed === 0
         ? { used: false, message: "You are unhurt — the salve would be wasted." }
         : { used: true, message: `You use the ${itemName} and recover ${String(healed)}.` };
     }
     case Effect.REVIVE: {
-      const healed = heal(self, medic ? 50 : 30);
+      const healed = heal(self, healingFor(self, medic ? 50 : 30, medic ? 1.5 : 2));
       const ailing = self.disease > 0 || self.blinded || self.panicked;
       if (healed === 0 && !ailing) {
         return { used: false, message: "You are already whole." };

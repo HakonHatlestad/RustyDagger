@@ -274,6 +274,7 @@ export function asFighter(character: Character): Fighter {
     roundsFought: 0,
     wise: false,
     winded: false,
+    reached: false,
     // What you strike with can carry its own effects: a diseased blade, a panicking rod.
     strikeTraits: new Set(
       character.gear
@@ -772,6 +773,13 @@ function useCarriedItem(game: Game, index: number): Game {
     quest.ending = "mobFled";
     quest.log.push(`${quest.monster.name} turns and runs.`);
     finishQuest(game, character, quest, "mobFled", "");
+    return game;
+  }
+  // The first reach of a fight is quick enough that nothing gets a swing in. Every one after
+  // costs the round, exactly as it always did.
+  if (!quest.hero.reached) {
+    quest.hero.reached = true;
+    quest.log.push("Quick about it — they do not get a swing in.");
     return game;
   }
   const outcome = oneSidedRound(quest.monster, quest.hero, game.rng);

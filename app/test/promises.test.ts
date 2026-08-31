@@ -7,6 +7,8 @@ import {
   type Equipment,
 } from "../src/rules/combat.js";
 import { describeItem, itemWorth, type ItemView } from "../src/ui/describe.js";
+import { Effect, describeUse, healingFor } from "../src/game/items.js";
+import { State, noPending } from "../src/rules/battle.js";
 
 /**
  * Does the game do what the interface says it does?
@@ -198,5 +200,60 @@ describe("what a smith promises", () => {
     };
     const forgedSword: ItemView = { ...worn, name: "Same Sword", forged: 5 };
     expect(itemWorth(forgedSword)).toBe(itemWorth(worn) + 5);
+  });
+});
+
+describe("what a draught promises", () => {
+  /** A fighter with the given Guts and fully wounded, so any heal has room to land. */
+  function hurt(guts: number) {
+    return {
+      name: "H",
+      guts,
+      wits: 30,
+      charm: 30,
+      attack: 0,
+      defend: 0,
+      skill: 10,
+      wounds: guts - 1,
+      state: State.ALIVE,
+      action: "Attack",
+      traits: new Set<string>(),
+      blastCharges: 0,
+      disease: 0,
+      blinded: false,
+      panicked: false,
+      bonusSwings: 0,
+      roundsFought: 0,
+      wise: false,
+      winded: false,
+      reached: false,
+      strikeTraits: new Set<string>(),
+      pending: noPending(),
+    };
+  }
+
+  it('"15 points, or a quarter of your Guts if that is more" means exactly that', () => {
+    // The trader's shelf says this. A starting hero is on the flat figure and a trained one is
+    // not, and both halves of the sentence have to hold or the shelf is lying.
+    expect(describeUse(Effect.HEAL, false)).toContain("15 points");
+    expect(describeUse(Effect.HEAL, false)).toContain("quarter of your Guts");
+    // 60 Guts: a quarter is 15, so the flat figure stands and nothing changed for a newcomer.
+    expect(healingFor(hurt(60), 15, 4)).toBe(15);
+    // 400 Guts: a quarter is 100, and that is what a salve is worth to that body.
+    expect(healingFor(hurt(400), 15, 4)).toBe(100);
+  });
+
+  it('"half of your Guts" for the stronger draught, and the medic does better', () => {
+    expect(describeUse(Effect.REVIVE, false)).toContain("half of your Guts");
+    expect(describeUse(Effect.REVIVE, true)).toContain("two thirds");
+    expect(healingFor(hurt(400), 30, 2)).toBe(200);
+    expect(healingFor(hurt(400), 50, 1.5)).toBe(266);
+  });
+
+  it("says the interface offers nothing it cannot deliver for every effect it lists", () => {
+    // Every effect the game implements gets a sentence, and no sentence is the fallback.
+    for (const effect of Object.values(Effect)) {
+      expect(describeUse(effect, false)).not.toBe("Nothing you know how to use.");
+    }
   });
 });

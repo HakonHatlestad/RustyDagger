@@ -52,6 +52,7 @@ function fighter(over: Partial<Fighter> = {}): Fighter {
     roundsFought: 0,
     wise: false,
     winded: false,
+    reached: false,
     strikeTraits: new Set<string>(),
     pending: noPending(),
     ...over,

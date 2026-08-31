@@ -183,3 +183,47 @@ describe("the loop the whole game is built around", () => {
     expect(ocean.death).toBeLessThan(0.25);
   });
 });
+
+describe("reaching for something in a fight", () => {
+  /** A hero mid-fight with a stack of the named item, and something to fight. */
+  function inFight(item: string) {
+    const game = freshGame(12);
+    const character = game.character!;
+    character.guts = 200;
+    character.wounds = 150;
+    character.marks = 50_000;
+    for (let i = 0; i < 5; i++) {
+      apply(game, { kind: "buy", shop: TRADER_SHOP.key, name: item });
+    }
+    apply(game, { kind: "startQuest", monsterKey: "Fields:Goblin", weight: 1 });
+    return { game, character };
+  }
+
+  it("lets the first draught be quick, and charges for every one after", () => {
+    // Reaching used to cost the whole round every time, and measured that made every consumable
+    // in the game a trap: drinking at half health lowered both win rate and survival in Hie
+    // Brasil and Shangala. Raising the amounts did not fix it -- the tempo was the cost.
+    const { game, character } = inFight("Gold Apple");
+    const index = () => character.pack.findIndex((c) => c.name === "Gold Apple");
+
+    const roundsBefore = game.quest!.rounds;
+    apply(game, { kind: "useItem", index: index() });
+    expect(game.quest!.rounds).toBe(roundsBefore);
+    expect(game.quest!.log.join(" ")).toContain("do not get a swing in");
+
+    // The second costs the round, so it never becomes a way of fighting.
+    character.wounds = 150;
+    apply(game, { kind: "useItem", index: index() });
+    expect(game.quest!.rounds).toBe(roundsBefore + 1);
+  });
+
+  it("heals a share of what you are made of, so a draught keeps its meaning", () => {
+    const { game, character } = inFight("Gold Apple");
+    apply(game, {
+      kind: "useItem",
+      index: character.pack.findIndex((c) => c.name === "Gold Apple"),
+    });
+    // Half of 200 Guts, not the flat 30 a 1997 hero got.
+    expect(character.wounds).toBe(50);
+  });
+});

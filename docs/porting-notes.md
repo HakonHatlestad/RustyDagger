@@ -365,6 +365,34 @@ Wounds and disease persist between sessions, in the hero's `temp` list where the
 
 ## Things added
 
+### Draughts are worth drinking now (rewrite only)
+
+Every healing item in the game was a **trap**. Measured with a trained hero in Hie Brasil and
+Shangala, drinking at half health lowered both win rate and survival against simply fighting on,
+because reaching for something cost the whole round and a round of fighting was worth more than
+fifteen or thirty points.
+
+Two things changed, in that order, because the first was not enough:
+
+1. **A draught mends a share of what you are made of.** A salve is fifteen points *or a quarter of
+   your Guts*, whichever is more; a Gold Apple is thirty *or half*. A starting hero with 60 Guts is
+   untouched by this — a quarter of 60 is exactly 15 — and a trained one is not. Measured on its
+   own, this barely moved the numbers: the tempo was the cost, not the size of the heal.
+2. **The first reach of a fight is quick.** Nothing gets a swing in. The second and every one after
+   costs the round, exactly as before, so a potion is an emergency button and never a way of
+   fighting. This is a deliberate reversal of the note in `oneSidedRound`, which held that a free
+   action "would make any potion strictly better than fighting" — true of an unlimited one, and the
+   unlimited cost turned out to kill the category outright.
+
+Measured after both, over ten heroes and two hundred quests each: in Hie Brasil a Gold Apple at half
+health takes the win rate from 0.390 to 0.410 and the death rate from 0.354 to 0.345 — better on
+both counts, where before it was worse on both. In Shangala, 0.219 to 0.233 and 0.687 to 0.672.
+
+The thrown dusts are left alone and are still a poor idea used indiscriminately, which is correct:
+they are for a particular moment, not a rotation.
+
+Shares and the one-free-reach rule are design judgement, not ported values.
+
 ### A trainer who sells Guts, Wits and Charm (rewrite only)
 
 The far half of the ladder was unreachable, and not because it was hard. Measured at level 21 with

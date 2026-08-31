@@ -79,7 +79,7 @@ anywhere in the code.
 
 One bullet per assertion in `app/test/balance.test.ts`, `app/test/progression.test.ts` and
 `app/test/campaign.test.ts`, in the order they appear there. There are twenty-one in the first, six
-in the second and seven in the third, and all thirty-four are here: this list is meant to be the complete prose copy of the executable intent,
+in the second and nine in the third, and all thirty-six are here: this list is meant to be the complete prose copy of the executable intent,
 because a partial copy drifts without anything noticing.
 
 - A character who buys a weapon and hunts gets somewhere over a few hundred fights. The campaign is
@@ -159,23 +159,29 @@ all, because Attack is rounding error against creatures carrying 500 Guts and 60
 - The top rung of the gear ladder is reachable at all: every silver item turns up eventually
   (`app/test/progression.test.ts:250-280`).
 
-And seven in a third file, `app/test/campaign.test.ts`, which does not sample anything: it plays a
+And nine in a third file, `app/test/campaign.test.ts`, which does not sample anything: it plays a
 whole game, choosing what to buy, when to train and when a region has stopped being worth the walk,
 using the same `assess` advice the interface gives the player. `pnpm sim` prints what it did.
 
 - Every region in the game is reached — no rung of the ladder is left with nothing on it
-  (`app/test/campaign.test.ts:360-363`).
+  (`app/test/campaign.test.ts:375-378`).
 - It never stalls: each region leaves the hero better off than it found them
-  (`app/test/campaign.test.ts:365-370`).
+  (`app/test/campaign.test.ts:380-385`).
 - It starts gently and ends somewhere that would have killed the same hero
-  (`app/test/campaign.test.ts:372-377`).
+  (`app/test/campaign.test.ts:387-392`).
 - Depth pays better in Marks actually banked, not in a formula
-  (`app/test/campaign.test.ts:379-382`).
+  (`app/test/campaign.test.ts:394-397`).
 - The region cards tell the truth: nothing the game calls safe is a bloodbath, and nothing it calls
-  deadly is a walk (`app/test/campaign.test.ts:384-395`).
+  deadly is a walk (`app/test/campaign.test.ts:399-410`).
 - The purse never stops finding a use, so the money keeps meaning something
-  (`app/test/campaign.test.ts:397-406`).
-- None of it rests on one lucky seed (`app/test/campaign.test.ts:408-412`).
+  (`app/test/campaign.test.ts:412-421`).
+- None of it rests on one lucky seed (`app/test/campaign.test.ts:423-427`).
+- Levels keep coming at the deep end: the levelling curve steepens and what a kill teaches grows
+  with it, so "next at 561,137 experience" is a slope and not a wall
+  (`app/test/campaign.test.ts:435-455`).
+- Charm is a real build rather than a dead stat: a high-Charm hero who takes what a creature carries
+  instead of killing it earns more and dies far less than one who fights
+  (`app/test/campaign.test.ts:457-490`).
 
 A change that breaks one of these assertions is a change to the design rather than a test failure to
 be tuned away, and [balance-protocol.md](balance-protocol.md) says what to do about it. If another

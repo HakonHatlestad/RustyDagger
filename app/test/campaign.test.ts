@@ -236,6 +236,16 @@ function verdictFor(character: Character, region: Region): string {
 }
 
 function hunt(game: Game, region: Region, quests: number): Leg {
+  return playPlanned(game, region, quests, line);
+}
+
+/** The same, but the action for each round is chosen by the caller. */
+function playPlanned(
+  game: Game,
+  region: Region,
+  quests: number,
+  plan: (round: number) => string,
+): Leg & { deaths: number } {
   const character = game.character!;
   const known = new Set(content.monsters.keys());
   const verdict = verdictFor(character, region);
@@ -254,7 +264,7 @@ function hunt(game: Game, region: Region, quests: number): Leg {
     apply(game, { kind: "startQuest", monsterKey: quarry, weight: region.weight });
     let round = 0;
     while (game.quest?.ending === null && round < 300) {
-      apply(game, { kind: "fight", action: line(round) });
+      apply(game, { kind: "fight", action: plan(round) });
       round++;
     }
     if (round > 0) {
@@ -277,6 +287,7 @@ function hunt(game: Game, region: Region, quests: number): Leg {
   sellEverything(game);
   const fighter = asFighter(character);
   return {
+    deaths,
     region: region.name,
     verdict,
     fights,
@@ -299,8 +310,8 @@ function hunt(game: Game, region: Region, quests: number): Leg {
  * The rule for moving on is the game's own advice — once a region reads `safe`, there is nothing
  * left to learn there — which means this also checks that the advice is worth following.
  */
-function playCampaign(seed: number, background = "poacher"): Leg[] {
-  const game: Game = {
+function freshGame(seed: number, background = "poacher"): Game {
+  return {
     content,
     rng: new GameRandom(seed),
     place: { kind: "town" },
@@ -308,6 +319,10 @@ function playCampaign(seed: number, background = "poacher"): Leg[] {
     quest: null,
     notices: [],
   };
+}
+
+function playCampaign(seed: number, background = "poacher"): Leg[] {
+  const game = freshGame(seed, background);
   const character = game.character!;
   const legs: Leg[] = [];
 
@@ -409,5 +424,68 @@ describe("a whole campaign, played by code", () => {
     const other = playCampaign(17, "squire");
     expect(other).toHaveLength(REGIONS.length);
     expect(other[other.length - 1]!.guts).toBeGreaterThan(200);
+  });
+});
+
+describe("two things that looked broken and were not", () => {
+  // Both of these were reported as design faults on the strength of the campaign print-out above.
+  // Both were the print-out's fault. They are pinned here so the same wrong conclusion cannot be
+  // drawn from the same output twice.
+
+  it("keeps handing out levels, because deep regions teach as fast as the curve steepens", () => {
+    // The report ends every campaign at level 24 with "next at 561,137 exp", which reads like a
+    // wall. It is not: the levelling curve and what a kill teaches both grow with depth, and they
+    // grow together. A Shangala kill is worth about 1,500 experience against the Fields' 17.
+    const game = freshGame(9);
+    const character = game.character!;
+    character.level = 22;
+    character.guts = 320;
+    character.wits = 900;
+    character.marks = 0;
+    const shangala = REGIONS.find((r) => r.key === "shang")!;
+    const before = character.level;
+    const exp = character.exp;
+    hunt(game, shangala, 400);
+    // Measured: one clear level per visit to a deep region at the point the curve was said to have
+    // stopped, and hundreds of thousands of experience banked toward the next. Slow, deliberately
+    // — but a slope, not a wall, and the print-out's "next at 561,137" says nothing about the rate
+    // of income beside it.
+    expect(character.level).toBeGreaterThan(before);
+    expect(character.exp - exp).toBeGreaterThan(0);
+  });
+
+  it("makes Charm a real build, not a dead stat", () => {
+    // Charm ends a fighting campaign near where it started, which reads as a stat nobody wants.
+    // It is the swindler's stat, and the campaign bot above never swindles. Measured properly, a
+    // high-Charm hero taking what a creature carries rather than killing it earns MORE and dies
+    // far less -- the point being that the two are different ways to play, not a ladder.
+    function run(charm: number, opener: string) {
+      let marks = 0;
+      let deaths = 0;
+      let fights = 0;
+      for (let seed = 1; seed <= 4; seed++) {
+        const game = freshGame(seed);
+        const character = game.character!;
+        character.level = 22;
+        character.guts = 320;
+        character.wits = 320;
+        character.charm = charm;
+        const before = character.marks;
+        const leg = playPlanned(
+          game,
+          REGIONS.find((r) => r.key === "brasil")!,
+          150,
+          (round) => (round === 0 ? opener : round % 2 === 1 ? Action.BERZERK : Action.ATTACK),
+        );
+        marks += character.marks - before;
+        deaths += leg.deaths;
+        fights += leg.fights;
+      }
+      return { marks: marks / fights, death: deaths / fights };
+    }
+    const fighter = run(40, Action.ATTACK);
+    const swindler = run(700, Action.SWINDLE);
+    expect(swindler.marks).toBeGreaterThan(fighter.marks);
+    expect(swindler.death).toBeLessThan(fighter.death);
   });
 });

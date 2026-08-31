@@ -40,7 +40,7 @@ file that proves it.
 - **You buy your way deeper.** Gold is the progression, not a scoreboard: a smith reforges what you
   carry, and Elden Bishop sells Guts, Wits and Charm at ten Marks for every point you already have.
   Both get dearer the further you push them, so neither runs out, and the far regions are pitched
-  where only a trained character can stand (`app/test/progression.test.ts:146-184`;
+  where only a trained character can stand (`app/test/progression.test.ts:148-186`;
   [porting-notes.md](porting-notes.md) for why gear alone is not enough out there).
 - **Risk is what buys reward.** Ten hunting regions (`docs/roadmap.md:61`), and the deeper ones pay
   far better and teach faster, which is the whole reason to leave the Fields
@@ -75,8 +75,8 @@ anywhere in the code.
 ## The design intent, as the tests state it
 
 One bullet per assertion in `app/test/balance.test.ts` and `app/test/progression.test.ts`, in the
-order they appear there. There are twenty-one in the first and two in the second, and all
-twenty-three are here: this list is meant to be the complete prose copy of the executable intent,
+order they appear there. There are twenty-one in the first and five in the second, and all
+twenty-six are here: this list is meant to be the complete prose copy of the executable intent,
 because a partial copy drifts without anything noticing.
 
 - A character who buys a weapon and hunts gets somewhere over a few hundred fights. The campaign is
@@ -142,9 +142,15 @@ shops sell, a hero won 2% of fights in the Ocean, and 370,000 Marks of reforging
 all, because Attack is rounding error against creatures carrying 500 Guts and 600 Skill.
 
 - Getting harder costs more for every point you already have, so no purse ever outruns it
-  (`app/test/progression.test.ts:133-144`).
+  (`app/test/progression.test.ts:135-146`).
 - The loop closes: hunt where you can survive, sell what you find, spend it on being harder, and
-  thereby reach a region that would have killed you (`app/test/progression.test.ts:146-184`).
+  thereby reach a region that would have killed you (`app/test/progression.test.ts:148-186`).
+- The first draught of a fight is quick and every one after costs the round, so a potion is an
+  emergency and never a way of fighting (`app/test/progression.test.ts:204-220`).
+- A draught mends a share of what you are made of, so it keeps its meaning as you grow
+  (`app/test/progression.test.ts:222-230`).
+- The top rung of the gear ladder is reachable at all: every silver item turns up eventually
+  (`app/test/progression.test.ts:234-264`).
 
 A change that breaks one of these assertions is a change to the design rather than a test failure to
 be tuned away, and [balance-protocol.md](balance-protocol.md) says what to do about it. If another

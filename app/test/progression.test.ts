@@ -10,6 +10,8 @@ import { REGIONS, canEnter, pickEncounter } from "../src/game/world.js";
 import { GameRandom } from "../src/rules/random.js";
 import { Action } from "../src/rules/battle.js";
 import { HARDEN_RATE, hardenCost } from "../src/game/training.js";
+import { rollLoot } from "../src/game/loot.js";
+import { parseEntity } from "../src/format/parse.js";
 
 /**
  * Does the whole game join up?
@@ -225,5 +227,39 @@ describe("reaching for something in a fight", () => {
     });
     // Half of 200 Guts, not the flat 30 a 1997 hero got.
     expect(character.wounds).toBe(50);
+  });
+});
+
+describe("the top rung of the gear ladder", () => {
+  it("is reachable at all, which the silver tier was not", () => {
+    // The 1997 rule put a further one-in-ten on anything silver, making the best gear in the game
+    // a 0.1% drop off a 1% listing -- reasonable for a game played daily for months, unreachable
+    // in a campaign this long. Measured before the change: not one Silver Gladius or Masamune
+    // across three hundred loot rolls of every monster that can carry one.
+    const monsters = (
+      JSON.parse(
+        readFileSync(
+          fileURLToPath(new URL("../../content/monsters.json", import.meta.url)),
+          "utf8",
+        ),
+      ) as { monsters: { source: string }[] }
+    ).monsters;
+    const rng = new GameRandom(3);
+    const seen = new Set<string>();
+    for (const m of monsters) {
+      const entity = parseEntity(m.source);
+      for (let i = 0; i < 500; i++) {
+        for (const item of rollLoot(entity, content, rng).items) {
+          if (item.name.startsWith("Silver")) {
+            seen.add(item.name);
+          }
+        }
+      }
+    }
+    const silver = [...content.weapons.keys()].filter((k) => k.startsWith("Silver"));
+    expect(silver.length).toBeGreaterThan(5);
+    expect(silver.filter((k) => !seen.has(k))).toEqual([]);
+    // Still rare: this is 500 kills of every monster in the game, not a session.
+    expect(seen.size).toBe(silver.length);
   });
 });

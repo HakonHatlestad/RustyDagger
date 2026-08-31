@@ -365,6 +365,19 @@ Wounds and disease persist between sessions, in the hero's `temp` list where the
 
 ## Things added
 
+### The silver tier is obtainable (rewrite only)
+
+Anything whose name begins with *Silver* had to pass its listed drop chance and then a further
+one-in-ten. Most silver items are listed at 1%, so the best gear in the game — a Silver Masamune at
+120 Attack and 40 Skill, a Silver Gladius at 100 — was a **0.1% drop**. Measured, not one appeared
+across three hundred loot rolls of every monster in the game that can carry one.
+
+That is a sensible rate for a game played daily for months and an unreachable one here. It is the
+same argument that removed the daily quest ration: this build's campaign is compressed, so a number
+tuned to 1997's pacing is not the same number. The extra roll is gone and the listed percentage is
+now the whole of it. Over five hundred kills of every monster, all ten silver items turn up, none
+more than seven times — still the rarest thing in the game, and now something that exists.
+
 ### Draughts are worth drinking now (rewrite only)
 
 Every healing item in the game was a **trap**. Measured with a trained hero in Hie Brasil and

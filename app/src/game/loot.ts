@@ -83,11 +83,15 @@ export function rollLoot(monster: Entity, content: Content, rng: GameRandom): Lo
 
     const weapon = content.weapons.get(name);
     if (weapon !== undefined) {
-      // Equipment: a percentage chance, and silver needs a second one.
+      // Equipment: the listed percentage chance, and that is the whole of it.
+      //
+      // The 1997 rule put a further one-in-ten on anything silver, which made the best gear in the
+      // game a 0.1% drop off a 1% listing. That is a sensible rate for a game played daily for
+      // months and an unreachable one here: measured, a Silver Gladius or Masamune never appeared
+      // across three hundred loot rolls of every monster that can carry one. The same reasoning
+      // that removed the daily quest ration applies -- this build's campaign is compressed, so a
+      // rate tuned to 1997's pacing is not the same rate. See `docs/porting-notes.md`.
       if (!rng.percent(count)) {
-        return;
-      }
-      if (name.startsWith("Silver") && !rng.percent(10)) {
         return;
       }
       items.push(armsOf(weapon));

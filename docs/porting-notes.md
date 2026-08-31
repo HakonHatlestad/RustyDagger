@@ -93,6 +93,24 @@ all agree with the Java, because the recorded whole-fight comparisons drive the 
 attacks and the `== SPECIAL ACTIONS ==` section has never been read by any test. That last part is
 worth knowing: it is recorded ground truth that nothing checks.
 
+### What dying costs is capped (rewrite only)
+
+The death penalty was already softened to "a tenth of your purse" when the 1997 rule went (see
+below). A tenth of a purse has no ceiling, though, and that turned out to scale faster than any
+region's takings: measured on a veteran with a 7,770-Mark purse, the Goblin Mound grossed 28.3
+Marks a fight and handed 40.3 of them straight back in death losses. The Hills were worse. The
+rational play was to farm the safest region in the game forever, which is the exact opposite of the
+risk-for-reward ladder the regions exist to be.
+
+The loss is now a tenth of your purse **or 150 Marks, whichever is smaller** (`LOSS_CAP` in
+[`state.ts`](../app/src/game/state.ts)). Early on nothing changes — a tenth of 200 Marks is still
+20. Once you have something to lose, the penalty stops outgrowing the reward. Measured after the
+change, net Marks per fight for the same veteran: Fields 5.5, Goblin Mound 11.9, Forest 19.9.
+
+The Hills remain net-negative at −18.5, and that is left alone deliberately: at a 43% death rate
+they *should* be a bad idea for that character, and `assess` in
+[`world.ts`](../app/src/game/world.ts) already tells the player so in words before they go.
+
 ### The daily quest limit is off
 
 A hero had `27 + 3 * level` quests a day; every action spent fatigue against that, and when it ran

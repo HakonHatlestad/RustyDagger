@@ -995,8 +995,19 @@ function finishQuest(
 /** A tenth of your purse, which is what losing costs. */
 export const LOSS_SHARE = 10;
 
+/**
+ * The most anyone can take off you while you are unconscious.
+ *
+ * Without a ceiling the penalty scales with your wealth, which inverts the whole risk ladder:
+ * measured on a veteran with a 7,770-Mark purse, the Goblin Mound grossed 28.3 Marks a fight and
+ * paid 40.3 of them straight back out in death losses, so the rational play was to farm the safest
+ * region in the game forever. A tenth of a small purse is still a real early sting; a tenth of a
+ * large one was a tax on going anywhere interesting.
+ */
+export const LOSS_CAP = 150;
+
 export function lossOnFalling(marks: number): number {
-  return Math.trunc(marks / LOSS_SHARE);
+  return Math.min(Math.trunc(marks / LOSS_SHARE), LOSS_CAP);
 }
 
 /**

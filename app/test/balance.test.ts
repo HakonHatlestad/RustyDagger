@@ -3,16 +3,18 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { loadContent, type Content } from "../src/game/content.js";
 import {
+  LOSS_CAP,
   apply,
   asFighter,
   characterFrom,
+  lossOnFalling,
   recover,
   type Character,
   type Game,
 } from "../src/game/state.js";
 import { parseHero } from "../src/game/hero.js";
 import { newHeroText, backgroundByKey } from "../src/game/creation.js";
-import { WEAPON_SHOP, buyPrice, sellPrice, stockOf } from "../src/game/shop.js";
+import { ARMOUR_SHOP, WEAPON_SHOP, buyPrice, sellPrice, stockOf } from "../src/game/shop.js";
 import { REGIONS, pickEncounter } from "../src/game/world.js";
 import { GameRandom } from "../src/rules/random.js";
 import { Action, act, battleRound } from "../src/rules/battle.js";
@@ -55,6 +57,22 @@ function freshGame(seed: number, background = "squire"): Game {
 }
 
 /** Buys and wears the best weapon the purse will stretch to, which is what a player does first. */
+/** Buys and wears the best armour the purse will stretch to. The companion to {@link armUp}. */
+function gearUp(game: Game): void {
+  const character = game.character!;
+  const affordable = stockOf(content, ARMOUR_SHOP)
+    .filter((row) => row.price <= character.marks && row.item.kind === "arms")
+    .sort((a, b) => b.price - a.price)[0];
+  if (affordable === undefined) {
+    return;
+  }
+  apply(game, { kind: "buy", shop: ARMOUR_SHOP.key, name: affordable.name });
+  const index = character.pack.findIndex((c) => c.name === affordable.name);
+  if (index >= 0) {
+    apply(game, { kind: "equip", index });
+  }
+}
+
 function armUp(game: Game): void {
   const character = game.character!;
   const affordable = stockOf(content, WEAPON_SHOP)
@@ -111,6 +129,9 @@ function playPlan(game: Game, region: string, quests: number, plan: (round: numb
   }
   return { wins, deaths, fights, marks: character.marks };
 }
+
+/** The line of play a competent player settles into: charge, breathe, charge. */
+const alternating = (round: number): string => (round % 2 === 0 ? Action.BERZERK : Action.ATTACK);
 
 /** Runs a line of play across several heroes and returns the pooled rates. */
 function line(region: string, plan: (round: number) => string, seeds = 10, quests = 200) {
@@ -338,6 +359,54 @@ describe("resting", () => {
     apply(game, { kind: "rest" });
     expect(characterOf(game).wounds).toBe(0);
     expect(characterOf(game).disease).toBe(0);
+  });
+});
+
+describe("the ladder out of the Fields", () => {
+  // The existing "pays far better the deeper you go" above compares `killExperience` at two
+  // weights. That is the multiplier, not the payoff: it cannot see win rates or what dying costs,
+  // and both of those are where the ladder actually lived or died. Measured before this check
+  // existed, a veteran with a 7,770-Mark purse grossed 28.3 Marks a fight in the Goblin Mound and
+  // paid 40.3 of them back out in death losses, because the penalty was a tenth of a purse with no
+  // ceiling. The rational play was to farm the starting region forever.
+
+  /**
+   * Marks actually kept per fight, deaths and all, for a veteran who can survive the region.
+   *
+   * The long Fields run and the re-equip afterwards are not padding: measured, a hero who has only
+   * done 1,200 fights still loses money in the Mound, and reading that as "the ladder is broken"
+   * rather than "this character is not ready yet" is the mistake this helper exists to avoid.
+   */
+  function earnings(region: string, seeds = 6): number {
+    let net = 0;
+    let fights = 0;
+    for (let seed = 1; seed <= seeds; seed++) {
+      const game = freshGame(seed);
+      armUp(game);
+      playPlan(game, "fields", 2000, alternating);
+      armUp(game);
+      gearUp(game);
+      const before = game.character!.marks;
+      const s = playPlan(game, region, 250, alternating);
+      net += game.character!.marks - before;
+      fights += s.fights;
+    }
+    return net / fights;
+  }
+
+  it("pays better in play, and not merely in the experience formula", () => {
+    const fields = earnings("fields");
+    const forest = earnings("forest");
+    expect(fields).toBeGreaterThan(0);
+    expect(forest).toBeGreaterThan(fields * 2);
+  });
+
+  it("does not tax you for being rich, which used to make depth irrational", () => {
+    // A tenth of a purse, uncapped, grew faster than any region's takings. The cap is what keeps
+    // a deep region worth entering once you have something to lose.
+    expect(lossOnFalling(200)).toBe(20);
+    expect(lossOnFalling(50_000)).toBe(LOSS_CAP);
+    expect(earnings("mound")).toBeGreaterThan(earnings("fields"));
   });
 });
 

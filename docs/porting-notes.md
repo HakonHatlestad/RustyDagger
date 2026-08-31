@@ -355,6 +355,37 @@ Wounds and disease persist between sessions, in the hero's `temp` list where the
 
 ## Things added
 
+### A smith who will take any amount of money (rewrite only)
+
+Marks had nowhere to go. Both gear shops together come to about three thousand, the region ladder
+to forty and a half thousand, and after that a campaign simply accumulates — measured, a veteran
+grinding the Fields passed eighteen thousand Marks with nothing left to buy. A game with no ending
+needs a sink with no bottom, or its economy stops meaning anything the moment you have won it.
+
+Bill Smith now reforges the weapon you are wearing (+1 Attack) and Aileen Suitor tempers your
+armour (+1 Defence). The first costs 2,000 Marks and every one after costs half again as much, so
+twenty of them come to over six million: the curve has no ceiling, which is the point.
+
+It deliberately does **not** replace the enchanting scrolls, which the magic shop already sells and
+which `readScroll` calls "a gold sink with no ceiling". Those are a flat hundred Marks — no amount
+of wealth is ever absorbed by buying more of them — and past an item's own power every further
+scroll can destroy it. The two are different bargains and both stay:
+
+| | Enchanting scroll | Reforging |
+|---|---|---|
+| Costs | 100 Marks, flat | Half again as much every time |
+| Risk | Destroys the item past its power | None |
+| Gives | Skill, mostly | A flat point of Attack or Defence |
+
+The counts live inside the item as `Forged` and `Tempered`, written the same way `Enchant` already
+was and **only when non-zero**, so an ordinary weapon still round-trips byte for byte and the save
+format needs no version bump. A reforging does not raise what an enchantment is weighed against:
+`itemPower` is the Java's arithmetic and is left alone.
+
+Prices are design judgement, not ported values — the Java has no such service.
+
+
+
 ### A browser build
 
 `./gradlew webDist` produces `build/web/`: the ordinary jar plus a page that boots it under

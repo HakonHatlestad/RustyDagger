@@ -52,6 +52,9 @@ export interface ItemView {
   readonly defend: number;
   readonly skill: number;
   readonly enchant: number;
+  /** Smith-bought points, so what the inventory shows matches what the fight uses. */
+  readonly forged: number;
+  readonly tempered: number;
   readonly traits: readonly string[];
 }
 
@@ -61,6 +64,8 @@ function asEquipment(item: ItemView): Equipment {
     defend: item.defend,
     skill: item.skill,
     enchant: item.enchant,
+    forged: item.forged,
+    tempered: item.tempered,
     traits: new Set(item.traits.map((t) => t.charAt(0).toUpperCase() + t.slice(1))),
   };
 }

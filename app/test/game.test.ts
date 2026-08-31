@@ -294,6 +294,8 @@ describe("the loop", () => {
       skill: 1,
       traits: ["right"],
       enchant: 0,
+      forged: 0,
+      tempered: 0,
     });
     const index = c.pack.length - 1;
     const beforeAttack = asFighter(c).attack;

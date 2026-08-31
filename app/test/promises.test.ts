@@ -6,7 +6,7 @@ import {
   itemSkill,
   type Equipment,
 } from "../src/rules/combat.js";
-import { describeItem, type ItemView } from "../src/ui/describe.js";
+import { describeItem, itemWorth, type ItemView } from "../src/ui/describe.js";
 
 /**
  * Does the game do what the interface says it does?
@@ -23,7 +23,7 @@ import { describeItem, type ItemView } from "../src/ui/describe.js";
 
 function gear(
   traits: string[],
-  base = { attack: 10, defend: 10, skill: 10, enchant: 0 },
+  base = { attack: 10, defend: 10, skill: 10, enchant: 0, forged: 0, tempered: 0 },
 ): Equipment {
   return { ...base, traits: new Set(traits) };
 }
@@ -68,6 +68,8 @@ describe("what an item's description promises", () => {
       defend: 0,
       skill: 0,
       enchant: 0,
+      forged: 0,
+      tempered: 0,
       traits: ["right", "left"],
     };
     expect(describeItem(pike).join(" ")).toContain("Two-handed");
@@ -82,6 +84,8 @@ describe("what an item's description promises", () => {
       defend: 0,
       skill: 0,
       enchant: 0,
+      forged: 0,
+      tempered: 0,
       traits: ["right"],
     };
     const shield: ItemView = {
@@ -90,6 +94,8 @@ describe("what an item's description promises", () => {
       defend: 5,
       skill: 0,
       enchant: 0,
+      forged: 0,
+      tempered: 0,
       traits: ["left"],
     };
     const boots: ItemView = {
@@ -98,6 +104,8 @@ describe("what an item's description promises", () => {
       defend: 1,
       skill: 0,
       enchant: 0,
+      forged: 0,
+      tempered: 0,
       traits: ["feet"],
     };
     const pike: ItemView = {
@@ -106,6 +114,8 @@ describe("what an item's description promises", () => {
       defend: 0,
       skill: 0,
       enchant: 0,
+      forged: 0,
+      tempered: 0,
       traits: ["right", "left"],
     };
     const said = describeItem(pike, [sword, shield, boots]).join(" ");
@@ -128,5 +138,65 @@ describe("what a background's chooser promises", () => {
 
   it('"Agile: a tenth more Skill"', () => {
     expect(combat(["Agile"]).skill - base.skill).toBe(Math.trunc((base.skill + 9) / 10));
+  });
+});
+
+describe("what a smith promises", () => {
+  it('"another point of Attack" means the fight sees another point of Attack', () => {
+    // The shop bench says a reforging buys a point of Attack. This is that sentence, checked
+    // against `calcCombat` rather than against the sentence next to it.
+    const plain = calcCombat({
+      wits: 30,
+      charm: 30,
+      gear: [gear([])],
+      fightRank: 0,
+      magicRank: 0,
+      thiefRank: 0,
+      traits: new Set<string>(),
+    });
+    const reforged = calcCombat({
+      wits: 30,
+      charm: 30,
+      gear: [{ ...gear([]), forged: 1 }],
+      fightRank: 0,
+      magicRank: 0,
+      thiefRank: 0,
+      traits: new Set<string>(),
+    });
+    expect(reforged.attack).toBe(plain.attack + 1);
+    expect(reforged.defend).toBe(plain.defend);
+  });
+
+  it('"another point of Defence" likewise, and it does not leak into Attack', () => {
+    const base = {
+      wits: 30,
+      charm: 30,
+      fightRank: 0,
+      magicRank: 0,
+      thiefRank: 0,
+      traits: new Set<string>(),
+    };
+    const plain = calcCombat({ ...base, gear: [gear([])] });
+    const tempered = calcCombat({ ...base, gear: [{ ...gear([]), tempered: 2 }] });
+    expect(tempered.defend).toBe(plain.defend + 2);
+    expect(tempered.attack).toBe(plain.attack);
+  });
+
+  it("shows a reforged weapon at its real worth in the inventory comparison", () => {
+    // The inventory prints a +N against what you are wearing. If the view dropped the smith's
+    // points it would understate a forged weapon and quietly advise a bad swap -- which is the
+    // exact class of bug this file exists for.
+    const worn: ItemView = {
+      name: "Long Sword",
+      attack: 15,
+      defend: 0,
+      skill: 0,
+      enchant: 0,
+      forged: 0,
+      tempered: 0,
+      traits: ["right"],
+    };
+    const forgedSword: ItemView = { ...worn, name: "Same Sword", forged: 5 };
+    expect(itemWorth(forgedSword)).toBe(itemWorth(worn) + 5);
   });
 });

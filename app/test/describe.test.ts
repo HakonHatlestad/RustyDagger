@@ -12,7 +12,17 @@ import {
 } from "../src/ui/describe.js";
 
 function item(name: string, over: Partial<ItemView> = {}): ItemView {
-  return { name, attack: 0, defend: 0, skill: 0, enchant: 0, traits: [], ...over };
+  return {
+    name,
+    attack: 0,
+    defend: 0,
+    skill: 0,
+    enchant: 0,
+    forged: 0,
+    tempered: 0,
+    traits: [],
+    ...over,
+  };
 }
 
 const sword = item("Long Sword", { attack: 15, traits: ["right"] });

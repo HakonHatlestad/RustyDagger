@@ -11,6 +11,7 @@
 
 import { Action } from "../rules/battle.js";
 import {
+  bestWornArms,
   apply,
   asFighter,
   expFraction,
@@ -23,6 +24,7 @@ import {
   type Place,
 } from "../game/state.js";
 import { raiseFor } from "../rules/levelling.js";
+import { FORGE_SERVICES, forgeCost, timesDone, type ForgeService } from "../game/forge.js";
 import { SHOPS, sellPrice, shopByKey, stockOf } from "../game/shop.js";
 import { REGIONS, assess, canEnter, pickEncounter, tableFor } from "../game/world.js";
 import { powerOf, typicalPower } from "../game/monster.js";
@@ -124,6 +126,8 @@ function toItemView(item: Carried): ItemView | null {
         defend: item.defend,
         skill: item.skill,
         enchant: item.enchant,
+        forged: item.forged,
+        tempered: item.tempered,
         traits: item.traits,
       }
     : null;
@@ -1055,6 +1059,45 @@ function shopScreen(
 
   const worn = wornViews(character);
   const columns = el("div", "columns");
+
+  // The smith's other trade: a permanent point on what you are already wearing, at a price that
+  // goes up by half every time. It is the only thing in the game that will take any amount of
+  // money, which is what a game with no ending needs.
+  const service = (Object.keys(FORGE_SERVICES) as ForgeService[]).find(
+    (k) => FORGE_SERVICES[k].shop === shopKey,
+  );
+  if (service !== undefined) {
+    const item = bestWornArms(character, service);
+    const bench = el("section", "bench");
+    const spec = FORGE_SERVICES[service];
+    if (item === null) {
+      bench.append(el("p", "aside", `Wearing nothing I could ${spec.label.toLowerCase()}.`));
+    } else {
+      const done = timesDone(item, service);
+      const cost = forgeCost(done);
+      bench.append(
+        el(
+          "p",
+          "aside",
+          `${spec.label} the ${item.name}: ${String(cost)} Marks for another point of ` +
+            `${spec.gives}.` +
+            (done > 0 ? ` Done ${String(done)} times so far.` : "") +
+            " Safe, and it costs half again as much each time.",
+        ),
+      );
+      bench.append(
+        button(
+          `${spec.label} — ${String(cost)} Marks`,
+          () => {
+            dispatch({ kind: "forge", service });
+            rerender();
+          },
+          { disabled: character.marks < cost },
+        ),
+      );
+    }
+    panel.append(bench);
+  }
 
   const buying = el("section");
   buying.append(el("h2", undefined, "For sale"));

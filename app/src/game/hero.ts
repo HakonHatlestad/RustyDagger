@@ -36,6 +36,17 @@ export interface CarriedArms {
    * `getCount(ArmsTrait.ENCHANT)`.
    */
   readonly enchant: number;
+  /**
+   * Times a smith has reforged this, each one a flat point of Attack.
+   *
+   * Stored the same way `Enchant` is — a nested count inside the item — so an unforged weapon
+   * round-trips byte for byte and the format needs no version bump. Distinct from `enchant`
+   * because they are bought differently: a scroll is cheap and can destroy the item, a reforging
+   * is safe and costs half again as much every time. See `docs/porting-notes.md`.
+   */
+  readonly forged: number;
+  /** Times an armourer has tempered this, each one a flat point of Defence. */
+  readonly tempered: number;
 }
 
 /** Anything the port does not model yet — notes, nested oddities — kept verbatim so it survives. */
@@ -96,7 +107,10 @@ function toCarried(field: Field): Carried | null {
   if (field.type === "itArms") {
     const [attack, defend, skill, ...rest] = field.fields;
     const num = (f: Field | undefined): number => (typeof f === "string" ? Number(f) : 0);
-    const enchant = rest.find((f): f is Entity => typeof f !== "string" && f.name === "Enchant");
+    const count = (name: string): number => {
+      const found = rest.find((f): f is Entity => typeof f !== "string" && f.name === name);
+      return found === undefined ? 0 : num(found.fields[0]);
+    };
     return {
       kind: "arms",
       name: field.name,
@@ -104,7 +118,9 @@ function toCarried(field: Field): Carried | null {
       defend: num(defend),
       skill: num(skill),
       traits: rest.filter((f): f is string => typeof f === "string" && f.length > 0),
-      enchant: enchant === undefined ? 0 : num(enchant.fields[0]),
+      enchant: count("Enchant"),
+      forged: count("Forged"),
+      tempered: count("Tempered"),
     };
   }
   if (field.type === "itCount" || field.type === "itPercent" || field.type === "itRandom") {
@@ -224,6 +240,12 @@ function carriedToEntity(item: Carried): Entity {
           // Written only when there is one, so an ordinary sword round-trips byte for byte.
           ...(item.enchant > 0
             ? [{ type: "itCount", name: "Enchant", fields: [String(item.enchant)] }]
+            : []),
+          ...(item.forged > 0
+            ? [{ type: "itCount", name: "Forged", fields: [String(item.forged)] }]
+            : []),
+          ...(item.tempered > 0
+            ? [{ type: "itCount", name: "Tempered", fields: [String(item.tempered)] }]
             : []),
         ],
       };

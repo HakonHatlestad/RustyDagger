@@ -460,6 +460,8 @@ describe("the shops", () => {
       skill: 0,
       traits: ["right"],
       enchant: 0,
+      forged: 0,
+      tempered: 0,
     });
     game.character!.pack.push({ kind: "count", name: "Ruby", count: 2 });
     apply(game, { kind: "goTo", place: { kind: "shop", shop: "weapons" } });
@@ -593,6 +595,8 @@ describe("the character screen", () => {
       skill: 0,
       traits: ["right"],
       enchant: 0,
+      forged: 0,
+      tempered: 0,
     });
     render(root, game, ui);
     expect(root.querySelector(".delta--better")?.textContent.trim()).toBe("+15");
@@ -607,6 +611,8 @@ describe("the character screen", () => {
       skill: 1,
       traits: ["right"],
       enchant: 0,
+      forged: 0,
+      tempered: 0,
     });
     render(root, game, ui);
     const rows = [...root.querySelectorAll<HTMLElement>(".itemlist li")];

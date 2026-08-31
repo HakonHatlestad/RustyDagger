@@ -19,6 +19,15 @@ export interface Equipment {
   readonly defend: number;
   readonly skill: number;
   readonly enchant: number;
+  /**
+   * Flat points bought from a smith: `forged` into Attack, `tempered` into Defence.
+   *
+   * Kept apart from `enchant` rather than folded into it, because enchantment's arithmetic is the
+   * Java's and is checked exactly against `baseline/rules.txt`. Both default to zero, so every row
+   * in that baseline is unaffected. See `game/forge.ts`.
+   */
+  readonly forged: number;
+  readonly tempered: number;
   readonly traits: ReadonlySet<string>;
 }
 
@@ -41,12 +50,17 @@ export const Trait = {
 /** What one item contributes to Attack, once its own traits are applied. */
 export function itemAttack(item: Equipment): number {
   const flaming = item.traits.has(Trait.RIGHT) && item.traits.has(Trait.FLAME);
-  return item.attack + (flaming ? 8 : 0) + Math.trunc((item.enchant + 9) / 10);
+  return item.attack + (flaming ? 8 : 0) + Math.trunc((item.enchant + 9) / 10) + item.forged;
 }
 
 /** What one item contributes to Defence. Note the different rounding from Attack. */
 export function itemDefend(item: Equipment): number {
-  return item.defend + (item.traits.has(Trait.BLESS) ? 1 : 0) + Math.trunc((item.enchant + 4) / 10);
+  return (
+    item.defend +
+    (item.traits.has(Trait.BLESS) ? 1 : 0) +
+    Math.trunc((item.enchant + 4) / 10) +
+    item.tempered
+  );
 }
 
 /** What one item contributes to Skill. Enchantment counts in full here, not a tenth. */

@@ -63,6 +63,10 @@ function asEquipment(item: CarriedArms): Equipment {
     defend: item.defend,
     skill: item.skill,
     enchant: item.enchant,
+    // Deliberately not passed through: `itemPower` is what an enchantment is weighed against, and
+    // that arithmetic is the Java's. A reforging buys Attack, not a bigger capacity for scrolls.
+    forged: 0,
+    tempered: 0,
     traits: new Set(item.traits.map((t) => t.charAt(0).toUpperCase() + t.slice(1))),
   };
 }

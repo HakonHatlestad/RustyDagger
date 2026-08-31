@@ -127,6 +127,8 @@ describe("what cannot be worn", () => {
       skill: 99,
       traits: [],
       enchant: 0,
+      forged: 0,
+      tempered: 0,
     });
     wear(g, "Odd Trinket");
     expect(worn(g)).toHaveLength(0);
@@ -143,6 +145,8 @@ describe("what cannot be worn", () => {
       skill: 0,
       traits: ["right", "cursed"],
       enchant: 0,
+      forged: 0,
+      tempered: 0,
     };
     g.character!.gear.push(cursed);
     give(g, "Long Sword");
@@ -162,6 +166,8 @@ describe("what cannot be worn", () => {
       skill: 0,
       traits: ["right", "cursed"],
       enchant: 0,
+      forged: 0,
+      tempered: 0,
     });
     apply(g, { kind: "unequip", index: 0 });
     expect(worn(g)).toEqual(["Cursed Blade"]);

@@ -34,7 +34,18 @@ const armsByKey = new Map<string, Equipment>(
         .filter((f): f is string => typeof f === "string" && f.length > 0)
         .map((f) => f.charAt(0).toUpperCase() + f.slice(1)),
     );
-    return [a.key, { attack: a.attack, defend: a.defend, skill: a.skill, enchant: 0, traits }];
+    return [
+      a.key,
+      {
+        attack: a.attack,
+        defend: a.defend,
+        skill: a.skill,
+        enchant: 0,
+        forged: 0,
+        tempered: 0,
+        traits,
+      },
+    ];
   }),
 );
 

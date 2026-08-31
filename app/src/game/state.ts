@@ -53,6 +53,14 @@ import { buyPrice, sellPrice, shopByKey, type ShopDefinition } from "./shop.js";
 import { effectOf, endOfFight, isBulkSellable, isUsableHere, useItem } from "./items.js";
 import { isScroll, readScroll } from "./scrolls.js";
 import { backgroundByKey, newHeroText } from "./creation.js";
+import {
+  FORGE_SERVICES,
+  forgeCost,
+  forged as forgedItem,
+  refusal as forgeRefusal,
+  timesDone,
+  type ForgeService,
+} from "./forge.js";
 
 import {
   JOINING_FEE,
@@ -71,6 +79,7 @@ import {
   heroMarks,
   parseHero,
   type Carried,
+  type CarriedArms,
   type Hero,
 } from "./hero.js";
 
@@ -223,6 +232,8 @@ function equipmentOf(character: Character): Equipment[] {
       defend: c.defend,
       skill: c.skill,
       enchant: c.enchant,
+      forged: c.forged,
+      tempered: c.tempered,
       traits: new Set(c.traits.map(capitalise)),
     }));
 }
@@ -291,6 +302,7 @@ export type Move =
   | { readonly kind: "rest" }
   | { readonly kind: "joinGuild" }
   | { readonly kind: "train"; readonly track: TrackKey }
+  | { readonly kind: "forge"; readonly service: ForgeService }
   | { readonly kind: "readScroll"; readonly scrollIndex: number; readonly target: number }
   | { readonly kind: "equip"; readonly index: number }
   | { readonly kind: "unequip"; readonly index: number }
@@ -339,6 +351,9 @@ export function apply(game: Game, move: Move): Game {
 
     case "train":
       return train(game, move.track);
+
+    case "forge":
+      return forge(game, move.service);
 
     case "readScroll":
       return applyScroll(game, move.scrollIndex, move.target);
@@ -412,6 +427,51 @@ function joinGuild(game: Game): Game {
  * A rank is permanent and immediately real: `asFighter` reads the ranks straight into Attack,
  * Defence and Skill, so the number on the character screen moves the moment you pay.
  */
+/**
+ * The worn piece a smith would work on: the one already carrying the most of what they add.
+ *
+ * Chosen by contribution rather than by slot, so "Reforge" always means the weapon actually doing
+ * the hitting, and there is no way to forge a knife cheaply and then wield a sword.
+ */
+export function bestWornArms(character: Character, service: ForgeService): CarriedArms | null {
+  const arms = character.gear.filter((c): c is CarriedArms => c.kind === "arms");
+  if (arms.length === 0) {
+    return null;
+  }
+  const score = (item: CarriedArms): number =>
+    service === "forged" ? item.attack + item.forged : item.defend + item.tempered;
+  return arms.reduce((best, item) => (score(item) > score(best) ? item : best));
+}
+
+/**
+ * Paying a smith to put another permanent point into what you are wearing.
+ *
+ * Works on the *worn* item rather than one picked out of the pack, so it is unambiguous which
+ * thing is being improved and the price cannot be dodged by forging a knife and wielding a sword.
+ */
+function forge(game: Game, service: ForgeService): Game {
+  const character = game.character;
+  if (character === null) {
+    return game;
+  }
+  const worn = bestWornArms(character, service);
+  const why = forgeRefusal(worn, service, character.marks);
+  if (why !== null) {
+    game.notices = [why];
+    return game;
+  }
+  const item = worn!;
+  const cost = forgeCost(timesDone(item, service));
+  character.marks -= cost;
+  const index = character.gear.indexOf(item);
+  character.gear[index] = forgedItem(item, service);
+  game.notices = [
+    `${String(cost)} Marks. The ${item.name} comes back a little better — ` +
+      `${FORGE_SERVICES[service].gives} ${String(timesDone(item, service) + 1)} above what it was.`,
+  ];
+  return game;
+}
+
 function train(game: Game, track: TrackKey): Game {
   const character = game.character;
   if (character === null) {

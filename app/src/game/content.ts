@@ -68,6 +68,8 @@ export function armsOf(weapon: WeaponDefinition): CarriedArms {
     traits: weapon.traits,
     // Anything the table sells is plain. Enchantment is something you do to it afterwards.
     enchant: 0,
+    forged: 0,
+    tempered: 0,
   };
 }
 

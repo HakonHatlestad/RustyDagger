@@ -15,8 +15,9 @@ This repository holds the game twice over, on purpose.
 
 - **`app/`** — the TypeScript rewrite, and where the work is. Playable in a browser end to end: make
   a character, hunt across ten regions, fight, loot, drink what you loot mid-fight, spend the
-  proceeds in four shops and at the guild, enchant what you are carrying, buy your way into the
-  places beyond the first four, and come back to it later because it saves. This is what
+  proceeds in four shops and at the guild, enchant what you are carrying, pay a smith to reforge it
+  and Elden Bishop to harden you, buy your way into the places beyond the first four, and come back
+  to it later because it saves. This is what
   [docs/roadmap.md](docs/roadmap.md) is about.
 - **the Java build** — the 1997 applet, ported to run on the desktop and in a browser. Still fully
   playable, and it is also the **reference the rewrite is checked against**: `./gradlew baseline`

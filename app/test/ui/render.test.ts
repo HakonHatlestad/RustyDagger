@@ -501,6 +501,64 @@ describe("the temple", () => {
   });
 });
 
+describe("the list of places to hunt", () => {
+  it("says how dangerous a locked region is, not only what it needs", () => {
+    // Otherwise the ladder asks you to spend twelve thousand Marks on a Rutter for Shangala with
+    // nothing to judge it by. Every key item is a real decision and it needs both halves: what it
+    // costs to open, and what is waiting behind it.
+    click("Go hunting");
+    const card = [...root.querySelectorAll<HTMLButtonElement>("button.choice")].find((b) =>
+      b.textContent.startsWith("Shangala"),
+    )!;
+    expect(card.disabled).toBe(true);
+    expect(card.textContent).toContain("Needs: Rutter for Shangala");
+    expect(card.textContent).toMatch(/outmatched|even match|manage|more than a match/);
+  });
+});
+
+describe("what the fight screen tells you about this round", () => {
+  // Three rules change what the buttons do, and all three live as invisible state on the fighter.
+  // A move that silently does something else is the worst kind of interface bug: the player has no
+  // way to learn the rule and no way to tell it from a fault.
+  //
+  // The state is set directly rather than fought into being. That the rules *set* it is pinned in
+  // balance.test.ts; what belongs here is that the screen says so, and driving a real fight to
+  // reach each state means picking Guts values where neither side dies, which is a fragile way to
+  // test a sentence.
+  beforeEach(() => {
+    click("Go hunting");
+    clickCard("The Fields");
+  });
+
+  it("says when a charge has left you winded", () => {
+    expect(root.textContent).not.toContain("off balance");
+    game.quest!.hero.winded = true;
+    render(root, game, ui);
+    expect(root.textContent).toContain("off balance");
+  });
+
+  it("says when the moment for a backstab has passed", () => {
+    expect(root.textContent).not.toContain("lands as an ordinary swing");
+    game.quest!.hero.roundsFought = 1;
+    render(root, game, ui);
+    expect(root.textContent).toContain("lands as an ordinary swing");
+  });
+
+  it("says when a creature has stopped falling for your patter", () => {
+    expect(root.textContent).not.toContain("will not fall for it again");
+    game.quest!.monster.wise = true;
+    render(root, game, ui);
+    expect(root.textContent).toContain("will not fall for it again");
+  });
+
+  it("says nothing at all on the opening round, when none of it applies", () => {
+    const text = root.textContent;
+    expect(text).not.toContain("off balance");
+    expect(text).not.toContain("lands as an ordinary swing");
+    expect(text).not.toContain("will not fall for it again");
+  });
+});
+
 describe("the smith's bench", () => {
   it("reforges the weapon you are wearing, for what the button says", () => {
     const character = game.character!;

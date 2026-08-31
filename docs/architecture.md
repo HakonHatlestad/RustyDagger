@@ -171,6 +171,9 @@ number the rules disagree with would be worse than showing nothing.
 | `game/world.ts` | The regions, their weighted encounter tables, what unlocks each, and how dangerous one looks to you |
 | `game/scrolls.ts` | What a scroll does to an item, and when enchanting one too far destroys it |
 | `game/guild.ts` | What a rank costs, and who the guild will teach |
+| `game/forge.ts` | What a smith charges to reforge or temper what you are wearing, on a curve that never flattens |
+| `game/training.ts` | What Elden Bishop charges for a point of Guts, Wits or Charm — and why Guts alone is capped by level |
+| `game/loot.ts` | What a dead monster was carrying, and the odds on each piece of it |
 | `rules/growth.ts` | Whether a win teaches you something, and how the chance falls away |
 | `game/creation.ts` | The four backgrounds, and the save text a new character starts from |
 | `game/save.ts` | Where a character is kept, and reading one back that will not parse |
@@ -188,7 +191,15 @@ They are not all the same kind of thing, and treating them as one pile hides whi
 | `balance.test.ts` | Is the game any *good*? Winnable, losable, and does progress happen? |
 | `promises.test.ts` | Does the game do what the interface **says** it does? |
 | `ui/render.test.ts` | Does the interface a player touches actually work? |
+| `progression.test.ts` | Does one hero's arc hold up — training, draughts, and the top of the gear ladder? |
+| `campaign.test.ts` | Does the whole game join up? Plays a campaign end to end; `pnpm sim` prints it |
+| `forge.test.ts` | Does the smith charge what it says and survive a save? |
 | `scripts/smoke.mjs` | Does the built artefact boot, play and save? |
+
+The last two are the ones that catch what the others cannot. Every suite above `progression` holds
+one thing still and pokes it, and a game can fail while all of them pass: before `campaign.test.ts`
+existed, a hero could reach the Ocean, win 2% of fights there, and have no way to improve — with a
+green suite throughout. If a change makes the game worse rather than wrong, that is where it shows.
 
 `balance.test.ts` is the odd one and the most easily lost: it plays whole sessions through `apply`
 and asserts things like "a new character still dies sometimes" and "the Hills are as dangerous as

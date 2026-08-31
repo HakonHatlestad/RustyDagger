@@ -617,7 +617,8 @@ function fieldsScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTM
     if (!open && region.key_item !== null) {
       // Named, not hinted at. A locked door you cannot identify is just a disabled button.
       card.append(el("span", "choice__locked", `Needs: ${region.key_item}`));
-    } else if (character !== null) {
+    }
+    if (character !== null) {
       // Worked out against what actually lives there, not against a number written down once.
       const theirs = typicalPower(
         tableFor(region, character.level),
@@ -798,6 +799,24 @@ function questScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTML
       swing(chosen.action);
       return true;
     });
+    // Two rules now change what these buttons do, and both are invisible state on the fighter.
+    // A disabled-looking outcome with no stated reason reads as a bug, so say them out loud —
+    // the tooltips carry the standing rules, but these are about *this* round.
+    const hero = quest.hero;
+    const notes: string[] = [];
+    if (hero.winded) {
+      notes.push("Still off balance from that charge — another will not connect as one.");
+    }
+    if (hero.roundsFought > 0) {
+      notes.push("They are fighting you now, so a backstab lands as an ordinary swing.");
+    }
+    if (quest.monster.wise) {
+      notes.push("They have seen your patter fail once and will not fall for it again.");
+    }
+    if (notes.length > 0) {
+      panel.append(el("p", "aside", notes.join(" ")));
+    }
+
     const items = usableRow(game, character, true, dispatch, rerender);
     if (items !== null) {
       panel.append(items);

@@ -1,7 +1,8 @@
 # Gameplay systems
 
 Everything here was read off the code, with file references so you can check it. Read this before
-touching balance.
+touching balance. The intent behind these numbers is in [design-vision.md](design-vision.md), and
+changing any of them goes through [balance-protocol.md](balance-protocol.md).
 
 ## Creating a hero
 
@@ -38,7 +39,8 @@ landed — see the hit roll below.
 
 Traits add 10% on top: `Agile`→Skill, `Strong`→Attack, `Sturdy`→Defence.
 
-Levelling costs `50 * 1.5^(level-1)` experience — 50, 75, 113, 169, 253… so it steepens fast.
+Levelling costs `50 * 1.5^(level-1)` experience, truncated — 50, 75, 112, 168, 253… so it
+steepens fast.
 
 ## Combat
 

@@ -29,8 +29,8 @@ build never had.
 **The rewrite is deliberately not the same game.** The original is a *daily* game — a ration of
 quests, gear that wears out, something lost when you die — because that is how a 1997 browser game
 earned its living off a shared server. There is no server. The rewrite takes all of it out and is a
-single-player game you can sit down and finish; the fight itself is where the tension lives.
-[docs/porting-notes.md](docs/porting-notes.md) has the reasoning.
+single-player game you can sit down and play for as long as you like; the fight itself is where the
+tension lives. [docs/porting-notes.md](docs/porting-notes.md) has the reasoning.
 
 ## Build & Run
 
@@ -92,6 +92,10 @@ fixture. See [docs/saves.md](docs/saves.md).
 
 ## Documentation
 
+- [docs/design-vision.md](docs/design-vision.md) - what the game is meant to be, and what it
+  deliberately is not
+- [docs/balance-protocol.md](docs/balance-protocol.md) - the procedure for changing any number the
+  game plays by
 - [docs/gameplay.md](docs/gameplay.md) - character creation, combat maths, RNG, items, the economy
 - [docs/architecture.md](docs/architecture.md) - package map and the Screen/Item models
 - [docs/saves.md](docs/saves.md) - save format, and where a character lives in each build

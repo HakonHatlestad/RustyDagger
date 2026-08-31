@@ -6,7 +6,10 @@ The game is being rebuilt as a TypeScript web app rather than modernised further
 reasoning is in [adr/2026-08-30-typescript-rewrite.md](adr/2026-08-30-typescript-rewrite.md). The
 Java build stays alive as the reference the new one is checked against, and goes on improving while
 that happens. Each phase below is a separate planning session
-when it is picked up; this document is sequencing and intent, not instructions.
+when it is picked up; this document is sequencing and intent, not instructions. The durable half
+of that intent now lives in [design-vision.md](design-vision.md), which is deliberately not a
+section of this document because a charter must outlive the plan that cites it; this document
+stays the sequencing.
 
 ## Instead of a freeze: regenerate the baseline
 
@@ -31,6 +34,9 @@ months of improvement. It also removes the plan's worst property: that every pha
 left you worse off than not starting, so a stall in the middle was strictly harmful. The Java build
 now keeps improving whatever happens to the rewrite.
 
+The full procedure a balance change follows — including where regenerating the baseline sits in
+it — is in [balance-protocol.md](balance-protocol.md).
+
 ## Where this has got to
 
 **Phases 0 to 4 are done and the game is playable end to end in a browser.** `app/` holds the
@@ -42,8 +48,8 @@ autosaves. 353 tests, plus a smoke test that boots the built bundle and plays th
 
 **It is no longer the same game as the Java build, on purpose.** The daily quest ration, gear decay
 and the death penalty are gone — everything that existed to make you put a 1997 browser game down
-and come back the next day. What is left is a single-player game you can sit down and finish.
-[porting-notes.md](porting-notes.md) has the reasoning and the table.
+and come back the next day. What is left is a single-player game you can sit down and play for as
+long as you like. [porting-notes.md](porting-notes.md) has the reasoning and the table.
 
 | Phase | State |
 |---|---|

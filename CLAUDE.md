@@ -82,6 +82,10 @@ a real subprocess with a working native stack, scrub the environment first:
 
 ## Where things are
 
+- **[docs/design-vision.md](docs/design-vision.md)** — what this game is meant to be, and what it
+  deliberately is not. Read this before proposing a feature.
+- **[docs/balance-protocol.md](docs/balance-protocol.md)** — the procedure for changing any number
+  the game plays by. Read this before touching a formula, cost or rate.
 - **[docs/architecture.md](docs/architecture.md)** — package map, what each layer does, the
   `Screen` and `Item` models, the `Tools` god object.
 - **[docs/gameplay.md](docs/gameplay.md)** — character creation, combat maths, the RNG
@@ -96,6 +100,37 @@ a real subprocess with a working native stack, scrub the environment first:
   the game is being rebuilt as a web app rather than modernised in Java.
 - **[docs/remake-comparison.md](docs/remake-comparison.md)** — what the still-maintained remake
   changed, and which of it we take.
+
+## Working rules for agents
+
+- **Run the full gate before every commit: `cd app && pnpm verify`.** No scoped substitute, no
+  "just the tests for the file I touched". It is type checking, linting, the format check, the whole
+  suite, a production build and a smoke test that plays the built bundle, and it takes about twelve
+  seconds — cheap enough that there is no case for running less. Run the Java gate
+  (`./gradlew spotlessApply spotlessCheck build`) when, and only when, Java sources changed; the
+  Java build is the reference and TypeScript-only work cannot affect it. **This is a local
+  pre-commit rule and changes nothing about CI** — `.github/workflows/build.yml` runs on every push
+  and pull request with no path filters, so the Java job runs whatever you touched.
+- **Decide and act; escalate only what is genuinely the user's to decide.** Settle technical and
+  implementation questions yourself — approach, structure, naming, which helper to reuse, how to
+  test it — and get on with it. Stop and ask only for product intent and scope (what the game
+  should become), facts only the user holds, spending or risk tolerance, and anything
+  outward-facing or hard to reverse. Player-facing wording, including text that quotes a game
+  value, is your own call and needs no permission — with two rules in **Conventions** below still
+  binding. The number itself must come from the game rather than a guess ("A number the player
+  sees"), and changing that number is a balance change under
+  [docs/balance-protocol.md](docs/balance-protocol.md). And wording that states a game value is a
+  promise, so pin it in `app/test/promises.test.ts` in the same change ("If the interface says the
+  game does something") — that pin is what stops the autonomy producing another sentence the game
+  does not honour.
+- **Never hack around a problem.** No masking a symptom, no loosening an assertion to make a suite
+  green, no faking a result, no `if` branch that special-cases the failing test. If a clean
+  solution is not available, say so plainly and say what is blocking it. Loosening an assertion in
+  `app/test/balance.test.ts` is the version of this that matters most here: those assertions are
+  the game's design intent in executable form.
+- **Judge a feature request against [docs/design-vision.md](docs/design-vision.md) before building
+  it**, and take any change to a number, formula, price or rate through
+  [docs/balance-protocol.md](docs/balance-protocol.md).
 
 ## Conventions
 

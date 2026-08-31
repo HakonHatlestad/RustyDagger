@@ -1,7 +1,8 @@
 # Porting notes
 
 Every deliberate departure from the 1997 original, and why. **Add to this when you change
-behaviour** — otherwise the next person cannot tell a decision from a bug.
+behaviour** — otherwise the next person cannot tell a decision from a bug. What the game is
+*becoming* is in [design-vision.md](design-vision.md); this file records what it departed *from*.
 
 Two builds live in this repository and they no longer agree, on purpose. Notes that apply only to
 the TypeScript rewrite in [`app/`](../app) say so; everything else is about the Java build, which

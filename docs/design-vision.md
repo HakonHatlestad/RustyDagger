@@ -13,8 +13,11 @@ intent behind them.
 
 A single-player role-playing game made of text and played in a browser: make a character, hunt
 across ten regions, fight, loot, drink what you loot mid-fight, spend the proceeds in four shops and
-at the guild, and come back to it later because it saves (`README.md:16-20`). Everything below is a
-claim about the shape of that loop, with the file that proves it.
+at the guild, and come back to it later because it saves (`README.md:16-20`). Single-player is the
+deliberate shape rather than an unfinished one (`README.md:29-33`), and the interface really is
+text — plain DOM, no framework, every string put on the page with `textContent`
+(`docs/architecture.md:153-155`). Everything below is a claim about the shape of that loop, with the
+file that proves it.
 
 - **Classless, point-buy and permanent.** Twenty build points spread across Guts, Wits, Charm and
   starting money, plus four optional traits — Noble 12, Trader 10, Wizard 9, Warrior 8 — each of

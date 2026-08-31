@@ -9,7 +9,7 @@ import { ARMOUR_SHOP, SHOPS, TRADER_SHOP, WEAPON_SHOP, stockOf } from "../src/ga
 import { REGIONS, canEnter, pickEncounter } from "../src/game/world.js";
 import { GameRandom } from "../src/rules/random.js";
 import { Action } from "../src/rules/battle.js";
-import { HARDEN_RATE, hardenCost } from "../src/game/training.js";
+import { HARDEN_RATE, atCeiling, gutsCeiling, hardenCost } from "../src/game/training.js";
 import { rollLoot } from "../src/game/loot.js";
 import { parseEntity } from "../src/format/parse.js";
 
@@ -132,6 +132,19 @@ function freshGame(seed: number): Game {
 }
 
 describe("the loop the whole game is built around", () => {
+  it("will not harden a body past what its years carry", () => {
+    // Guts is health AND the multiplier on every blow, so buying it without limit buys damage
+    // without limit. Measured at 700 Guts, every fight in the game ended in 1.0 rounds and going
+    // from 10 Attack to 120 in Shangala moved the win rate by two points -- the whole gear ladder
+    // was decoration. Held to the ceiling, 10 Attack wins 0.48 there and 120 wins 0.61.
+    expect(gutsCeiling(20)).toBe(200);
+    expect(atCeiling("guts", 200, 20)).toBe(true);
+    expect(atCeiling("guts", 199, 20)).toBe(false);
+    // Wits and Charm have no ceiling: neither multiplies damage.
+    expect(atCeiling("wits", 5000, 20)).toBe(false);
+    expect(atCeiling("charm", 5000, 20)).toBe(false);
+  });
+
   it("costs more for each point, so no purse ever outruns it", () => {
     expect(hardenCost(10)).toBe(10 * HARDEN_RATE);
     expect(hardenCost(300)).toBe(300 * HARDEN_RATE);
@@ -177,8 +190,11 @@ describe("the loop the whole game is built around", () => {
     // Spend the winnings on being harder, which is the only sink that reaches out there.
     const points = trainUpTo(game, character.marks - 20_000);
     expect(points).toBeGreaterThan(100);
-    expect(character.guts).toBeGreaterThan(before.guts + 40);
-    expect(character.wits).toBeGreaterThan(before.wits + 40);
+    // Guts is capped by level, so training fills it to the ceiling and stops. Wits is not, and is
+    // what the rest of the money goes into. That split is the whole point: unlimited Guts bought
+    // unlimited damage, ended every fight in one round, and made all 91 weapons decoration.
+    expect(character.guts).toBe(gutsCeiling(character.level));
+    expect(character.wits).toBeGreaterThan(before.wits + 100);
 
     const ocean = hunt(game, "ocean", 250);
     expect(ocean.win).toBeGreaterThan(0.55);

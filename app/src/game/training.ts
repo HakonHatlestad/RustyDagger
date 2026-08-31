@@ -35,12 +35,44 @@
 /** Marks per point of the stat you already have. */
 export const HARDEN_RATE = 10;
 
+/**
+ * How much Guts a level will carry, and why Guts alone is capped.
+ *
+ * Guts does double duty in the ported maths: it is your health *and* the multiplier on every blow
+ * (`guts * (2 + swings) / 10`). Buying it without limit therefore buys damage without limit, and
+ * measured that broke the game quietly rather than loudly:
+ *
+ * - At 700 Guts every fight in the game ended in **1.0 rounds**. You overkill anything you can hit,
+ *   so damage beyond "enough" is worth nothing.
+ * - Which made Attack — and with it all 91 weapons and the whole silver tier — decoration. Going
+ *   from 10 Attack to 120 in Shangala moved the win rate by two points.
+ * - And it flattened the far end: Shangala at 0.84 with no gear worth speaking of.
+ *
+ * Held at 250 instead, the same test reads completely differently: 10 Attack wins 0.48 of fights in
+ * Shangala where 120 Attack wins 0.61, with a third fewer deaths, and fights run 1.1 to 1.4 rounds.
+ * Gear is worth hunting again and the far end stays hard.
+ *
+ * So Guts is the stat you *earn* — levels grant it and using it grows it — and the Bishop will only
+ * harden what your years can carry: `level * GUTS_PER_LEVEL`. Wits and Charm have no such cap,
+ * because neither multiplies damage and both stay honest at any size.
+ *
+ * A first attempt fixed this by scaling Attack with Guts inside the combat maths instead. It was
+ * measured, it worked less well than this, and it cost a departure from the Java arithmetic for
+ * nothing, so it was reverted. See `docs/porting-notes.md`.
+ */
+export const GUTS_PER_LEVEL = 10;
+
+/** The most Guts a hero of this level can be trained to. */
+export function gutsCeiling(level: number): number {
+  return level * GUTS_PER_LEVEL;
+}
+
 /** The three things you can buy, which are the three the game actually has. */
 export const TRAINABLE = [
   {
     key: "guts",
     name: "Guts",
-    what: "Health, and most of what a blow is worth. The stat that decides whether you can be out there at all.",
+    what: "Health, and most of what a blow is worth — which is why the Bishop will only take it as far as your level allows. The rest comes from levelling, and from using it.",
   },
   {
     key: "wits",
@@ -62,8 +94,21 @@ export function hardenCost(current: number): number {
   return cost < HARDEN_RATE ? HARDEN_RATE : cost;
 }
 
+/** Whether this stat is at the limit of what the hero's level will carry. */
+export function atCeiling(stat: TrainableKey, current: number, level: number): boolean {
+  return stat === "guts" && current >= gutsCeiling(level);
+}
+
 /** Why the trainer would turn you away, or null if they would not. */
-export function refusal(current: number, marks: number): string | null {
+export function refusal(
+  stat: TrainableKey,
+  current: number,
+  level: number,
+  marks: number,
+): string | null {
+  if (atCeiling(stat, current, level)) {
+    return "There is only so much hardening a body of your years will take. Come back a level on.";
+  }
   const cost = hardenCost(current);
   if (marks < cost) {
     return `That is ${String(cost)} Marks of work, and you have ${String(marks)}.`;

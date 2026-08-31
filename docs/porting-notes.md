@@ -406,6 +406,54 @@ they are for a particular moment, not a rotation.
 
 Shares and the one-free-reach rule are design judgement, not ported values.
 
+### Guts is earned, not bought — and why the gear ladder depends on it (rewrite only)
+
+The trainer below sells Guts, Wits and Charm. Selling **Guts** without a limit turned out to break
+the game quietly, and the way it broke is worth writing down because none of the symptoms looked
+like the cause.
+
+Guts does double duty in the ported maths: it is your health *and* the multiplier on every blow,
+`guts * (2 + swings) / 10`. So buying Guts buys damage, and buying it without limit buys damage
+without limit. Measured with a hero trained to 700 Guts:
+
+- **Every fight in the game ended in 1.0 rounds.** You overkill anything you can hit.
+- Which makes damage beyond "enough" worth nothing, and therefore makes **Attack worth nothing**:
+  going from 10 Attack to 120 in Shangala moved the win rate from 0.82 to 0.84. All 91 weapons and
+  the entire silver tier were decoration.
+- And it flattened the far end — Shangala at 0.84 with a starter weapon.
+
+Held to a ceiling instead, the same measurements read completely differently. At 250 Guts, 10 Attack
+wins 0.48 of fights in Shangala and 120 Attack wins **0.61**, with a third fewer deaths, and fights
+run 1.1 to 1.4 rounds instead of 1.0.
+
+So Elden Bishop will only harden what your years carry: **ten Guts per level**
+(`GUTS_PER_LEVEL` in [`training.ts`](../app/src/game/training.ts)). Growth by use can and does carry
+you past that ceiling — the cap is on what you can *buy*, not on what you can become. Wits and Charm
+have no ceiling, because neither multiplies damage: Wits buys the hit roll, which plateaus of its own
+accord once your Skill passes what you are fighting, and Charm buys prices and swindles.
+
+**A fix that was tried, measured and reverted.** The first attempt scaled Attack with Guts inside
+the combat maths — `attack + attack * guts / 100` fed into `resolveDamage` — so that a weapon's bite
+grew with the arm swinging it. It worked, in the sense that it compiled and read well. It was worse
+than the ceiling on every count: it did not restore Attack's relevance at 700 Guts (fights were
+still one round, so more damage still bought nothing), it moved `Brasil:Fighter` against the
+harness's 80-Guts probe from a 67% death rate to 38% — a real divergence from the Java, caught by
+`parity.test.ts` rather than by argument — and it cost a permanent departure from the ported
+arithmetic in exchange. It is gone; `resolveDamage` and every row of the ATTACK RESOLUTION baseline
+are untouched. Recorded so nobody spends the afternoon on it twice.
+
+### The Hills sit where they belong now (rewrite only)
+
+`REGIONS` is walked in order and the region list is drawn from it, so the array order is the
+difficulty order the player is shown. The Hills sat third, between the Forest and the Goblin Mound,
+which is the 1997 map order and not what happens when you play it: a campaign that took them third
+met a 0.52 win rate and a 0.32 death rate, against 0.92 and 0.01 in the Mound they supposedly came
+before. Their creatures are simply bigger — a Giant carries 225 Guts where a Mound Rager carries 97.
+
+They now sit fifth, after the Castle Dungeons, with `advisedLevel` 12 to match. Nothing about the
+region itself changed. `assess` already warned the player in words; this fixes the order the list
+recommends, which is the part that was lying.
+
 ### A trainer who sells Guts, Wits and Charm (rewrite only)
 
 The far half of the ladder was unreachable, and not because it was hard. Measured at level 21 with
@@ -420,10 +468,11 @@ fights, and then flattens. Levelling adds two points a level against a cost that
 time, so it is logarithmic in play time; nothing in the game could take a hero to the 300-plus the
 far regions are pitched at.
 
-Elden Bishop now trains you, for **ten Marks per point you already have**. The next point of Guts
-costs ten times your Guts, so going from a fresh hero to 300 in one stat is a little over four
-hundred thousand Marks — about what a long campaign in the Goblin Mound pays. The total cost to
-reach any level is quadratic, so it is endless in the way the game is endless: no purse outruns it.
+Elden Bishop now trains you, for **ten Marks per point you already have**. The next point costs ten
+times what you have, so going from a fresh hero to 300 in one stat is a little over four hundred
+thousand Marks — about what a long campaign in the Goblin Mound pays. The total cost to reach any
+level is quadratic, so it is endless in the way the game is endless: no purse outruns it. Guts is
+capped by level (see above); Wits and Charm are not, and Wits is where a fortune actually goes.
 
 Measured end to end, and pinned in `app/test/progression.test.ts`: a hero who works the Fields, the
 Forest and the Mound, buys every key on Sally's shelf, and spends the winnings on training arrives

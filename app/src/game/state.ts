@@ -445,7 +445,7 @@ function harden(game: Game, stat: TrainableKey): Game {
     return game;
   }
   const current = character[stat];
-  const why = hardenRefusal(current, character.marks);
+  const why = hardenRefusal(stat, current, character.level, character.marks);
   if (why !== null) {
     game.notices = [why];
     return game;

@@ -98,16 +98,6 @@ export const REGIONS: readonly Region[] = [
     key_item: null,
   },
   {
-    key: "hills",
-    prefix: "Hills",
-    name: "The Hills",
-    blurb: "Bare rock. Goats, trolls, and things with wings. The dragon does not come out for you.",
-    weight: 3,
-    advisedLevel: 8,
-    table: table(["Goat", "Basilisk", "Troll", "Wyvern", "Giant", "Sphinx"], [7, 5, 5, 4, 3, 3]),
-    key_item: null,
-  },
-  {
     key: "mound",
     prefix: "Mound",
     name: "The Goblin Mound",
@@ -126,6 +116,22 @@ export const REGIONS: readonly Region[] = [
     advisedLevel: 12,
     table: table(["Rodent", "Snot", "Rager", "Gang", "Troll", "Mage"], [7, 6, 5, 4, 3, 2]),
     key_item: "Castle Permit",
+  },
+  {
+    key: "hills",
+    prefix: "Hills",
+    name: "The Hills",
+    blurb: "Bare rock. Goats, trolls, and things with wings. The dragon does not come out for you.",
+    weight: 3,
+    // Measured, not guessed, and deliberately out of step with the 1997 map order: played through,
+    // the Hills kill a hero that walks the Goblin Mound comfortably. A campaign that took them in
+    // the old third slot met a 0.52 win rate and a 0.32 death rate, against 0.92 and 0.01 in the
+    // Mound it was supposedly harder than. Its creatures are simply bigger -- a Giant carries 225
+    // Guts where a Mound Rager carries 97 -- and this number only orders the list, so ordering it
+    // by what actually happens is the honest thing.
+    advisedLevel: 12,
+    table: table(["Goat", "Basilisk", "Troll", "Wyvern", "Giant", "Sphinx"], [7, 5, 5, 4, 3, 3]),
+    key_item: null,
   },
   {
     key: "vault",

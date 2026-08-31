@@ -443,6 +443,7 @@ describe("the temple", () => {
     // The screen where late money turns into power. Untested, this could have been a dead button
     // and every other test in the suite would still have passed.
     const character = game.character!;
+    character.level = 30;
     character.guts = 100;
     character.marks = 50_000;
     render(root, game, ui);
@@ -455,6 +456,7 @@ describe("the temple", () => {
 
   it("offers all three stats, and prices each off its own value", () => {
     const character = game.character!;
+    character.level = 30;
     character.guts = 100;
     character.wits = 40;
     character.charm = 20;
@@ -468,8 +470,27 @@ describe("the temple", () => {
     }
   });
 
+  it("says so on the button when your level will carry no more Guts", () => {
+    // Guts is capped at ten a level, because it multiplies damage as well as being health. A
+    // disabled button with no explanation would read as a bug, so the label carries the reason.
+    const character = game.character!;
+    character.level = 12;
+    character.guts = 120;
+    character.marks = 500_000;
+    render(root, game, ui);
+    const label = buttons().find((b) => b.startsWith("Guts "))!;
+    expect(label).toBe("Guts 120 — as far as level 12 will carry");
+    const target = [...root.querySelectorAll("button")].find((b) =>
+      b.textContent.startsWith("Guts "),
+    )!;
+    expect(target.disabled).toBe(true);
+    // Wits has no ceiling, so it is still on offer with the same purse.
+    expect(buttons().some((b) => b.startsWith("Wits ") && b.includes("Marks"))).toBe(true);
+  });
+
   it("will not let you train what you cannot pay for", () => {
     const character = game.character!;
+    character.level = 30;
     character.guts = 100;
     character.marks = 10;
     render(root, game, ui);

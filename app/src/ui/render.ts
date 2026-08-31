@@ -25,7 +25,7 @@ import {
 } from "../game/state.js";
 import { raiseFor } from "../rules/levelling.js";
 import { FORGE_SERVICES, forgeCost, timesDone, type ForgeService } from "../game/forge.js";
-import { TRAINABLE, hardenCost } from "../game/training.js";
+import { TRAINABLE, atCeiling, hardenCost } from "../game/training.js";
 import { SHOPS, sellPrice, shopByKey, stockOf } from "../game/shop.js";
 import { REGIONS, assess, canEnter, pickEncounter, tableFor } from "../game/world.js";
 import { powerOf, typicalPower } from "../game/monster.js";
@@ -903,14 +903,17 @@ function templeScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTM
     for (const stat of TRAINABLE) {
       const current = character[stat.key];
       const cost = hardenCost(current);
+      const capped = atCeiling(stat.key, current, character.level);
       row.append(
         button(
-          `${stat.name} ${String(current)} to ${String(current + 1)} — ${String(cost)} Marks`,
+          capped
+            ? `${stat.name} ${String(current)} — as far as level ${String(character.level)} will carry`
+            : `${stat.name} ${String(current)} to ${String(current + 1)} — ${String(cost)} Marks`,
           () => {
             dispatch({ kind: "harden", stat: stat.key });
             rerender();
           },
-          { disabled: character.marks < cost, hint: stat.what },
+          { disabled: capped || character.marks < cost, hint: stat.what },
         ),
       );
     }

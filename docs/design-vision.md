@@ -37,10 +37,13 @@ file that proves it.
   (`app/src/game/guild.ts:43`), deliberately beyond a long run in the starting region, so it is the
   first thing in the game that asks you to go somewhere dangerous
   (`app/test/balance.test.ts:301-307`).
-- **You buy your way deeper.** Gold is the progression, not a scoreboard: a smith reforges what you
-  carry, and Elden Bishop sells Guts, Wits and Charm at ten Marks for every point you already have.
+- **You buy your way deeper — but not all of it.** Gold is the progression, not a scoreboard: a
+  smith reforges what you carry, and Elden Bishop sells Wits and Charm at ten Marks for every point
+  you already have. **Guts is the exception and is earned**, capped at ten a level, because it
+  multiplies damage as well as being health: bought without limit it ended every fight in one round
+  and made all 91 weapons decoration.
   Both get dearer the further you push them, so neither runs out, and the far regions are pitched
-  where only a trained character can stand (`app/test/progression.test.ts:148-186`;
+  where only a trained character can stand (`app/test/progression.test.ts:161-202`;
   [porting-notes.md](porting-notes.md) for why gear alone is not enough out there).
 - **Risk is what buys reward.** Ten hunting regions (`docs/roadmap.md:61`), and the deeper ones pay
   far better and teach faster, which is the whole reason to leave the Fields
@@ -74,9 +77,9 @@ anywhere in the code.
 
 ## The design intent, as the tests state it
 
-One bullet per assertion in `app/test/balance.test.ts` and `app/test/progression.test.ts`, in the
-order they appear there. There are twenty-one in the first and five in the second, and all
-twenty-six are here: this list is meant to be the complete prose copy of the executable intent,
+One bullet per assertion in `app/test/balance.test.ts`, `app/test/progression.test.ts` and
+`app/test/campaign.test.ts`, in the order they appear there. There are twenty-one in the first, six
+in the second and seven in the third, and all thirty-four are here: this list is meant to be the complete prose copy of the executable intent,
 because a partial copy drifts without anything noticing.
 
 - A character who buys a weapon and hunts gets somewhere over a few hundred fights. The campaign is
@@ -141,21 +144,43 @@ passed while the loop the game is built around did not close: at level 21 with t
 shops sell, a hero won 2% of fights in the Ocean, and 370,000 Marks of reforging moved that not at
 all, because Attack is rounding error against creatures carrying 500 Guts and 600 Skill.
 
-- Getting harder costs more for every point you already have, so no purse ever outruns it
+- Guts is earned, not bought: the trainer will not harden a body past ten points a level, because
+  Guts multiplies damage as well as being health, and buying it without limit ended every fight in
+  one round and made the whole gear ladder decoration
   (`app/test/progression.test.ts:135-146`).
+- Getting harder costs more for every point you already have, so no purse ever outruns it
+  (`app/test/progression.test.ts:148-159`).
 - The loop closes: hunt where you can survive, sell what you find, spend it on being harder, and
-  thereby reach a region that would have killed you (`app/test/progression.test.ts:148-186`).
+  thereby reach a region that would have killed you (`app/test/progression.test.ts:161-202`).
 - The first draught of a fight is quick and every one after costs the round, so a potion is an
-  emergency and never a way of fighting (`app/test/progression.test.ts:204-220`).
+  emergency and never a way of fighting (`app/test/progression.test.ts:220-236`).
 - A draught mends a share of what you are made of, so it keeps its meaning as you grow
-  (`app/test/progression.test.ts:222-230`).
+  (`app/test/progression.test.ts:238-246`).
 - The top rung of the gear ladder is reachable at all: every silver item turns up eventually
-  (`app/test/progression.test.ts:234-264`).
+  (`app/test/progression.test.ts:250-280`).
+
+And seven in a third file, `app/test/campaign.test.ts`, which does not sample anything: it plays a
+whole game, choosing what to buy, when to train and when a region has stopped being worth the walk,
+using the same `assess` advice the interface gives the player. `pnpm sim` prints what it did.
+
+- Every region in the game is reached — no rung of the ladder is left with nothing on it
+  (`app/test/campaign.test.ts:360-363`).
+- It never stalls: each region leaves the hero better off than it found them
+  (`app/test/campaign.test.ts:365-370`).
+- It starts gently and ends somewhere that would have killed the same hero
+  (`app/test/campaign.test.ts:372-377`).
+- Depth pays better in Marks actually banked, not in a formula
+  (`app/test/campaign.test.ts:379-382`).
+- The region cards tell the truth: nothing the game calls safe is a bloodbath, and nothing it calls
+  deadly is a walk (`app/test/campaign.test.ts:384-395`).
+- The purse never stops finding a use, so the money keeps meaning something
+  (`app/test/campaign.test.ts:397-406`).
+- None of it rests on one lucky seed (`app/test/campaign.test.ts:408-412`).
 
 A change that breaks one of these assertions is a change to the design rather than a test failure to
 be tuned away, and [balance-protocol.md](balance-protocol.md) says what to do about it. If another
-assertion is ever added to either file, a bullet belongs here in the same change, because this list
-claims to be complete.
+assertion is ever added to any of the three files, a bullet belongs here in the same change, because
+this list claims to be complete.
 
 ## Open questions
 

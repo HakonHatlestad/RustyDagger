@@ -18,7 +18,7 @@ import { GameRandom } from "../src/rules/random.js";
 import { Action } from "../src/rules/battle.js";
 import { powerOf, typicalPower } from "../src/game/monster.js";
 import { JOINING_FEE, TRACKS, canJoin, canTrain } from "../src/game/guild.js";
-import { hardenCost } from "../src/game/training.js";
+import { atCeiling, hardenCost } from "../src/game/training.js";
 import { raiseFor } from "../src/rules/levelling.js";
 
 /**
@@ -180,9 +180,24 @@ function inTown(game: Game, spendOn: "gear" | "self"): void {
   }
 
   if (spendOn === "self") {
-    // Keep Guts and Wits level with each other: measured, either alone barely moves the deep end.
+    // Keep Guts and Wits level with each other -- measured, either alone barely moves the deep end
+    // -- and skip whichever is at its level ceiling rather than stopping altogether. An earlier
+    // version broke out of this loop on the first refusal, so the moment Guts capped the hero
+    // stopped training at all and finished a campaign sitting on four million Marks.
     for (;;) {
-      const stat = character.guts <= character.wits ? "guts" : "wits";
+      const open = (["guts", "wits", "charm"] as const).filter(
+        (k) => !atCeiling(k, character[k], character.level),
+      );
+      if (open.length === 0) {
+        break;
+      }
+      // Whichever of the two that keep you alive is behind; Charm only once they are both capped
+      // or out of reach, because it buys prices and swindles rather than survival.
+      const vital = open.filter((k) => k !== "charm");
+      const stat =
+        vital.length > 0
+          ? vital.reduce((low, k) => (character[k] < character[low] ? k : low))
+          : open[0]!;
       // Never spend the last of the purse; a key or a weapon may be worth more.
       if (character.marks - hardenCost(character[stat]) < 20_000) {
         break;
@@ -383,8 +398,11 @@ describe("a whole campaign, played by code", () => {
     // Everything is bought and trained on the way through, so a campaign should not finish sitting
     // on a fortune with nothing left to spend it on.
     const last = legs[legs.length - 1]!;
-    expect(hardenCost(last.guts)).toBeGreaterThan(JOINING_FEE);
-    expect(last.guts).toBeGreaterThan(250);
+    // Guts stops at the level ceiling; Wits is the one with no roof, so it is what a fortune goes
+    // into and what keeps the purse worth having.
+    expect(last.guts).toBeLessThan(450);
+    expect(hardenCost(last.wits)).toBeGreaterThan(JOINING_FEE);
+    expect(last.wits).toBeGreaterThan(250);
   });
 
   it("holds up for a different hero, so none of this is one lucky seed", () => {

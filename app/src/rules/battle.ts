@@ -37,7 +37,7 @@ export type ActionName = (typeof Action)[keyof typeof Action];
 export const BERZERK_GUARD_DIVISOR = 2;
 
 /** Whether an action is an all-out charge, which costs both the guard and the initiative. */
-function wildCharge(action: string): boolean {
+export function wildCharge(action: string): boolean {
   return isAction(action, Action.BERZERK) || isAction(action, Action.IEATSU);
 }
 

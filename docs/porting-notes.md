@@ -378,6 +378,23 @@ tuned to 1997's pacing is not the same number. The extra roll is gone and the li
 now the whole of it. Over five hundred kills of every monster, all ten silver items turn up, none
 more than seven times — still the rarest thing in the game, and now something that exists.
 
+### The fight screen closes the moves that can only hurt you (rewrite only)
+
+Two of the six actions become **strictly dominated** partway through a fight, as a consequence of
+the costs added above. A charge thrown while winded keeps none of its multipliers and still gives up
+the guard and the initiative, so it is worse than an ordinary swing in every respect. A Hypnotise or
+Swindle against a creature already wise to it cannot succeed and still spends the round.
+
+Neither is a decision, so neither is offered: both buttons close, with the reason on them, and the
+keyboard shortcuts respect the same bar. A move that can only make things worse is a trap rather
+than a choice, and this game has had enough of those — see the healing draughts below, which were
+one for the same reason.
+
+The standing rules also stopped living in tooltips. `title` is unreachable on a touchscreen and
+awkward from a keyboard, and three of the six actions now carry real rules rather than flavour, so
+the fight screen carries a foldable "What these do" listing every action it offers. It is closed by
+default; six rules a round is noise once you know them.
+
 ### Draughts are worth drinking now (rewrite only)
 
 Every healing item in the game was a **trap**. Measured with a trained hero in Hie Brasil and

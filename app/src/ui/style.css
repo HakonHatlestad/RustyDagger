@@ -155,7 +155,9 @@ h2 {
 
 .bar {
   display: grid;
-  grid-template-columns: 4.5rem 1fr auto;
+  /* Fixed rather than max-content so the two bars line up with each other; wide enough for the
+     longest label there is, which is "NEXT LEVEL" uppercased and letter-spaced. */
+  grid-template-columns: 6rem 1fr auto;
   align-items: center;
   gap: 0.5rem;
 }

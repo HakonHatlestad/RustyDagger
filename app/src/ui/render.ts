@@ -9,7 +9,7 @@
  * come from game content and from save files, and neither should ever be able to inject markup.
  */
 
-import { Action } from "../rules/battle.js";
+import { Action, isAction, wildCharge } from "../rules/battle.js";
 import {
   bestWornArms,
   apply,
@@ -776,7 +776,26 @@ function questScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTML
       dispatch({ kind: "fight", action });
       rerender();
     };
+    // A move that can only make things worse is a trap, not a choice. Two of these become
+    // strictly dominated mid-fight: a charge while winded drops none of its multipliers in but
+    // still costs the guard and the initiative, and a talk-down against something already wise to
+    // it cannot succeed and still spends the round. Both are closed rather than merely warned
+    // about — the same reasoning that put a cost on Berzerk in the first place.
+    const barred = (action: string): string | null => {
+      if (wildCharge(action) && quest.hero.winded) {
+        return "Still winded — this would cost your guard and the round for nothing.";
+      }
+      if (
+        (isAction(action, Action.CONTROL) || isAction(action, Action.SWINDLE)) &&
+        quest.monster.wise
+      ) {
+        return "They are wise to it — this cannot work now.";
+      }
+      return null;
+    };
+
     for (const choice of choices) {
+      const why = barred(choice.action);
       const node = button(
         choice.label,
         () => {
@@ -784,7 +803,8 @@ function questScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTML
         },
         {
           primary: choice.action === Action.ATTACK,
-          hint: `${choice.hint} (${choice.key.toUpperCase()})`,
+          disabled: why !== null,
+          hint: why ?? `${choice.hint} (${choice.key.toUpperCase()})`,
         },
       );
       // Drawn by CSS from the attribute rather than appended as a node, so the shortcut never
@@ -795,7 +815,7 @@ function questScreen(game: Game, dispatch: Dispatch, rerender: () => void): HTML
     panel.append(actions);
     bindKeys((key) => {
       const chosen = choices.find((c) => c.key === key);
-      if (chosen === undefined) {
+      if (chosen === undefined || barred(chosen.action) !== null) {
         return false;
       }
       swing(chosen.action);

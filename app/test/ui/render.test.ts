@@ -569,6 +569,43 @@ describe("what the fight screen tells you about this round", () => {
     expect(root.textContent).toContain("will not fall for it again");
   });
 
+  it("closes the moves that could only make things worse", () => {
+    // Winded, a charge keeps none of its multipliers and still costs the guard and the initiative
+    // — strictly worse than an ordinary swing. Against something already wise to your patter, a
+    // talk-down cannot succeed and still spends the round. Neither is a decision, so neither is
+    // offered: a button that can only hurt you is a trap, and this game has had enough of those.
+    const enabled = (label: string): boolean =>
+      ![...root.querySelectorAll("button")].find((b) => b.textContent === label)!.disabled;
+
+    expect(enabled("Berzerk")).toBe(true);
+    game.quest!.hero.winded = true;
+    render(root, game, ui);
+    expect(enabled("Berzerk")).toBe(false);
+    expect(enabled("Attack")).toBe(true);
+
+    game.quest!.hero.winded = false;
+    game.quest!.monster.wise = true;
+    render(root, game, ui);
+    expect(enabled("Hypnotise")).toBe(false);
+    expect(enabled("Swindle")).toBe(false);
+    expect(enabled("Berzerk")).toBe(true);
+  });
+
+  it("will not let the keyboard reach a move the buttons have closed", () => {
+    // The shortcut keys bypass the button entirely, so barring one and not the other would leave
+    // the trap open to anyone playing with their hands on the keys.
+    game.quest!.hero.winded = true;
+    render(root, game, ui);
+    const key = (k: string): void => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: k, bubbles: true }));
+    };
+    const before = game.quest!.rounds;
+    key("z");
+    expect(game.quest!.rounds).toBe(before);
+    key("a");
+    expect(game.quest!.rounds).toBeGreaterThan(before);
+  });
+
   it("says nothing at all on the opening round, when none of it applies", () => {
     const text = root.textContent;
     expect(text).not.toContain("off balance");

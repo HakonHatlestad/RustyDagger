@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "sim": "SIM_REPORT=1 vitest run test/campaign.test.ts --reporter=basic",
     "lint": "eslint src test --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

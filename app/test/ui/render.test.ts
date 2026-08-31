@@ -4,10 +4,12 @@ import { resolve } from "node:path";
 import { loadContent, type Content } from "../../src/game/content.js";
 import { JOINING_FEE } from "../../src/game/guild.js";
 import { parseHero } from "../../src/game/hero.js";
-import { apply, characterFrom, type Game } from "../../src/game/state.js";
+import { apply, asFighter, characterFrom, type Game } from "../../src/game/state.js";
 import { GameRandom } from "../../src/rules/random.js";
 import { initialUi, render, type UiState } from "../../src/ui/render.js";
 import { REGIONS } from "../../src/game/world.js";
+import { TRAINABLE, hardenCost } from "../../src/game/training.js";
+import { forgeCost } from "../../src/game/forge.js";
 
 /**
  * The interface, driven the way a player drives it.
@@ -435,6 +437,87 @@ describe("the temple", () => {
     render(root, game, ui);
     const rest = [...root.querySelectorAll("button")].find((b) => b.textContent === "Rest")!;
     expect(rest.disabled).toBe(true);
+  });
+
+  it("sells a point of Guts, and charges what the button says", () => {
+    // The screen where late money turns into power. Untested, this could have been a dead button
+    // and every other test in the suite would still have passed.
+    const character = game.character!;
+    character.guts = 100;
+    character.marks = 50_000;
+    render(root, game, ui);
+    const label = buttons().find((b) => b.startsWith("Guts "));
+    expect(label).toBe(`Guts 100 to 101 — ${String(hardenCost(100))} Marks`);
+    click(label!);
+    expect(character.guts).toBe(101);
+    expect(character.marks).toBe(50_000 - hardenCost(100));
+  });
+
+  it("offers all three stats, and prices each off its own value", () => {
+    const character = game.character!;
+    character.guts = 100;
+    character.wits = 40;
+    character.charm = 20;
+    character.marks = 50_000;
+    render(root, game, ui);
+    for (const stat of TRAINABLE) {
+      const current = character[stat.key];
+      expect(buttons()).toContain(
+        `${stat.name} ${String(current)} to ${String(current + 1)} — ${String(hardenCost(current))} Marks`,
+      );
+    }
+  });
+
+  it("will not let you train what you cannot pay for", () => {
+    const character = game.character!;
+    character.guts = 100;
+    character.marks = 10;
+    render(root, game, ui);
+    const target = [...root.querySelectorAll("button")].find((b) =>
+      b.textContent.startsWith("Guts "),
+    )!;
+    expect(target.disabled).toBe(true);
+  });
+});
+
+describe("the smith's bench", () => {
+  it("reforges the weapon you are wearing, for what the button says", () => {
+    const character = game.character!;
+    character.marks = 50_000;
+    click("Bill Smith's");
+    const label = buttons().find((b) => b.startsWith("Reforge"));
+    expect(label).toBe(`Reforge — ${String(forgeCost(0))} Marks`);
+    const before = asFighter(character).attack;
+    click(label!);
+    expect(asFighter(character).attack).toBe(before + 1);
+    expect(character.marks).toBe(50_000 - forgeCost(0));
+  });
+
+  it("gets dearer each time, and says so on the button", () => {
+    const character = game.character!;
+    character.marks = 500_000;
+    click("Bill Smith's");
+    click(buttons().find((b) => b.startsWith("Reforge"))!);
+    render(root, game, ui);
+    expect(buttons()).toContain(`Reforge — ${String(forgeCost(1))} Marks`);
+    expect(forgeCost(1)).toBeGreaterThan(forgeCost(0));
+  });
+
+  it("tempers at the armourer rather than reforging, and adds Defence", () => {
+    const character = game.character!;
+    character.marks = 50_000;
+    click("Aileen Suitor's");
+    const label = buttons().find((b) => b.startsWith("Temper"));
+    expect(label).toBeDefined();
+    expect(buttons().find((b) => b.startsWith("Reforge"))).toBeUndefined();
+    const before = asFighter(character).defend;
+    click(label!);
+    expect(asFighter(character).defend).toBe(before + 1);
+  });
+
+  it("offers no bench at the shops that have no smith", () => {
+    click("Sally Trader's");
+    expect(buttons().some((b) => b.startsWith("Reforge") || b.startsWith("Temper"))).toBe(false);
   });
 });
 

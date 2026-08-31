@@ -57,6 +57,13 @@ Nothing needs installing but a JDK 17+. Gradle downloads the Java 17 toolchain i
 
 ## Seeing your change
 
+**To see the whole game rather than a unit of it, run `cd app && pnpm sim`.** It plays a campaign
+from a fresh hero to the far end of the ladder — buying gear, joining the guild, training, opening
+locked regions — and prints it region by region with levels, stats, purse and win rates. The
+assertions in `app/test/campaign.test.ts` are what CI checks; the print-out is for a human deciding
+whether the shape is reasonable. It has caught two things nothing else did: a loop that did not
+close, and a rational play of farming the starting region forever.
+
 **In `app/`, run `pnpm verify`** — that is type checking, linting, formatting, the full suite, a
 build, and a game played through the built bundle. It is what CI runs.
 
